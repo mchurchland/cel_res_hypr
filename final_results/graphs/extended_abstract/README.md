@@ -3,6 +3,9 @@
 These figures are deliberately distinct from the thesis/journal versions.
 They use the `extended-abstract` colour scheme and 70% highest-density
 contours instead of the 50% contours used by the thesis figures.
+The raw-spectral-radius summary includes GR as a fourth row; lower GR means
+greater convergence after the shared input tail. The thesis version retains
+the separate GR synthesis figure.
 
 All plotted analyses use only these canonical rank-updated effective-rank
 inputs:

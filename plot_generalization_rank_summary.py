@@ -419,7 +419,6 @@ def _plot_sign_sweeps(ax, summaries: list[tuple[str, pd.DataFrame, str]]) -> Non
     empirical_labeled = False
     for dataset, summary, color in summaries:
         ordered = summary.sort_values("sign_fraction")
-        correlation = ordered["mean_gr"].corr(ordered["gr_cv"])
         ax.plot(
             ordered["sign_fraction"],
             ordered["gr_cv"],
@@ -430,7 +429,7 @@ def _plot_sign_sweeps(ax, summaries: list[tuple[str, pd.DataFrame, str]]) -> Non
             markersize=4.4,
             markerfacecolor="white",
             markeredgewidth=1.0,
-            label=f"{dataset} ($r$={correlation:.2f})",
+            label=dataset,
         )
         if dataset != "Matched ER":
             empirical = ordered.iloc[

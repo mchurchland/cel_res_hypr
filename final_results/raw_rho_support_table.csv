@@ -1,0 +1,82 @@
+family,contrast_id,high_mode,low_mode,high_label,low_label,outcome,n_paired_trials,high_mean,low_mean,change,ci95_low,ci95_high
+CE matched,0_to_40,sign_test_og_cel0.0,sign_test_og_cel0.4,0\%,40\%,raw_rho,200,106.50889,49.96124,-56.547648,-57.667059,-55.387677
+CE matched,0_to_40,sign_test_og_cel0.0,sign_test_og_cel0.4,0\%,40\%,IPC_mean,200,7.2971996,10.228161,2.9309617,2.828877,3.033072
+CE matched,0_to_40,sign_test_og_cel0.0,sign_test_og_cel0.4,0\%,40\%,IPC_cv,200,0.24318232,0.37103266,0.12785034,0.12328878,0.13233362
+CE matched,0_to_40,sign_test_og_cel0.0,sign_test_og_cel0.4,0\%,40\%,KR_mean,200,3.8548931,9.8403251,5.985432,5.619488,6.3584458
+CE matched,0_to_40,sign_test_og_cel0.0,sign_test_og_cel0.4,0\%,40\%,KR_cv,200,0.31730385,0.47617866,0.1588748,0.15367672,0.16397598
+CE matched,0_to_40,sign_test_og_cel0.0,sign_test_og_cel0.4,0\%,40\%,MC_mean,200,4.3175403,6.3813817,2.0638414,1.9897513,2.1385385
+CE matched,0_to_40,sign_test_og_cel0.0,sign_test_og_cel0.4,0\%,40\%,MC_cv,200,0.33685664,0.47704937,0.14019273,0.13474197,0.14549018
+CE matched,0_to_40,sign_test_og_cel0.0,sign_test_og_cel0.4,0\%,40\%,GR_mean,200,3.0633022,8.5277401,5.464438,5.1723572,5.7601878
+CE matched,0_to_40,sign_test_og_cel0.0,sign_test_og_cel0.4,0\%,40\%,GR_cv,200,0.25789106,0.49248873,0.23459767,0.22729151,0.24178781
+CE known edges,0_to_40,sign_test_og_cel0.0,sign_test_og_cel0.4,0\%,40\%,raw_rho,200,78.142136,44.070589,-34.071547,-35.008032,-33.074092
+CE known edges,0_to_40,sign_test_og_cel0.0,sign_test_og_cel0.4,0\%,40\%,IPC_mean,200,7.459817,9.2669526,1.8071356,1.7264211,1.8875132
+CE known edges,0_to_40,sign_test_og_cel0.0,sign_test_og_cel0.4,0\%,40\%,IPC_cv,200,0.2254483,0.30318281,0.077734509,0.072626132,0.082852696
+CE known edges,0_to_40,sign_test_og_cel0.0,sign_test_og_cel0.4,0\%,40\%,KR_mean,200,3.8940609,7.0318749,3.137814,2.9353245,3.3319711
+CE known edges,0_to_40,sign_test_og_cel0.0,sign_test_og_cel0.4,0\%,40\%,KR_cv,200,0.29989691,0.36802694,0.068130029,0.063792348,0.072386038
+CE known edges,0_to_40,sign_test_og_cel0.0,sign_test_og_cel0.4,0\%,40\%,MC_mean,200,4.4081479,5.5423872,1.1342392,1.0762827,1.1925123
+CE known edges,0_to_40,sign_test_og_cel0.0,sign_test_og_cel0.4,0\%,40\%,MC_cv,200,0.30437872,0.40632745,0.10194873,0.096825441,0.10702518
+CE known edges,0_to_40,sign_test_og_cel0.0,sign_test_og_cel0.4,0\%,40\%,GR_mean,200,3.1113781,5.7555413,2.6441633,2.5014868,2.7874512
+CE known edges,0_to_40,sign_test_og_cel0.0,sign_test_og_cel0.4,0\%,40\%,GR_cv,200,0.24917968,0.35228552,0.10310584,0.096702031,0.10959808
+ER matched,0_to_40,sign_test_er0.0,sign_test_er0.4,0\%,40\%,raw_rho,200,12.121951,3.609232,-8.5127194,-8.524304,-8.5009108
+ER matched,0_to_40,sign_test_er0.0,sign_test_er0.4,0\%,40\%,IPC_mean,200,6.9354387,16.689772,9.7543335,9.696546,9.8121223
+ER matched,0_to_40,sign_test_er0.0,sign_test_er0.4,0\%,40\%,IPC_cv,200,0.25714888,0.36966567,0.11251679,0.10964713,0.1154772
+ER matched,0_to_40,sign_test_er0.0,sign_test_er0.4,0\%,40\%,KR_mean,200,3.1271622,20.442227,17.315065,17.135536,17.491937
+ER matched,0_to_40,sign_test_er0.0,sign_test_er0.4,0\%,40\%,KR_cv,200,0.29435133,0.78655401,0.49220268,0.48973113,0.49474556
+ER matched,0_to_40,sign_test_er0.0,sign_test_er0.4,0\%,40\%,MC_mean,200,3.8448108,10.593122,6.7483114,6.710996,6.7842771
+ER matched,0_to_40,sign_test_er0.0,sign_test_er0.4,0\%,40\%,MC_cv,200,0.29732223,0.52840951,0.23108728,0.22829366,0.23385659
+ER matched,0_to_40,sign_test_er0.0,sign_test_er0.4,0\%,40\%,GR_mean,200,2.7084175,18.20709,15.498673,15.352141,15.64426
+ER matched,0_to_40,sign_test_er0.0,sign_test_er0.4,0\%,40\%,GR_cv,200,0.24326695,0.87703247,0.63376552,0.62640194,0.64091398
+CE matched,100_to_60,sign_test_og_cel1.0,sign_test_og_cel0.6,100\%,60\%,raw_rho,200,106.5087,51.082814,-55.425884,-56.451557,-54.369914
+CE matched,100_to_60,sign_test_og_cel1.0,sign_test_og_cel0.6,100\%,60\%,IPC_mean,200,7.7210604,10.085077,2.3640166,2.2735592,2.4536706
+CE matched,100_to_60,sign_test_og_cel1.0,sign_test_og_cel0.6,100\%,60\%,IPC_cv,200,0.23274927,0.36806878,0.13531951,0.13033626,0.14002421
+CE matched,100_to_60,sign_test_og_cel1.0,sign_test_og_cel0.6,100\%,60\%,KR_mean,200,3.5068011,9.3697757,5.8629746,5.5397335,6.1815821
+CE matched,100_to_60,sign_test_og_cel1.0,sign_test_og_cel0.6,100\%,60\%,KR_cv,200,0.34657021,0.47318243,0.12661223,0.120829,0.13232192
+CE matched,100_to_60,sign_test_og_cel1.0,sign_test_og_cel0.6,100\%,60\%,MC_mean,200,4.5895062,6.2970163,1.7075101,1.6382137,1.7745082
+CE matched,100_to_60,sign_test_og_cel1.0,sign_test_og_cel0.6,100\%,60\%,MC_cv,200,0.32620211,0.47778826,0.15158614,0.14597391,0.15701979
+CE matched,100_to_60,sign_test_og_cel1.0,sign_test_og_cel0.6,100\%,60\%,GR_mean,200,3.0676371,8.1265445,5.0589074,4.8035512,5.3171618
+CE matched,100_to_60,sign_test_og_cel1.0,sign_test_og_cel0.6,100\%,60\%,GR_cv,200,0.30097872,0.48953101,0.18855229,0.18033644,0.19679669
+CE known edges,100_to_60,sign_test_og_cel1.0,sign_test_og_cel0.6,100\%,60\%,raw_rho,200,78.14222,43.652851,-34.489368,-35.411686,-33.541408
+CE known edges,100_to_60,sign_test_og_cel1.0,sign_test_og_cel0.6,100\%,60\%,IPC_mean,200,7.6633874,9.3018265,1.6384391,1.5633632,1.7121394
+CE known edges,100_to_60,sign_test_og_cel1.0,sign_test_og_cel0.6,100\%,60\%,IPC_cv,200,0.22330999,0.30860662,0.08529663,0.080272675,0.090163045
+CE known edges,100_to_60,sign_test_og_cel1.0,sign_test_og_cel0.6,100\%,60\%,KR_mean,200,3.7446323,7.1236801,3.3790478,3.1779051,3.5751279
+CE known edges,100_to_60,sign_test_og_cel1.0,sign_test_og_cel0.6,100\%,60\%,KR_cv,200,0.31218563,0.37009997,0.057914335,0.053586374,0.06226255
+CE known edges,100_to_60,sign_test_og_cel1.0,sign_test_og_cel0.6,100\%,60\%,MC_mean,200,4.5632381,5.5628272,0.99958908,0.94422216,1.0536041
+CE known edges,100_to_60,sign_test_og_cel1.0,sign_test_og_cel0.6,100\%,60\%,MC_cv,200,0.30414865,0.41052331,0.10637467,0.1006052,0.11218453
+CE known edges,100_to_60,sign_test_og_cel1.0,sign_test_og_cel0.6,100\%,60\%,GR_mean,200,3.1590531,5.8151163,2.6560632,2.5196081,2.7926963
+CE known edges,100_to_60,sign_test_og_cel1.0,sign_test_og_cel0.6,100\%,60\%,GR_cv,200,0.26398023,0.35457755,0.090597323,0.083821727,0.097408337
+ER matched,100_to_60,sign_test_er1.0,sign_test_er0.6,100\%,60\%,raw_rho,200,12.121952,3.6150697,-8.5068821,-8.5197947,-8.494102
+ER matched,100_to_60,sign_test_er1.0,sign_test_er0.6,100\%,60\%,IPC_mean,200,7.3214688,16.699967,9.3784981,9.3220624,9.4343991
+ER matched,100_to_60,sign_test_er1.0,sign_test_er0.6,100\%,60\%,IPC_cv,200,0.24226403,0.3696567,0.12739267,0.12427902,0.13044139
+ER matched,100_to_60,sign_test_er1.0,sign_test_er0.6,100\%,60\%,KR_mean,200,2.9818058,20.409694,17.427888,17.257533,17.598531
+ER matched,100_to_60,sign_test_er1.0,sign_test_er0.6,100\%,60\%,KR_cv,200,0.30838811,0.78585795,0.47746984,0.47401485,0.48096717
+ER matched,100_to_60,sign_test_er1.0,sign_test_er0.6,100\%,60\%,MC_mean,200,4.1323826,10.607533,6.47515,6.4319101,6.518143
+ER matched,100_to_60,sign_test_er1.0,sign_test_er0.6,100\%,60\%,MC_cv,200,0.27983129,0.52785142,0.24802013,0.24483458,0.25115441
+ER matched,100_to_60,sign_test_er1.0,sign_test_er0.6,100\%,60\%,GR_mean,200,2.627172,18.184995,15.557823,15.399642,15.712073
+ER matched,100_to_60,sign_test_er1.0,sign_test_er0.6,100\%,60\%,GR_cv,200,0.2914246,0.8774785,0.5860539,0.57929509,0.59258055
+CE shuffles,high_to_low,real,conn_shuf_only,empirical,conn. shuf.,raw_rho,200,73.307437,44.534761,-28.772675,-29.60474,-27.907448
+CE shuffles,high_to_low,real,conn_shuf_only,empirical,conn. shuf.,IPC_mean,200,8.8364464,11.990333,3.153887,2.9992311,3.3037109
+CE shuffles,high_to_low,real,conn_shuf_only,empirical,conn. shuf.,IPC_cv,200,0.29954171,0.39484027,0.095298568,0.091176959,0.099386414
+CE shuffles,high_to_low,real,conn_shuf_only,empirical,conn. shuf.,KR_mean,200,5.5517214,12.093835,6.5421135,6.1363771,6.9487064
+CE shuffles,high_to_low,real,conn_shuf_only,empirical,conn. shuf.,KR_cv,200,0.39797318,0.60694297,0.20896979,0.20270203,0.2148988
+CE shuffles,high_to_low,real,conn_shuf_only,empirical,conn. shuf.,MC_mean,200,5.4757315,7.4424612,1.9667297,1.8497972,2.0793442
+CE shuffles,high_to_low,real,conn_shuf_only,empirical,conn. shuf.,MC_cv,200,0.40881948,0.49743154,0.088612057,0.083062019,0.094191699
+CE shuffles,high_to_low,real,conn_shuf_only,empirical,conn. shuf.,GR_mean,200,4.9324757,10.198707,5.2662318,4.9417935,5.5906151
+CE shuffles,high_to_low,real,conn_shuf_only,empirical,conn. shuf.,GR_cv,200,0.34700787,0.65961346,0.31260559,0.30334878,0.32146244
+PM1 controls,high_to_low,global_sign_pres,local_sign+binary,PM1+wt. shuf.,PM1,raw_rho,200,7.9346431,6.2845439,-1.6500992,-1.7410688,-1.5640045
+PM1 controls,high_to_low,global_sign_pres,local_sign+binary,PM1+wt. shuf.,PM1,IPC_mean,200,8.4294229,10.001624,1.5722009,1.4630685,1.6853416
+PM1 controls,high_to_low,global_sign_pres,local_sign+binary,PM1+wt. shuf.,PM1,IPC_cv,200,0.31788061,0.37972146,0.061840846,0.058054331,0.06562396
+PM1 controls,high_to_low,global_sign_pres,local_sign+binary,PM1+wt. shuf.,PM1,KR_mean,200,4.9732468,7.748784,2.7755372,2.5729608,2.9870594
+PM1 controls,high_to_low,global_sign_pres,local_sign+binary,PM1+wt. shuf.,PM1,KR_cv,200,0.42633632,0.53858354,0.11224722,0.10547797,0.11920295
+PM1 controls,high_to_low,global_sign_pres,local_sign+binary,PM1+wt. shuf.,PM1,MC_mean,200,4.9326653,6.0103641,1.0776988,1.0089828,1.1498408
+PM1 controls,high_to_low,global_sign_pres,local_sign+binary,PM1+wt. shuf.,PM1,MC_cv,200,0.39497191,0.45260524,0.057633335,0.054016321,0.061214296
+PM1 controls,high_to_low,global_sign_pres,local_sign+binary,PM1+wt. shuf.,PM1,GR_mean,200,4.323918,5.8681077,1.5441897,1.3962014,1.6980876
+PM1 controls,high_to_low,global_sign_pres,local_sign+binary,PM1+wt. shuf.,PM1,GR_cv,200,0.41585468,0.52068545,0.10483077,0.095282997,0.11481112
+Binary controls,high_to_low,binary_base_topology_shuffle,binary_base,binary shuf.,binary,raw_rho,200,15.456112,15.27856,-0.17755273,-0.1921992,-0.16290395
+Binary controls,high_to_low,binary_base_topology_shuffle,binary_base,binary shuf.,binary,IPC_mean,200,6.494418,6.6092409,0.11482299,0.086929134,0.14248093
+Binary controls,high_to_low,binary_base_topology_shuffle,binary_base,binary shuf.,binary,IPC_cv,200,0.23015631,0.23168011,0.0015237942,-0.0013247673,0.0043926785
+Binary controls,high_to_low,binary_base_topology_shuffle,binary_base,binary shuf.,binary,KR_mean,200,2.7732059,2.9419925,0.16878664,0.14252931,0.19443092
+Binary controls,high_to_low,binary_base_topology_shuffle,binary_base,binary shuf.,binary,KR_cv,200,0.2621668,0.27347045,0.011303651,0.0091845793,0.013403655
+Binary controls,high_to_low,binary_base_topology_shuffle,binary_base,binary shuf.,binary,MC_mean,200,3.6292229,3.7534277,0.12420476,0.110112,0.13835057
+Binary controls,high_to_low,binary_base_topology_shuffle,binary_base,binary shuf.,binary,MC_cv,200,0.26777382,0.2982373,0.030463483,0.027768978,0.033121721
+Binary controls,high_to_low,binary_base_topology_shuffle,binary_base,binary shuf.,binary,GR_mean,200,2.3520083,2.5096602,0.1576519,0.13271559,0.18370708
+Binary controls,high_to_low,binary_base_topology_shuffle,binary_base,binary shuf.,binary,GR_cv,200,0.2346509,0.21916131,-0.015489583,-0.019819563,-0.01123245

@@ -20,8 +20,8 @@ import pandas as pd
 from util.graph_utils import _assign_group_ids
 
 
-# GR is plotted separately because lower GR indicates better generalization,
-# unlike the higher-is-better performance metrics in this figure.
+# The thesis version uses the three higher-is-better performance metrics.
+# The extended-abstract version can add GR, for which lower is better.
 METRICS = ("IPC", "KR", "MC")
 
 SHORT_NAMES = {
@@ -292,10 +292,11 @@ def plot_summary(
         }
     )
 
+    fig_height = 6.85 + max(0, len(metrics) - 3) * 0.70
     fig, axes = plt.subplots(
         len(metrics),
         2,
-        figsize=(7.15, 6.85),
+        figsize=(7.15, fig_height),
         dpi=300,
         sharex=True,
         squeeze=False,
@@ -363,12 +364,17 @@ def plot_summary(
             )
             if row == 0:
                 ax.set_title(
-                    "Mean performance" if col == 0 else "Mean CV",
+                    ("Mean metric value" if "GR" in metrics else "Mean performance")
+                    if col == 0 else "Mean CV",
                     fontweight="semibold",
                     pad=5,
                 )
             if col == 0:
-                ax.set_ylabel(metric, fontweight="bold", labelpad=6)
+                ax.set_ylabel(
+                    "GR\n(lower better)" if metric == "GR" else metric,
+                    fontweight="bold",
+                    labelpad=6,
+                )
 
             ax.set_xlim(np.sqrt(2.8), np.sqrt(110.0))
             ax.set_xticks(np.sqrt(rho_ticks), labels=["3", "10", "25", "50", "100"])
@@ -424,7 +430,7 @@ def plot_summary(
     fig.legend(
         handles=family_handles + dataset_handles,
         loc="lower center",
-        bbox_to_anchor=(0.50, 0.025),
+        bbox_to_anchor=(0.50, 0.075 if "GR" in metrics else 0.025),
         ncol=3,
         frameon=False,
         columnspacing=0.90,

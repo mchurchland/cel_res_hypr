@@ -145,6 +145,7 @@ def generate(out_dir: Path, contour_percent: float) -> list[Path]:
         SHUFFLE_CSV,
         Path("final_results/sign_frac"),
         max_sign_frac=0.5,
+        metrics=("IPC", "KR", "MC", "GR"),
         sign_sweeps=RAW_RHO_SIGN_SWEEPS,
     )
     raw_rho_dir = out_dir / "raw_rho"
@@ -160,6 +161,7 @@ def generate(out_dir: Path, contour_percent: float) -> list[Path]:
             "raw_rho_performance_summary",
             y_scale="linear",
             show=False,
+            metrics=("IPC", "KR", "MC", "GR"),
             color_scheme=COLOR_SCHEME,
             sign_sweeps=RAW_RHO_SIGN_SWEEPS,
         )
