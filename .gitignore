@@ -14,3 +14,6 @@ final_results/triad_sign_fraction_experiment/triad_sign_fraction_activation_deta
 build/
 dist/
 *.egg-info/
+
+# Separately maintained local manuscript checkout
+/thesis_tex/

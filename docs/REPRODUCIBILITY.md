@@ -125,8 +125,11 @@ length-three reference stream as production for each seed.
 Use [GRAPHING_README.md](../GRAPHING_README.md) for exact final inputs, flags,
 figure layouts, and filenames. Its primary architecture/shuffle/sign-fraction
 inputs are the curated `final_results/**/combined.ALL.GRKR_erank.rank_updated.csv`
-files. `final_results_GRKR_*` and `final_results_KR_*` contain alternative or
-intermediate calculations and are preserved for provenance.
+files. Commit `1b2344a` removed the three obsolete `final_results_GRKR_*` and
+`final_results_KR_*` result trees from the checkout. Their alternative/intermediate
+calculations remain available in Git history, for example through
+`git show 1b2344a^:<historical-file-path>`. The curated `final_results/` tree was
+unchanged by that cleanup.
 
 The generic merged outputs are `combined.ALL.csv`, `mean_by_group.ALL.csv`, and
 `dispersion_by_group.ALL.csv`. Plot merged tables rather than individual chunks.
@@ -174,5 +177,9 @@ limitations and proposed separate corrections are listed in
 
 Production GPU/SLURM sweeps and every full-resolution manuscript figure were
 not rerun. No numerical algorithm or historical scientific issue was silently
-corrected. Checksums verify that archived data/results and the untracked
-`thesis_tex/` contents match the pre-refactor snapshot.
+corrected. The checksum evidence in `baseline/preservation.json` records the
+state at the end of the refactor (`89466f0`), before the intentional deletions in
+`1b2344a`; it is not a claim that those deleted outputs remain in the checkout.
+The local `thesis_tex/` checkout is maintained separately and ignored by the
+parent repository. It is not distributed with this repository; obtain the
+manuscript separately when needed. Its files remain untouched by this cleanup.

@@ -121,16 +121,21 @@ sbatch r_data.sbatch
 The main launchers partition 200 seeded repeats across 20 array tasks. Rank-only
 reruns preserve existing MC/IPC. `Connectome/` contains processed inputs;
 `new_cel.xls` and `old_cel.xls` retain source spreadsheets. `final_results/` holds
-curated results and manuscript figures; the other `final_results_*` trees retain
-alternative/intermediate rank calculations. `logs/` and `depreciated/` preserve
-historical execution evidence and older launchers. `Parameter_justification/`,
+curated results and manuscript figures. Commit `1b2344a` removed the obsolete
+`final_results_GRKR_200__relative_svd_rank/`, `final_results_GRKR_erank/`, and
+`final_results_KR__1__relative_svd_rank/` trees (345 CSVs and eight PNGs).
+Those historical versions remain recoverable from Git history. `logs/` and
+`depreciated/` preserve historical execution evidence and older launchers. `Parameter_justification/`,
 `metric_figures/`, and `architecture_variant_figures/` contain specialized workflows.
 
 For exact manuscript inputs and plotting commands, use
 [GRAPHING_README.md](GRAPHING_README.md). Prefer its rank-updated `_erank` CSVs;
 do not assume similarly named historical result directories are interchangeable.
-No archived data or figures were changed by this refactor. The local
-`thesis_tex/` manuscript tree is content-protected and was left in place.
+The refactor through `89466f0` preserved all archived data and figures; the later
+cleanup left the curated `final_results/`, connectome inputs, and implementation
+unchanged. The local `thesis_tex/` manuscript checkout is maintained separately,
+ignored by this repository, and left in place with its contents untouched. It
+is not included in a clone of this research repository.
 
 The [changelog](CHANGELOG.md), [iteration log](docs/REFACTOR_LOG.md), and
 [final Critic report](docs/CRITIC_REPORT.md) record changes, validation, and

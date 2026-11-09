@@ -6,6 +6,10 @@ behavior-preserving refactor criteria within the validation scope below. No
 unresolved software-refactor blocker remains. Historical scientific limitations
 are explicitly retained and do not constitute approval of a scientific correction.
 
+The original review and checksum evidence cover the refactor through `89466f0`.
+The subsequent cleanup is recorded below so those historical checks are not
+mistaken for a statement about the current checkout.
+
 ## Accepted changes and evidence
 
 | Iteration | Decision | Independent evidence |
@@ -32,13 +36,34 @@ Final verification evidence independently checked by the Critic:
 - A processed-connectome example executed all four metrics for 12 configurations,
   then merged its results and generated a histogram in temporary directories.
 - Wheel build, isolated console-command checks, and SLURM shell syntax checks.
-- SHA-256 verification of 8,651 archived data/result files and 607 manuscript
-  files: none changed or disappeared; no manuscript files were added.
+- At `89466f0`, SHA-256 verification of 8,651 archived data/result files and 607
+  manuscript files found no changes, removals, or manuscript additions. This
+  predates the intentional result deletions in `1b2344a`.
 
 No metric algorithm, random-draw ordering, production grid, published result,
 CSV contract, or statistical grouping was changed. The optional weight-performance
 plot's disabled exporter was restored, correcting a software crash without
 changing plotted data. Documentation changes correct solver/SVD/sign definitions.
+
+## Post-refactor cleanup
+
+Commit `1b2344a` removed 345 CSVs and eight PNGs (4,872,345 text lines) from
+`final_results_GRKR_200__relative_svd_rank/`, `final_results_GRKR_erank/`, and
+`final_results_KR__1__relative_svd_rank/`. These obsolete result versions remain
+recoverable from Git history. The curated `final_results/`, connectome inputs,
+implementation, tests, and launchers were unchanged. All 55 tests passed on
+that commit after the cleanup.
+
+That commit also recorded the local `thesis_tex/` checkout as a Git link without
+submodule configuration. The follow-up removes that link from the parent index
+and ignores the separately maintained manuscript checkout. Its files and nested
+Git metadata remain in place. A fresh research-repository clone does not include
+the manuscript; it must be obtained separately.
+
+**Follow-up review: ACCEPT.** The Critic verified that the tracking removal
+affects only the mode-160000 Git link and that all 607 manuscript/metadata files
+match the pre-fix checksums. Documentation and tracking are the only changes;
+the preceding 55-test result remains applicable without another test run.
 
 ## Remaining historical issues
 
@@ -69,7 +94,8 @@ by metadata but have not received the recorded Python 3.13.9 validation.
 The archived `depreciated/` launchers retain historical paths/settings and are
 not presented as current reproduction recipes. Some figure scripts retain
 manuscript-specific paths; `GRAPHING_README.md` documents their canonical use.
-The `thesis_tex/` manuscript tree remains untracked, unmoved, and content-identical.
+The local `thesis_tex/` manuscript checkout is separately maintained, ignored by
+the parent repository, unmoved, and content-identical across the tracking fix.
 
 The accepted refactor preserves these historical limitations explicitly. Any
 scientific correction requires its own protocol decision and labeled numerical

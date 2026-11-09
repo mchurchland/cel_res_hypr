@@ -1,5 +1,13 @@
 # Changelog
 
+## Post-refactor cleanup — 2026-11-09
+
+- Record the intentional removal of 345 CSVs and eight PNGs from three obsolete
+  result trees in `1b2344a`; retain the curated `final_results/` and source data.
+- Scope the original preservation evidence to refactor commit `89466f0`.
+- Remove the incomplete `thesis_tex` Git link and ignore the separately
+  maintained local manuscript checkout, preserving its contents and Git metadata.
+
 ## 0.1.0 — research codebase refactor (2026-11-09)
 
 - Separate connectome IO, topology, weight controls, and spectral normalization.

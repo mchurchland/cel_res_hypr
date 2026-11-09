@@ -1,5 +1,9 @@
 # Actor–Critic iteration log
 
+The five iterations below describe the refactor completed at `89466f0`.
+The later intentional result cleanup in `1b2344a` and manuscript tracking fix
+are documented in [CRITIC_REPORT.md](CRITIC_REPORT.md#post-refactor-cleanup).
+
 ## 1. Audit and numerical baseline — ACCEPT
 
 **Actor:** Recorded the original module/directory inventory, reviewed entry
