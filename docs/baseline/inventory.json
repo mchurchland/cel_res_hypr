@@ -1,0 +1,59 @@
+{
+  "commit": "749f5ab6d31c62f4f6e5ae98375cf4cd12b0e83e",
+  "tracked": {
+    "(root files)": {
+      "files": 30,
+      "bytes": 1722871
+    },
+    "Connectome": {
+      "files": 3,
+      "bytes": 707421
+    },
+    "Parameter_justification": {
+      "files": 4,
+      "bytes": 72541
+    },
+    "architecture_variant_figures": {
+      "files": 46,
+      "bytes": 241829137
+    },
+    "depreciated": {
+      "files": 3,
+      "bytes": 8159
+    },
+    "final_results": {
+      "files": 557,
+      "bytes": 1441230123
+    },
+    "final_results_GRKR_200__relative_svd_rank": {
+      "files": 115,
+      "bytes": 328190651
+    },
+    "final_results_GRKR_erank": {
+      "files": 116,
+      "bytes": 370068496
+    },
+    "final_results_KR__1__relative_svd_rank": {
+      "files": 122,
+      "bytes": 324787401
+    },
+    "logs": {
+      "files": 7639,
+      "bytes": 74197381
+    },
+    "metric_figures": {
+      "files": 57,
+      "bytes": 11017397
+    },
+    "network_stats": {
+      "files": 6,
+      "bytes": 61922
+    },
+    "util": {
+      "files": 8,
+      "bytes": 76828
+    }
+  },
+  "protected_data_files": 8651,
+  "untracked_thesis_files": 607
+}

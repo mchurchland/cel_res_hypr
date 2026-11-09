@@ -1,0 +1,944 @@
+{
+  "Parameter_justification/gr_common_tail_sensitivity.py": {
+    "lines": 403,
+    "imports": [
+      "from __future__ import annotations",
+      "import argparse",
+      "import sys",
+      "from pathlib import Path",
+      "import numpy as np",
+      "import pandas as pd",
+      "import torch",
+      "from inv_arc_test import _pick_device",
+      "from network_stats.run_one import make_gr_input_stream_sweep, run_reservoir_stream_batch",
+      "from network_stats.stats import compute_GR",
+      "from Parameter_justification.ipc_order_sweep_ce import _build_model_reservoir, _expand_models, _make_neuron_bias, _model_title, _resolve_seeds",
+      "from reservoir_variants import DEFAULT_SIM_PARAMS",
+      "from util.util import assign_random_unknown_signs, load_connectome, load_unknown_sign_weights, set_seed"
+    ],
+    "definitions": [
+      "parse_args",
+      "_validate_args",
+      "_correlation",
+      "_summarize",
+      "_write_report",
+      "main"
+    ]
+  },
+  "Parameter_justification/ipc_delay_sensitivity.py": {
+    "lines": 307,
+    "imports": [
+      "from __future__ import annotations",
+      "import argparse",
+      "import csv",
+      "import sys",
+      "from pathlib import Path",
+      "import numpy as np",
+      "import torch",
+      "from inv_arc_test import _pick_device",
+      "from network_stats.run_one import run_reservoir_with_pre",
+      "from util.util import assign_random_unknown_signs, load_connectome, load_unknown_sign_weights, set_seed",
+      "from Parameter_justification.ipc_order_sweep_ce import _build_model_reservoir, _expand_models, _model_title, _resolve_seeds, ipc_contrib_by_order"
+    ],
+    "definitions": [
+      "parse_args",
+      "_rankdata",
+      "_write_csv",
+      "main"
+    ]
+  },
+  "Parameter_justification/ipc_order_sweep_ce.py": {
+    "lines": 901,
+    "imports": [
+      "from __future__ import annotations",
+      "import argparse",
+      "import csv",
+      "import sys",
+      "from pathlib import Path",
+      "import matplotlib",
+      "import matplotlib.pyplot as plt",
+      "import numpy as np",
+      "import torch",
+      "from torch import Tensor",
+      "from inv_arc_test import ALL_JOB_KEYS, _pick_device",
+      "from network_stats.run_one import run_reservoir_with_pre",
+      "import network_stats.stats as stats_mod",
+      "from reservoir_variants import VARIANT_LABELS",
+      "from util.util import _conn_and_w_shuffle_ce, _conn_shuffle_ce, _sample_from_cel, _shuffle_ce_weights, assign_random_unknown_signs, build_reservoir, load_connectome, load_unknown_sign_weights, set_seed"
+    ],
+    "definitions": [
+      "parse_args",
+      "_dedupe_keep_order",
+      "_expand_models",
+      "_resolve_seeds",
+      "_build_model_reservoir",
+      "_make_neuron_bias",
+      "ipc_contrib_by_order",
+      "ipc_scores_by_order_delay",
+      "ipc_contrib_from_scores",
+      "run_ipc_scores_once",
+      "write_raw_csv",
+      "write_summary_csv",
+      "write_validation_csv",
+      "_rankdata",
+      "_model_title",
+      "_report_block_for_model",
+      "write_report",
+      "write_plot",
+      "main"
+    ]
+  },
+  "Parameter_justification/mc_delay_sensitivity.py": {
+    "lines": 316,
+    "imports": [
+      "from __future__ import annotations",
+      "import argparse",
+      "import csv",
+      "import sys",
+      "from pathlib import Path",
+      "import numpy as np",
+      "import torch",
+      "from inv_arc_test import _pick_device",
+      "from network_stats.run_one import run_reservoir_with_pre",
+      "from network_stats.stats import compute_MC",
+      "from util.util import assign_random_unknown_signs, load_connectome, load_unknown_sign_weights, set_seed",
+      "from Parameter_justification.ipc_order_sweep_ce import _build_model_reservoir, _expand_models, _model_title, _resolve_seeds"
+    ],
+    "definitions": [
+      "parse_args",
+      "_rankdata",
+      "_write_csv",
+      "main"
+    ]
+  },
+  "architecture_variant_figures/make_weighted_graph_examples.py": {
+    "lines": 1296,
+    "imports": [
+      "from __future__ import annotations",
+      "import argparse",
+      "from dataclasses import dataclass",
+      "import math",
+      "import os",
+      "from pathlib import Path",
+      "import re",
+      "import shutil",
+      "import sys",
+      "import matplotlib as mpl",
+      "import matplotlib.pyplot as plt",
+      "import networkx as nx",
+      "import numpy as np",
+      "import torch",
+      "from matplotlib import colors as mcolors",
+      "from matplotlib.colors import LinearSegmentedColormap",
+      "from util.util import UNKNOWN_SIGN_INHIBITORY_FRACTION, _conn_and_w_shuffle_ce, _conn_shuffle_ce, _count_edges, _sample_from_cel, _shuffle_ce_weights, assign_random_unknown_signs, build_reservoir, load_connectome, load_connectome_node_names, load_unknown_sign_weights, negative_edge_fraction",
+      "from graph_hist import _short_legend_name"
+    ],
+    "definitions": [
+      "select_interactive_backend",
+      "Variant",
+      "_slugify",
+      "_build_variants",
+      "variant_alters_connectivity",
+      "parse_args",
+      "maybe_show",
+      "load_ce_with_project_code",
+      "_ce_negative_fraction",
+      "_build_from_feature_conn",
+      "construct_w_with_project_code",
+      "_panel_letter",
+      "_grid_title",
+      "_paper_variants",
+      "build_variant_panel_data",
+      "_build_er_sign_matched",
+      "_resolve_out_path",
+      "build_sign_matched_unknown_connectome",
+      "_edge_subset",
+      "build_dual_colormap_norms",
+      "draw_weighted_panel",
+      "stats_line",
+      "compute_ce_kamada_layout",
+      "make_variant_figure",
+      "make_variant_grid_figures",
+      "make_index_figure",
+      "make_new_sign_matched_four_panel",
+      "main"
+    ]
+  },
+  "audit_degree_matched_shuffle.py": {
+    "lines": 338,
+    "imports": [
+      "from __future__ import annotations",
+      "import argparse",
+      "import csv",
+      "import json",
+      "from pathlib import Path",
+      "import numpy as np",
+      "from util.util import UNKNOWN_SIGN_INHIBITORY_FRACTION, assign_random_unknown_signs, degree_matched_shuffle_directed, load_connectome, load_unknown_sign_weights"
+    ],
+    "definitions": [
+      "parse_args",
+      "describe",
+      "load_cel_matched_inputs",
+      "main"
+    ]
+  },
+  "graph_hist.py": {
+    "lines": 5721,
+    "imports": [
+      "import os",
+      "import sys",
+      "import argparse",
+      "import csv",
+      "import numpy as np",
+      "import pandas as pd",
+      "import itertools",
+      "import pingouin as pg",
+      "import warnings",
+      "from scipy.stats import t as student_t",
+      "from scipy.ndimage import gaussian_filter",
+      "import matplotlib as mpl",
+      "import re",
+      "from matplotlib.ticker import FormatStrFormatter",
+      "import matplotlib.pyplot as plt",
+      "from matplotlib.lines import Line2D",
+      "from util.graph_utils import _compute_dispersion_table, _compute_mean_table, _assign_group_ids, _aggregate_over_hparams"
+    ],
+    "definitions": [
+      "_short_thesis_name",
+      "_short_legend_name",
+      "_sign_fraction_from_mode",
+      "_is_grid_tenth",
+      "_detect_ce_sign_fraction",
+      "_validate_color_scheme",
+      "_rho_delta_colormap",
+      "_sign_balance_color",
+      "_sign_balance_colormap",
+      "_add_sign_balance_colorbar",
+      "_mode_sign_fraction",
+      "_mode_marker_map",
+      "_sign_balance_label",
+      "_architecture_sign_balance_group",
+      "_architecture_sign_balance_color_map",
+      "_mode_styles_for_cv_performance",
+      "parse_args",
+      "_safe_path",
+      "_replace_path",
+      "_mode_numeric_value",
+      "_write_weight_metric_difference_table",
+      "_read_combined_csv",
+      "_read_compare_table",
+      "_mode_metric_means",
+      "compare_mode_metric_means",
+      "_normalize_compare_metrics",
+      "_load_local_sign_binary_overlay",
+      "plot_mode_self_drop_comparison",
+      "_metric_bounds_from_reference",
+      "_pairwise_tost_results",
+      "print_tost_preservation_summary",
+      "_save_publication_figure",
+      "_tight_layout_quiet",
+      "_style_3d_axis",
+      "_clear_3d_axis_background",
+      "_format_wt_mean_axis_as_offset",
+      "_capture_figure_rgba",
+      "_trim_white_border",
+      "_pad_height_center",
+      "_pad_width_center",
+      "_save_3d_front_back",
+      "_ensure_columns",
+      "_filter_to_modes",
+      "_dispersion",
+      "_unique_hparam_rows",
+      "_sign_norm_label",
+      "_parse_sign_fraction_from_mode",
+      "_infer_normalization_from_mode",
+      "_prepare_sign_norm_ablation_df",
+      "_summarize_group_values",
+      "_save_sign_norm_metric_grid",
+      "_save_sign_norm_scaling_grid",
+      "_save_sign_norm_combined_grid",
+      "plot_sign_norm_ablation",
+      "plot_triad_sign_fraction_summary",
+      "plot_frac_arch_histograms",
+      "plot_frac_cv_meanline",
+      "plot_weight_gauss_mean_cv",
+      "plot_weight_gauss_mean_perf",
+      "plot_weight_gauss_cv_metric_2d",
+      "plot_weight_gauss_perf_cv_grid",
+      "plot_rho_cv_other_perf",
+      "_rho_delta_by_mode",
+      "plot_overlaid_arch_histograms",
+      "plot_mc_vs_gr_all_arch",
+      "_mean_difference_ci",
+      "_latex_escape_table_text",
+      "_cv_difference_latex_table",
+      "_resolve_cv_baseline_mode",
+      "print_cv_difference_tables",
+      "_mean_performance_differences",
+      "plot_cv_performance_differences_3d",
+      "plot_cv_performance_hills_3d",
+      "plot_cv_performance_contours_2d",
+      "_cv_performance_joint_table",
+      "plot_cv_performance_contour_triptych",
+      "main"
+    ]
+  },
+  "inv_arc_test.py": {
+    "lines": 757,
+    "imports": [
+      "import os",
+      "import argparse",
+      "import itertools",
+      "import numpy as np",
+      "import matplotlib",
+      "import torch",
+      "from reservoir_variants import VARIANT_KEYS, VariantContext, run_variant, save_rows",
+      "from util.util import UNKNOWN_SIGN_INHIBITORY_FRACTION, assign_random_unknown_signs, load_connectome, load_unknown_sign_weights"
+    ],
+    "definitions": [
+      "_build_col_params",
+      "_split_indices",
+      "_pick_device",
+      "set_seed",
+      "_validate_subset_size",
+      "_draw_node_subsets",
+      "_build_ctx",
+      "_run_and_save",
+      "parse_args",
+      "main"
+    ]
+  },
+  "make_extended_abstract_figures.py": {
+    "lines": 198,
+    "imports": [
+      "from __future__ import annotations",
+      "import argparse",
+      "import os",
+      "from pathlib import Path",
+      "import graph_hist as graph",
+      "import plot_generalization_rank_summary as gr_summary",
+      "import plot_raw_rho_performance_summary as rho_summary"
+    ],
+    "definitions": [
+      "_validate_inputs",
+      "_joint_tables",
+      "generate",
+      "parse_args",
+      "main"
+    ]
+  },
+  "make_raw_rho_support_table.py": {
+    "lines": 258,
+    "imports": [
+      "from __future__ import annotations",
+      "import argparse",
+      "import re",
+      "from pathlib import Path",
+      "import numpy as np",
+      "import pandas as pd"
+    ],
+    "definitions": [
+      "read_trials",
+      "sign_fraction",
+      "endpoint_modes",
+      "compare",
+      "latex_change_with_ci",
+      "write_latex",
+      "main"
+    ]
+  },
+  "metric_figures/make_ablation_summary_tables.py": {
+    "lines": 365,
+    "imports": [
+      "from __future__ import annotations",
+      "import os",
+      "import textwrap",
+      "from pathlib import Path",
+      "import matplotlib.pyplot as plt",
+      "import pandas as pd",
+      "from matplotlib.patches import Rectangle"
+    ],
+    "definitions": [
+      "load_mean_cv",
+      "load_mean_cv_from_combined",
+      "direction",
+      "format_result",
+      "format_change",
+      "make_row",
+      "build_rows",
+      "wrapped",
+      "draw_table",
+      "save_csv",
+      "main"
+    ]
+  },
+  "metric_figures/make_rank_metric_figure.py": {
+    "lines": 212,
+    "imports": [
+      "from __future__ import annotations",
+      "import os",
+      "from pathlib import Path",
+      "import matplotlib.pyplot as plt",
+      "import numpy as np",
+      "from matplotlib import gridspec"
+    ],
+    "definitions": [
+      "effective_rank",
+      "state_matrix",
+      "draw_heatmap",
+      "draw_spectrum",
+      "draw_input_panel",
+      "add_panel_label",
+      "main"
+    ]
+  },
+  "metric_figures/make_sign_norm_simplified_plots.py": {
+    "lines": 1091,
+    "imports": [
+      "from __future__ import annotations",
+      "from pathlib import Path",
+      "import matplotlib.pyplot as plt",
+      "import numpy as np",
+      "import pandas as pd",
+      "from matplotlib.lines import Line2D",
+      "from matplotlib.patches import Patch"
+    ],
+    "definitions": [
+      "_load_dataset",
+      "_cv_panel_label",
+      "_normalize_metric_rows",
+      "_group_index",
+      "_raw_rho_relative",
+      "_rho_ratio",
+      "_group_average_values",
+      "_padded_limits",
+      "option8_shared_axis_limits",
+      "_crossings",
+      "_draw_marker",
+      "_draw_marker_line",
+      "_setup_axis",
+      "_setup_paper_axis",
+      "_radius_regions",
+      "_shade_radius_regions",
+      "_draw_q_reference_lines",
+      "_save_figure",
+      "_normalized_all_metric_index",
+      "_draw_overlay_panel",
+      "save_mechanism_overlay",
+      "_delta_rows",
+      "save_normalization_delta",
+      "save_grouped_perf_cv",
+      "save_radius_mechanism_only",
+      "_draw_norm_index_lines",
+      "_label_norm_endpoints",
+      "_draw_grouped_performance_panel",
+      "save_compact_mechanism_response",
+      "save_metric_delta_panels",
+      "save_mechanism_plus_effect",
+      "_draw_group_average_index_panel",
+      "_draw_group_average_raw_panel",
+      "save_option_8_average_perf_cv",
+      "save_companion_summary",
+      "main"
+    ]
+  },
+  "metric_figures/make_slide_update_figures.py": {
+    "lines": 457,
+    "imports": [
+      "from __future__ import annotations",
+      "import os",
+      "from pathlib import Path",
+      "import matplotlib.pyplot as plt",
+      "from matplotlib.patches import FancyArrowPatch, FancyBboxPatch"
+    ],
+    "definitions": [
+      "rounded_box",
+      "pill",
+      "down_arrow",
+      "draw_ipc_schematic",
+      "draw_value_pills",
+      "draw_hyperparameter_figure",
+      "draw_triplet",
+      "draw_cv_card",
+      "draw_cv_relative_variation_figure",
+      "main"
+    ]
+  },
+  "metric_figures/make_task_agnostic_metrics_figure.py": {
+    "lines": 177,
+    "imports": [
+      "from __future__ import annotations",
+      "import os",
+      "from pathlib import Path",
+      "import matplotlib.pyplot as plt",
+      "import numpy as np",
+      "from matplotlib import gridspec",
+      "from matplotlib.patches import Circle, FancyArrowPatch, FancyBboxPatch"
+    ],
+    "definitions": [
+      "add_card",
+      "draw_schematic",
+      "draw_memory",
+      "draw_ipc",
+      "draw_kernel_rank",
+      "draw_gr",
+      "main"
+    ]
+  },
+  "network_stats/plot_triad_activation_comparison.py": {
+    "lines": 117,
+    "imports": [
+      "from __future__ import annotations",
+      "import argparse",
+      "from pathlib import Path",
+      "import matplotlib.pyplot as plt",
+      "import numpy as np",
+      "import pandas as pd"
+    ],
+    "definitions": [
+      "_comparison_table",
+      "plot_comparison",
+      "main"
+    ]
+  },
+  "network_stats/run_one.py": {
+    "lines": 327,
+    "imports": [
+      "import torch",
+      "from torch import Tensor",
+      "from network_stats.stats import compute_IPC, compute_KR, compute_GR, compute_MC"
+    ],
+    "definitions": [
+      "run_reservoir_with_pre",
+      "run_reservoir_states",
+      "run_reservoir_stream_batch",
+      "make_gr_input_streams",
+      "make_gr_input_stream_sweep",
+      "make_kr_input_streams",
+      "run_one"
+    ]
+  },
+  "network_stats/stats.py": {
+    "lines": 121,
+    "imports": [
+      "from network_stats.stats_util import corr2_score, legendre_P, effective_rank_from_states, ridge_fit_predict",
+      "from torch import Tensor",
+      "import torch",
+      "import numpy as np"
+    ],
+    "definitions": [
+      "compute_IPC",
+      "compute_KR",
+      "compute_GR",
+      "compute_MC",
+      "compute_GR_pilati",
+      "compute_KR_pilati",
+      "_relative_svd_rank_pilati"
+    ]
+  },
+  "network_stats/stats_util.py": {
+    "lines": 106,
+    "imports": [
+      "from torch import Tensor",
+      "import torch"
+    ],
+    "definitions": [
+      "legendre_P",
+      "effective_rank_from_states",
+      "ridge_fit_predict",
+      "corr2_score"
+    ]
+  },
+  "network_stats/test_stats.py": {
+    "lines": 336,
+    "imports": [
+      "import unittest",
+      "from unittest import mock",
+      "import csv",
+      "import math",
+      "from pathlib import Path",
+      "import tempfile",
+      "import torch",
+      "from network_stats.run_one import make_gr_input_stream_sweep, make_gr_input_streams, make_kr_input_streams, run_one, run_reservoir_stream_batch",
+      "from network_stats.stats import compute_GR, compute_KR",
+      "from reservoir_variants import DEFAULT_SIM_PARAMS, save_rows"
+    ],
+    "definitions": [
+      "GeneralizationRankTests"
+    ]
+  },
+  "network_stats/triad_sign_fraction_experiment.py": {
+    "lines": 701,
+    "imports": [
+      "from __future__ import annotations",
+      "import argparse",
+      "import csv",
+      "import itertools",
+      "import os",
+      "import sys",
+      "from dataclasses import dataclass",
+      "from pathlib import Path",
+      "import numpy as np",
+      "import pandas as pd",
+      "import torch",
+      "from inv_arc_test import NORMALIZATION_MODES, SWEEP_SR, _split_indices",
+      "from network_stats.run_one import run_reservoir_with_pre",
+      "from util.util import UNKNOWN_SIGN_INHIBITORY_FRACTION, _count_edges, assign_random_unknown_signs, build_reservoir, load_connectome, load_connectome_node_names, load_unknown_sign_weights, negative_edge_fraction"
+    ],
+    "definitions": [
+      "DatasetSpec",
+      "_sign_fractions_for_job",
+      "_candidate_triples",
+      "_summarize_values",
+      "triad_weight_summaries",
+      "activation_summaries",
+      "_append_rows",
+      "_write_detail_rows",
+      "_summarize_repeats",
+      "_all_csv_name",
+      "_merge_chunk_csvs",
+      "merge_chunk_outputs",
+      "parse_args",
+      "main"
+    ]
+  },
+  "plot_generalization_rank_summary.py": {
+    "lines": 862,
+    "imports": [
+      "from __future__ import annotations",
+      "import argparse",
+      "import os",
+      "import re",
+      "from pathlib import Path",
+      "import matplotlib as mpl",
+      "import matplotlib.pyplot as plt",
+      "from matplotlib.lines import Line2D",
+      "import numpy as np",
+      "import pandas as pd",
+      "from scipy.ndimage import gaussian_filter",
+      "from util.graph_utils import _assign_group_ids"
+    ],
+    "definitions": [
+      "_read_grouped_gr",
+      "_condition_summary",
+      "_draw_hdi_contour",
+      "_style_gr_axis",
+      "_panel_label",
+      "_plot_main_architectures",
+      "_plot_sign_sweeps",
+      "_raw_rho_series",
+      "_plot_raw_rho",
+      "_plot_shuffle_family",
+      "create_figure",
+      "parse_args",
+      "main"
+    ]
+  },
+  "plot_raw_rho_performance_summary.py": {
+    "lines": 508,
+    "imports": [
+      "from __future__ import annotations",
+      "import argparse",
+      "import os",
+      "import re",
+      "from pathlib import Path",
+      "import matplotlib as mpl",
+      "import matplotlib.pyplot as plt",
+      "from matplotlib.lines import Line2D",
+      "from matplotlib.ticker import MaxNLocator",
+      "import numpy as np",
+      "import pandas as pd",
+      "from util.graph_utils import _assign_group_ids"
+    ],
+    "definitions": [
+      "_display_color",
+      "_read_results",
+      "_per_group_metric_summary",
+      "_parse_sign_sweep_metadata",
+      "build_summary",
+      "plot_summary",
+      "parse_args",
+      "main"
+    ]
+  },
+  "plot_sign_balance_weight_histograms.py": {
+    "lines": 315,
+    "imports": [
+      "from __future__ import annotations",
+      "import argparse",
+      "import os",
+      "from dataclasses import dataclass",
+      "import matplotlib.pyplot as plt",
+      "from matplotlib.ticker import LogLocator, NullFormatter",
+      "import numpy as np",
+      "import torch",
+      "from util.util import UNKNOWN_SIGN_INHIBITORY_FRACTION, assign_random_unknown_signs, build_reservoir, load_connectome, load_unknown_sign_weights"
+    ],
+    "definitions": [
+      "DatasetSpec",
+      "_normalized_sign_balance_weights",
+      "_load_trial_connectome",
+      "_log_edges",
+      "_weight_ticks",
+      "_nonzero_runs",
+      "_plot_nonzero_stairs",
+      "plot_histograms",
+      "parse_args",
+      "main"
+    ]
+  },
+  "quick_sign_sweep_summary.py": {
+    "lines": 332,
+    "imports": [
+      "from __future__ import annotations",
+      "import os",
+      "from pathlib import Path",
+      "import matplotlib as mpl",
+      "import matplotlib.pyplot as plt",
+      "import numpy as np",
+      "import pandas as pd",
+      "from plot_raw_rho_performance_summary import build_summary"
+    ],
+    "definitions": [
+      "_aggregate_sign_sweeps",
+      "_load_ce_reference_rho",
+      "_load_reference_rhos",
+      "_save_celegans_only",
+      "main"
+    ]
+  },
+  "reservoir_variants.py": {
+    "lines": 809,
+    "imports": [
+      "from __future__ import annotations",
+      "from dataclasses import dataclass, field",
+      "from pathlib import Path",
+      "from typing import Sequence",
+      "import numpy as np",
+      "import torch",
+      "from scipy.stats import entropy, halfnorm",
+      "from network_stats.run_one import run_one",
+      "from util.util import build_reservoir, _cel_to_bin, _count_edges, _shuffle_ce_weights, _conn_and_w_shuffle_ce, _conn_shuffle_ce, _sample_from_cel, scale_to_sr, _signed_binary_from_cel",
+      "from sklearn.metrics.pairwise import cosine_similarity"
+    ],
+    "definitions": [
+      "_kl_empirical_to_fitted_gaussian",
+      "SimulationParams",
+      "VariantContext",
+      "evaluate_reservoir",
+      "_apply_input_subset",
+      "_unpack_col_param",
+      "_make_neuron_bias",
+      "_run_variant_row",
+      "_rank_row_key",
+      "_update_rank_columns",
+      "save_rows",
+      "_seed",
+      "_nnz_match_ce",
+      "_resolve_key",
+      "_weight_test_feature_conn",
+      "_require_ce",
+      "_family_baseline_ref",
+      "run_variant",
+      "list_variants"
+    ]
+  },
+  "summarize_sign_effective_rho.py": {
+    "lines": 185,
+    "imports": [
+      "from __future__ import annotations",
+      "import argparse",
+      "import re",
+      "from pathlib import Path",
+      "import numpy as np",
+      "import pandas as pd"
+    ],
+    "definitions": [
+      "_parse_sign_fraction",
+      "_parse_normalization",
+      "_read_input",
+      "summarize",
+      "print_sweep_tables",
+      "parse_args",
+      "main"
+    ]
+  },
+  "util/find_zero_indegree_neurons.py": {
+    "lines": 54,
+    "imports": [
+      "from __future__ import annotations",
+      "import argparse",
+      "from pathlib import Path",
+      "import numpy as np"
+    ],
+    "definitions": [
+      "load_connectome_with_names",
+      "main"
+    ]
+  },
+  "util/graph_utils.py": {
+    "lines": 194,
+    "imports": [
+      "import os",
+      "import glob",
+      "import pandas as pd",
+      "import numpy as np"
+    ],
+    "definitions": [
+      "_safe_path",
+      "_read_glob",
+      "_ensure_columns",
+      "_dispersion_cv",
+      "_dispersion_v",
+      "_unique_hparam_rows",
+      "_build_combined",
+      "_assign_group_ids",
+      "_aggregate_over_hparams",
+      "_compute_dispersion_table",
+      "_compute_mean_table"
+    ]
+  },
+  "util/keep_mode_from_csv.py": {
+    "lines": 81,
+    "imports": [
+      "from __future__ import annotations",
+      "import argparse",
+      "import csv",
+      "import re",
+      "from pathlib import Path"
+    ],
+    "definitions": [
+      "parse_args",
+      "sanitize",
+      "default_output_path",
+      "write_csv",
+      "main"
+    ]
+  },
+  "util/merge.py": {
+    "lines": 77,
+    "imports": [
+      "import os",
+      "import argparse",
+      "import matplotlib",
+      "from graph_utils import _safe_path, _read_glob, _build_combined, _compute_dispersion_table, _compute_mean_table"
+    ],
+    "definitions": [
+      "parse_args",
+      "main"
+    ]
+  },
+  "util/read_xls.py": {
+    "lines": 318,
+    "imports": [
+      "import argparse",
+      "import numpy as np",
+      "import pandas as pd",
+      "from typing import Dict, Tuple, List, Optional"
+    ],
+    "definitions": [
+      "canonical_nt",
+      "nt_to_edge_sign",
+      "add_edge",
+      "read_sheet",
+      "process_connectome",
+      "process_neuron_to_muscle",
+      "_new_cel_sign_token",
+      "new_cel_sign_is_unknown",
+      "new_cel_sign_to_edge_sign",
+      "process_new_cel",
+      "merge_edge_maps",
+      "build_matrix",
+      "main"
+    ]
+  },
+  "util/remove_mode_from_combined.py": {
+    "lines": 102,
+    "imports": [
+      "from __future__ import annotations",
+      "import argparse",
+      "import csv",
+      "import re",
+      "import tempfile",
+      "from pathlib import Path"
+    ],
+    "definitions": [
+      "parse_args",
+      "default_output_path",
+      "sanitize_for_temp",
+      "write_csv",
+      "main"
+    ]
+  },
+  "util/replace_rank_metrics.py": {
+    "lines": 336,
+    "imports": [
+      "from __future__ import annotations",
+      "import argparse",
+      "import csv",
+      "from decimal import Decimal, InvalidOperation",
+      "import math",
+      "from pathlib import Path",
+      "import shutil",
+      "import tempfile"
+    ],
+    "definitions": [
+      "parse_args",
+      "default_output_path",
+      "backup_path",
+      "read_header",
+      "choose_key_columns",
+      "canonical_value",
+      "row_key",
+      "validate_rank",
+      "load_replacement_ranks",
+      "format_examples",
+      "replace_rank_metrics",
+      "main"
+    ]
+  },
+  "util/util.py": {
+    "lines": 912,
+    "imports": [
+      "import numpy as np",
+      "from torch import Tensor",
+      "import torch",
+      "import os",
+      "import networkx as nx",
+      "from pathlib import Path"
+    ],
+    "definitions": [
+      "_connectome_node_path_candidates",
+      "_connectome_unknown_sign_path_candidates",
+      "_load_connectome_names",
+      "load_connectome_node_names",
+      "load_unknown_sign_weights",
+      "assign_random_unknown_signs",
+      "_count_edges",
+      "negative_edge_fraction",
+      "_shuffle_ce_weights",
+      "_shuffle_ce_weights_except_1",
+      "_conn_and_w_shuffle_ce",
+      "_conn_shuffle_ce",
+      "_sample_from_cel",
+      "_sample_from_cel_sign",
+      "_cel_to_bin",
+      "_signed_binary_from_cel",
+      "_binary_to_cel_interpolation",
+      "_cel_to_shuffled_cel_interpolation",
+      "load_connectome",
+      "build_reservoir",
+      "spectral_radius_power",
+      "scale_to_sr",
+      "normalize_reservoir_weights",
+      "_match_edge_count",
+      "er_adjacency",
+      "ws_directed_adjacency_exact",
+      "degree_matched_shuffle_directed",
+      "apply_percent_negative",
+      "scale_weights",
+      "spectral_norm",
+      "set_seed"
+    ]
+  }
+}
