@@ -130,6 +130,42 @@ task writes a provenance-tagged CSV below a `chunk_<id>/` directory. Fixed seed
 offsets make repeat assignment, rank streams, and optional node subsets
 reproducible across architectures.
 
+Set `STP=1` for `r_data.sbatch`, `r_data_shuf.sbatch`, or `r_data_frac.sbatch`
+to run the neuron-wise Tsodyks–Markram short-term plasticity variant. For
+example, `STP=1 sbatch r_data.sbatch`. This runs all four metrics, removes the
+spectral-radius target from the hyperparameter grid, and uses the generated
+recurrent weights without radius rescaling. The default output root is
+`final_results_STP`, separate from the fixed-weight results. Each chunk writes
+`effective_rho_trace.csv` beside `invariance_variants.csv`; the trace contains
+the spectral radius of the effective recurrent matrix at step 0 and every 100
+steps of the 2,500-step MC/IPC trajectory. It also records the signed and
+absolute mean effective weight over the original nonzero edges, so weight
+magnitude can be inspected beside radius. The `fraction_abs_pre_ge_2` column
+gives the fraction of preactivations with `|pre| >= 2` in each 100-step window;
+such units have `|tanh(pre)| >= 0.964`. `rho_target` is empty in STP rows;
+`raw_rho` and `post_rho` both describe the generated unscaled matrix, while
+the trace at step 0 describes the effective matrix after STP utilization.
+
+STP uses one resource and utilization pair per presynaptic neuron, shared by
+all its outgoing edges. The signed reservoir state is mapped to activity by
+`(state + 1) / 2`. Its defaults are utilization `U=0.1`, recovery time 50
+steps, facilitation time 10 steps, and update rate `0.1`. The update rate
+multiplies both resource and utilization changes each step, including the
+activity-dependent terms; `1.0` recovers the earlier, faster update. Override
+these with `STP_UTILIZATION`, `STP_TAU_RECOVERY`,
+`STP_TAU_FACILITATION`, and `STP_UPDATE_RATE` when submitting a launcher, or
+with the corresponding `--stp-*` options in `inv_arc_test.py`. The STP state
+resets for each KR/GR input stream. The reported effective radius is a property
+of the time-varying recurrent matrix, not the full nonlinear leaky-state
+Jacobian.
+
+The default STP gain is `u*x*W`, so release probability reduces the initial
+effective weights by `U`. This is selected by `STP_GAIN_MODE=raw`. The optional
+`STP_GAIN_MODE=baseline` uses `(u*x/U)*W`, matching the initial raw weight
+scale; it can amplify recurrent drive when facilitation dominates. The default
+recovery/facilitation times favor depression. They were selected from an
+exploratory 20-seed pilot and are not a calibrated optimum.
+
 The GR methodology launcher reuses the same independently sampled seven-step
 prefix for each stream while varying the length of one shared continuation.
 Total stream length is therefore `7 + common_tail_length`, and the default
@@ -138,11 +174,13 @@ each seed. Length zero is a prefix-only diagnostic; conclusions about
 robustness should be based on stable architecture ordering across positive
 tail lengths, not equality of absolute GR values.
 
-Two normalization modes are available:
+Three recurrent-weight modes are available:
 
 - `spectral_radius`: scale each generated reservoir by its own spectral radius.
 - `original_radius`: scale controls using their architecture-family baseline,
   used by the fixed-baseline-radius shuffle experiment.
+- `stp_raw`/`stp_baseline`: keep generated recurrent weights unscaled and apply
+  the selected Tsodyks–Markram efficacy during state updates.
 
 ## Results and figures
 

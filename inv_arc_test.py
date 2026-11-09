@@ -19,6 +19,9 @@ Invariance sweeps for C. elegans reservoirs.
 import os
 import argparse
 import itertools
+import csv
+from dataclasses import replace
+from pathlib import Path
 
 import numpy as np
 
@@ -27,7 +30,8 @@ matplotlib.use("Agg")  # safe for headless cluster
 
 import torch
 
-from reservoir_variants import VARIANT_KEYS, VariantContext, run_variant, save_rows
+from network_stats.run_one import STPParams
+from reservoir_variants import RHO_TRACE_HEADER, VARIANT_KEYS, VariantContext, run_variant, save_rows
 
 # ---- repo helpers (reuse your utils/stats) ----
 from util.util import (
@@ -103,11 +107,11 @@ NORMALIZATION_MODES = ("spectral_radius", "original_radius")
 
 
 def _build_col_params(
-    sr_grid: list[float],
+    sr_grid: list[float | None],
     leak_grid: list[float],
     u_grid: list[float],
     neuron_bias_grid: list[float],
-) -> list[tuple[float, float, float, float]]:
+) -> list[tuple[float | None, float, float, float]]:
     # Cartesian product of (spectral radius target, leak, input scale, neuron bias range)
     return [
         (sr, leak, u, neuron_bias)
@@ -195,7 +199,7 @@ def _build_ctx(
     WS_K: int,
     ce_W_bio: np.ndarray,
     ce_ei: np.ndarray | None,
-    col_params: list[tuple[float, float, float, float]],
+    col_params: list[tuple[float | None, float, float, float]],
     device: torch.device,
     seed: int,
     sid: int,
@@ -210,6 +214,8 @@ def _build_ctx(
     label_normalization: bool = False,
     rank_only: bool = False,
     kr_only: bool = False,
+    stp_params: STPParams | None = None,
+    rho_trace_interval: int = 100,
 ) -> VariantContext:
     if job_key not in VARIANT_KEYS:
         if (not job_key.startswith("sign_test")) and (not job_key.startswith("weight_test")):
@@ -233,12 +239,21 @@ def _build_ctx(
         label_normalization=label_normalization,
         rank_only=rank_only,
         kr_only=kr_only,
+        stp_params=stp_params,
+        rho_trace_interval=rho_trace_interval,
     )
 
 
 def _run_and_save(job_key: str, ctx: VariantContext, out_dir: str, csv_name: str, append: bool = False):
     os.makedirs(out_dir, exist_ok=True)
     out_csv = os.path.join(out_dir, csv_name)
+    if ctx.stp_params is not None:
+        trace_path = Path(out_dir) / "effective_rho_trace.csv"
+        trace_mode = "a" if append and trace_path.exists() else "w"
+        with trace_path.open(trace_mode, newline="") as f:
+            if trace_mode == "w":
+                csv.writer(f).writerow(RHO_TRACE_HEADER)
+        ctx = replace(ctx, rho_trace_path=trace_path)
     rows = run_variant(job_key, ctx)
     save_rows(
         out_csv,
@@ -399,6 +414,21 @@ def parse_args():
         ),
     )
     p.add_argument(
+        "--stp", action="store_true",
+        help="Use neuron-wise Tsodyks–Markram STP on unscaled recurrent weights; omit the spectral-radius sweep.",
+    )
+    p.add_argument("--stp-utilization", type=float, default=0.1)
+    p.add_argument("--stp-tau-recovery", type=float, default=50.0,
+                   help="Resource recovery time in simulation steps (>=1).")
+    p.add_argument("--stp-tau-facilitation", type=float, default=10.0,
+                   help="Utilization relaxation time in simulation steps (>=1).")
+    p.add_argument("--stp-gain-mode", choices=("raw", "baseline"), default="raw",
+                   help="raw uses u*x*W; baseline uses (u*x/U)*W for an initially matched gain.")
+    p.add_argument("--stp-update-rate", type=float, default=0.1,
+                   help="Fraction of each STP resource and utilization change applied per step (0, 1].")
+    p.add_argument("--stp-rho-interval", type=int, default=100,
+                   help="Sample the effective recurrent spectral radius every N steps.")
+    p.add_argument(
         "--random-node-subsets",
         action="store_true",
         help=(
@@ -482,6 +512,19 @@ def parse_args():
 
 def main():
     args = parse_args()
+    if args.stp and (args.rank_only or args.kr_only):
+        raise ValueError("--stp requires a full metrics run; omit --rank-only and --kr-only.")
+    if args.stp and (args.rho_values is not None or args.rho_test):
+        raise ValueError("--stp removes the spectral-radius sweep; omit --rho-values/--rho-test.")
+    if args.stp_rho_interval <= 0:
+        raise ValueError("--stp-rho-interval must be positive.")
+    stp_params = (
+        STPParams(
+            args.stp_utilization, args.stp_tau_recovery,
+            args.stp_tau_facilitation, args.stp_gain_mode, args.stp_update_rate,
+        )
+        if args.stp else None
+    )
     if args.rank_only:
         print(
             "[INFO] rank-only mode: skipping MC/IPC and updating only KR/GR "
@@ -494,17 +537,17 @@ def main():
         )
     sign_flip_fracs = list(args.sign_flip_frac if isinstance(args.sign_flip_frac, (list, tuple)) else [args.sign_flip_frac])
     alphas = list(args.alphas if isinstance(args.alphas, (list, tuple)) else [args.alphas])
-    normalization_modes = list(args.normalization_modes)
+    normalization_modes = [f"stp_{args.stp_gain_mode}"] if args.stp else list(args.normalization_modes)
     for frac in sign_flip_fracs:
         if not (0.0 <= frac <= 1.0):
             raise ValueError("--sign-flip-frac values must be between 0 and 1 inclusive for sign_test.")
     # Build parameter grid and optionally slice for array jobs
-    sr_grid = (
+    sr_grid = [None] if args.stp else (
         list(args.rho_values)
         if args.rho_values is not None
         else (SWEEP_SR if not args.rho_test else [0.5, 0.8, 0.95, 1.0, 1.05, 1.2, 1.5, 2.0, 4.0, 10.0])
     )
-    if any(sr <= 0.0 for sr in sr_grid):
+    if any(sr is not None and sr <= 0.0 for sr in sr_grid):
         raise ValueError("--rho-values must be positive.")
     leak_grid = SWEEP_LEAK
     u_grid    = SWEEP_U 
@@ -658,6 +701,8 @@ def main():
                         label_normalization=label_normalization,
                         rank_only=args.rank_only,
                         kr_only=args.kr_only,
+                        stp_params=stp_params,
+                        rho_trace_interval=args.stp_rho_interval,
                     )
 
                 if job_key in ("shuffle_weights", "conn_shuf", "local_sign"):

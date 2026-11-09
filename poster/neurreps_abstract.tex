@@ -1,0 +1,149 @@
+\documentclass[mlabstract,onecolumn]{jmlr}
+
+% Required review watermark from the official NeurReps 2026 template.
+\usepackage[hpos=300px,vpos=70px]{draftwatermark}
+\SetWatermarkText{\test}
+\SetWatermarkScale{1}
+\SetWatermarkAngle{0}
+
+\jmlrvolume{}
+\firstpageno{1}
+\editors{NeurReps 2026}
+\jmlryear{2026}
+\jmlrworkshop{Symmetry and Geometry in Neural Representations}
+\emergencystretch=1em
+
+\title[Hyperparameter Robustness in Reservoirs]{Effective dimensionality, generalization, and hyperparameter robustness in connectome reservoirs}
+
+% Double-blind review: author names, affiliations, acknowledgements, and
+% identifying code links are intentionally omitted.
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Reservoir computing provides a controlled setting for studying how recurrent network architecture shapes computation: input signals are projected into a high-dimensional state space by a fixed nonlinear dynamical system, and only the readout is trained. However, reservoir performance can be strongly dependent on hyperparameters; this paper asks which recurrent network features support robustness to those parameter changes. We characterize computational performance using memory capacity (MC), truncated single-delay information-processing capacity (IPC), and kernel rank (KR). Generalization across input histories is measured using generalization rank (GR), while hyperparameter robustness is quantified using the coefficient of variation (CV) of each metric across sweeps of target spectral radius, input scaling, leak rate, and neuron bias.
+
+To examine the architectural determinants of robustness, we construct controlled perturbations that alter connectivity topology, excitatory/inhibitory sign structure, weight magnitudes, and weight placement while preserving complementary properties. Across these experiments, the \textit{C.~elegans} connectome occupies a relatively low-variance regime.
+
+The central result is a performance--robustness tradeoff: architecture variants with higher task-agnostic performance also tend to exhibit greater hyperparameter sensitivity and poorer generalization across input histories. Across the excitatory/inhibitory (E/I) edge balance sweeps and shuffle controls, this tradeoff is closely associated with the raw spectral radius before normalization. Because every perturbed matrix is subsequently rescaled to the same target radius, a larger scaling factor is applied to matrices with lower raw spectral radius to obtain $W^{\mathrm{res}}$. The observed differences among architectures therefore characterize the joint effects of structural variation and architecture-specific normalization-induced rescaling.
+\end{abstract}
+
+\begin{keywords}
+reservoir computing; neural representations; echo state networks; hyperparameter robustness; connectomics
+\end{keywords}
+
+\section{Introduction and Motivation}
+
+Reservoir computing uses a fixed recurrent dynamical system to project input sequences into a high-dimensional state space, after which only a readout is trained \citep{jaeger_echo_state_2001,maass_lsm_2002}. At the same time, reservoir behavior can vary with target spectral radius, input scaling, leak rate, and neuronal bias \citep{Lukosevicius2012PracticalESN,Matzner2022HyperparameterTuningESN}. 
+
+Connectome-derived and small-world reservoirs can support memory and time-series prediction while exhibiting performance and robustness properties distinct from random reservoirs \citep{KAWAI201915,morra_daley_2022,morra_fly_rc_2023}, motivating our central question: which network features support robustness to hyperparameter changes? We use the anatomical \textit{C.~elegans} chemical-synapse connectome as a recurrent weight matrix and perturb topology, E/I sign structure, weight distribution, weight placement, and sign placement. Because each recurrent matrix is rescaled to a target spectral radius before evaluation, these perturbations can also alter the normalization factor. We therefore analyze architectural variation together with architecture-specific normalization-induced rescaling.
+
+\section{Methods}
+\paragraph{Reservoir and connectome.}
+We use a leaky echo-state network with fixed recurrent weights and a trained linear readout,
+\begin{equation}
+x_{t+1}=(1-\alpha)x_t+\alpha\tanh\!\left(W^{\mathrm{res}}x_t+s_{\mathrm{in}}W^{\mathrm{in}}u_t+b\right).
+\label{eq:state}
+\end{equation}
+The scalar input is projected to all $N=297$ units through a Gaussian weighted input vector. The recurrent matrix is the EleganSign anatomical \textit{C.~elegans} chemical-synapse connectome \citep{fenyves_szilagyi_2020}: directed contact counts set weight magnitudes and inferred polarities set signs. Electrical synapses are not included in the dataset. Self-loops (34) were excluded as a preprocessing step. EleganSign provides predicted signs for 1,740 of 3,604 chemical edges; for each repeat, the remaining 1,864 unknown or complex edges receive exactly 452 negative and 1,412 positive signs, matching the labeled-edge ratio. E/I balance denotes an edge fraction, not neuron counts. As a sensitivity analysis, selected controls exclude the unknown or complex-sign edges entirely.
+
+\paragraph{Metrics and robustness.}
+MC measures how much recent input history can be recovered from the current reservoir state by summing squared-correlation readout scores over the previous 30 time steps \citep{Jaeger2002STMESN}. The truncated single-delay IPC diagnostic measures nonlinear processing of that history by reconstructing Legendre-polynomial transformations of orders 1--5 for each delayed input over the same 30 steps; products across different delays are omitted \citep{dambre_ipc_2012}. KR is the effective rank of final states generated by 300 independent length-10 input streams and measures separation of input histories \citep{legenstein_maass_2007,roy_effective_rank_2007}. GR applies the same effective-rank measure to 300 streams with distinct seven-step prefixes followed by one shared three-step tail. Lower GR indicates greater similarity among tail states. We refer to this as generalization across earlier histories or for brevity as generalization \citep{vidamour_quantifying_2022}.
+
+Each trial evaluates four target radii $\{0.6,0.8,0.95,1.05\}$, three leak rates $\{0.6,0.8,1.0\}$, four input scales $\{0.1,0.5,1.0,1.5\}$, and two bias magnitudes $\{0,0.1\}$: 96 settings in total. Random quantities are fixed across the grid and redrawn between trials; each architecture has 200 trials. MC and IPC use 500 washout, 1,500 training, and 500 test steps with ridge parameter $10^{-4}$. For metric values $a$ across the grid, hyperparameter robustness is $\mathrm{CV}(a)=\mathrm{sd}(a)/\mathrm{mean}(a)$. A lower CV indicates lower sensitivity to hyperparameter setting, which we refer to as hyperparameter robustness, or simply robustness.
+
+\paragraph{Perturbations and normalization.}
+Controls change weight magnitudes, replace signed weights with all-positive binary weights, compare empirical, Erd\H{o}s--R\'enyi, and Watts--Strogatz topologies, sweep the negative-edge fraction, and shuffle signs, weights, connections, or connections plus weights. Directed connection shuffles preserve in- and out-degree and the signed-weight distribution. Every perturbed matrix $W'$ is normalized as
+\begin{equation}
+W^{\mathrm{res}}=\frac{\rho_{\mathrm{target}}}{\rho_{\mathrm{raw}}}W',
+\qquad \rho_{\mathrm{raw}}=\max_i|\lambda_i(W')|.
+\label{eq:normalization}
+\end{equation}
+Thus, the achieved spectral radius is held fixed, but the normalization factor is not. When a perturbation changes $\rho_{\mathrm{raw}}$, its effect cannot be separated from the corresponding change in the scaling factor used to obtain $W^{\mathrm{res}}$. In particular, the E/I sweep cannot isolate the effect of E/I edge balance from the effect of its accompanying change in raw spectral radius.
+
+\par\medskip
+\refstepcounter{figure}\label{fig:architecture}
+\begin{center}
+\includegraphics[width=0.70\linewidth]{figures/architecture_tradeoff.png}
+\begin{minipage}{0.94\linewidth}
+\small\textbf{Figure \thefigure:} Performance--robustness island plots for the architecture comparison. Each panel plots mean task-agnostic performance against hyperparameter CV; contours enclose the highest-density 50\% of trials. Shape identifies architecture and color gives E/I edge balance (blue: 0\% negative edges; purple: empirical \textit{C.~elegans}, approximately 24.25\%; yellow: 50\%).
+\end{minipage}
+\end{center}
+\medskip
+
+\section{Results}
+
+\paragraph{Architecture comparisons reveal a performance--robustness tradeoff.}
+Across IPC, KR, and MC, the architecture families followed a shared positive relationship between mean performance and CV (Figure~\ref{fig:architecture}). Architectures with 50\% negative edges occupied the high-performance, high-CV region, whereas architectures at the empirical E/I edge balance of approximately 24.25\% had lower performance and lower CV. The all-positive binary reservoir occupied the low-performance, low-CV region. Architectures with the same E/I edge balance nevertheless remained separated, showing that topology, sign placement, and weight magnitudes further differentiated performance and robustness.
+
+\paragraph{E/I edge balance sweeps trace the tradeoff.}
+When connectivity and weight magnitudes were held fixed, mean IPC, KR, and MC and their CVs were low near the all-positive and all-negative endpoints and increased as the fraction of negative edges approached 50\%. The same pattern was present in the edge-matched random topology and after removing unknown or complex-polarity edges. Across these sweeps, $\rho_{\mathrm{raw}}$ decreased toward 50\% negative edges, so a larger scaling factor was applied near the balanced regime to obtain $W^{\mathrm{res}}$ at the common target radius.
+
+\paragraph{Shuffle controls.}
+For empirical contact-count weights, degree-preserving connection shuffles, weight shuffles, and their combination increased both mean performance and CV relative to the empirical baseline. With signed-unit weights, sign and connection shuffles instead reduced mean performance and CV.
+
+\paragraph{Generalization rank and spectral-radius normalization.}
+Across the E/I sweeps and shuffle controls, lower $\rho_{\mathrm{raw}}$ generally coincided with higher IPC, KR, MC, GR, and their CVs (Figure~\ref{fig:rawrho}, Table~\ref{tab:raw-rho-support}). Higher GR indicates that differences between earlier input histories persist after the shared tail, meaning poorer generalization under this protocol. Because each matrix is rescaled to a common target radius, these trends reflect structural changes together with changes in recurrent-weight scale.\footnote{The figure shows only negative-edge fractions below 50\% because mean metric values and CVs follow approximately symmetric trends on either side of 50\%. Table~\ref{tab:raw-rho-support} reports both sides of the sweep.}
+
+\par\medskip
+\refstepcounter{figure}\label{fig:rawrho}
+\begin{center}
+\includegraphics[width=0.49\linewidth]{figures/raw_rho_performance_summary.pdf}
+\begin{minipage}{0.92\linewidth}
+\small\textbf{Figure \thefigure:} Raw spectral radius versus IPC, KR, MC, and GR (rows), showing mean values (left) and hyperparameter CV (right) across E/I sweeps and shuffle controls. Lower GR indicates better generalization.
+\end{minipage}
+\end{center}
+\medskip
+
+\section{Discussion, Limitations, and NeurReps Relevance}
+
+The empirical \textit{C.~elegans} architecture lies on the low-variance side of a performance--robustness tradeoff rather than near peak task-agnostic performance. Biological interpretation is limited by the handling of unknown or complex edges, omitted electrical synapses, and inputs to all neurons rather than sensory populations. 
+
+Across architectures, higher IPC, MC, and KR coincided with higher CV and GR, revealing a tradeoff in which greater task-agnostic performance accompanies both increased hyperparameter sensitivity and reduced generalization. These metrics covaried inversely with \(\rho_{\mathrm{raw}}\). For reservoir computing, \(\rho_{\mathrm{raw}}\) should be reported alongside architecture comparisons because it determines the scaling factor used to obtain \(W^{\mathrm{res}}\) and helps interpret differences in performance, generalization, and sensitivity.
+
+The positive association between GR and CV links representation geometry to hyperparameter robustness. Higher GR means that states remain separated by earlier history even after receiving the same recent input, indicating reduced generalization. These same conditions have higher CV, indicating greater sensitivity to hyperparameter choice. Thus, representations that generalize less across input histories are also less stable across hyperparameter settings.
+\clearpage
+\bibliography{references}
+\clearpage
+\section{Supplementary Materials}
+\begin{table}[h]
+\centering\scriptsize
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{llccccc}
+\hline
+Family & Conditions (high $\to$ low) & $\rho_{\rm raw}$ (high $\to$ low) & IPC & KR & MC & GR \\
+\hline
+\multicolumn{7}{l}{\textbf{Mean metric change}} \\
+CE matched & 0\% $\to$ 40\% negative edges & $106.51\to49.96$ & $+2.93\pm0.11$ & $+5.99\pm0.38$ & $+2.06\pm0.08$ & $+5.46\pm0.31$ \\
+CE matched & 100\% $\to$ 60\% negative edges & $106.51\to51.08$ & $+2.36\pm0.10$ & $+5.86\pm0.33$ & $+1.71\pm0.08$ & $+5.06\pm0.26$ \\
+CE known edges & 0\% $\to$ 40\% negative edges & $78.14\to44.07$ & $+1.81\pm0.09$ & $+3.14\pm0.21$ & $+1.13\pm0.07$ & $+2.64\pm0.15$ \\
+CE known edges & 100\% $\to$ 60\% negative edges & $78.14\to43.65$ & $+1.64\pm0.08$ & $+3.38\pm0.21$ & $+1.00\pm0.06$ & $+2.66\pm0.15$ \\
+ER matched & 0\% $\to$ 40\% negative edges & $12.12\to3.61$ & $+9.75\pm0.07$ & $+17.32\pm0.19$ & $+6.75\pm0.04$ & $+15.50\pm0.15$ \\
+ER matched & 100\% $\to$ 60\% negative edges & $12.12\to3.62$ & $+9.38\pm0.06$ & $+17.43\pm0.18$ & $+6.48\pm0.05$ & $+15.56\pm0.17$ \\
+CE shuffles & empirical $\to$ conn. shuf. & $73.31\to44.53$ & $+3.15\pm0.16$ & $+6.54\pm0.41$ & $+1.97\pm0.13$ & $+5.27\pm0.33$ \\
+PM1 controls & PM1+wt. shuf. $\to$ PM1 & $7.93\to6.28$ & $+1.57\pm0.12$ & $+2.78\pm0.21$ & $+1.08\pm0.08$ & $+1.54\pm0.16$ \\
+Binary controls & binary shuf. $\to$ binary & $15.46\to15.28$ & $+0.11\pm0.04$ & $+0.17\pm0.03$ & $+0.12\pm0.02$ & $+0.16\pm0.03$ \\
+\hline
+\multicolumn{7}{l}{\textbf{Hyperparameter CV change}} \\
+CE matched & 0\% $\to$ 40\% negative edges & $106.51\to49.96$ & $+0.128\pm0.005$ & $+0.159\pm0.006$ & $+0.140\pm0.006$ & $+0.235\pm0.008$ \\
+CE matched & 100\% $\to$ 60\% negative edges & $106.51\to51.08$ & $+0.135\pm0.006$ & $+0.127\pm0.007$ & $+0.152\pm0.007$ & $+0.189\pm0.009$ \\
+CE known edges & 0\% $\to$ 40\% negative edges & $78.14\to44.07$ & $+0.078\pm0.006$ & $+0.068\pm0.005$ & $+0.102\pm0.006$ & $+0.103\pm0.007$ \\
+CE known edges & 100\% $\to$ 60\% negative edges & $78.14\to43.65$ & $+0.085\pm0.006$ & $+0.058\pm0.005$ & $+0.106\pm0.007$ & $+0.091\pm0.008$ \\
+ER matched & 0\% $\to$ 40\% negative edges & $12.12\to3.61$ & $+0.113\pm0.004$ & $+0.492\pm0.003$ & $+0.231\pm0.003$ & $+0.634\pm0.008$ \\
+ER matched & 100\% $\to$ 60\% negative edges & $12.12\to3.62$ & $+0.127\pm0.004$ & $+0.477\pm0.004$ & $+0.248\pm0.004$ & $+0.586\pm0.007$ \\
+CE shuffles & empirical $\to$ conn. shuf. & $73.31\to44.53$ & $+0.095\pm0.005$ & $+0.209\pm0.007$ & $+0.089\pm0.006$ & $+0.313\pm0.010$ \\
+PM1 controls & PM1+wt. shuf. $\to$ PM1 & $7.93\to6.28$ & $+0.062\pm0.004$ & $+0.112\pm0.008$ & $+0.058\pm0.004$ & $+0.105\pm0.010$ \\
+Binary controls & binary shuf. $\to$ binary & $15.46\to15.28$ & $+0.002\pm0.004$ & $+0.011\pm0.003$ & $+0.030\pm0.004$ & $-0.015\pm0.005$ \\
+\hline
+\end{tabular}
+\caption{Within-family high-to-low raw-radius contrasts. The 0\% to 40\% negative-edge branch and shuffle controls appear in Figure~\ref{fig:rawrho}; 100\% to 60\% is the complementary E/I sweep. Radii are condition means; metric entries are lower-minus-higher changes $\pm$ outward-rounded 95\% paired-bootstrap margins (200 seeds, 96 hyperparameter settings per seed). Lower GR indicates better generalization across earlier histories. Contrasts are descriptive under spectral-radius normalization.}
+\label{tab:raw-rho-support}
+\end{table}
+
+
+
+
+
+\end{document}

@@ -1,0 +1,2 @@
+mode,normalization,shuffle_id,rho_target,leak,input_scale,neuron_bias,MC,IPC,KR,GR,wt_mean,cosine_similarity,kl_to_gaussian,seed,src,raw_rho,ref_rho,post_rho,scale_factor
+real,stp_baseline,0,nan,0.6,1.0,0.0,0.13376228511333466,0.2986962647940886,107.59419250488281,102.90838623046875,0.1308709979057312,0.3302963376045227,0.6822619938055223,12346,demo,78.16568756103516,nan,78.16568756103516,1.0

@@ -24,6 +24,21 @@ export MKL_NUM_THREADS=${SLURM_CPUS_PER_TASK}
 # Use `KR_ONLY=1 RANK_ONLY=0` for KR only or set both to 0 for a full run.
 KR_ONLY="${KR_ONLY:-0}"
 RANK_ONLY="${RANK_ONLY:-1}"
+STP="${STP:-0}"
+STP_ARGS=()
+if [[ "${STP}" == "1" ]]; then
+  KR_ONLY=0
+  RANK_ONLY=0
+  STP_ARGS=(--stp --stp-utilization "${STP_UTILIZATION:-0.1}" \
+    --stp-tau-recovery "${STP_TAU_RECOVERY:-50}" \
+    --stp-tau-facilitation "${STP_TAU_FACILITATION:-10}" \
+    --stp-gain-mode "${STP_GAIN_MODE:-raw}" \
+    --stp-update-rate "${STP_UPDATE_RATE:-0.1}" \
+    --stp-rho-interval 100)
+elif [[ "${STP}" != "0" ]]; then
+  echo "[error] STP must be 0 or 1, got: ${STP}" >&2
+  exit 1
+fi
 METRIC_ARGS=()
 if [[ "${KR_ONLY}" != "0" && "${KR_ONLY}" != "1" ]]; then
   echo "[error] KR_ONLY must be 0 or 1, got: ${KR_ONLY}" >&2
@@ -40,7 +55,11 @@ elif [[ "${RANK_ONLY}" == "1" ]]; then
   METRIC_ARGS+=(--rank-only)
 fi
 
-RESULTS_ROOT="${RESULTS_ROOT:-final_results_GRKR_erank}"
+if [[ "${STP}" == "1" ]]; then
+  RESULTS_ROOT="${RESULTS_ROOT:-final_results_STP}"
+else
+  RESULTS_ROOT="${RESULTS_ROOT:-final_results_GRKR_erank}"
+fi
 OUTROOT="${OUTROOT:-${RESULTS_ROOT}/topology_shuffles}"
 OUTDIR="${OUTROOT}/chunk_${SLURM_ARRAY_TASK_ID}"
 mkdir -p "${OUTDIR}"
@@ -121,4 +140,5 @@ conda run -n cel python inv_arc_test.py \
   --er-p 0.1 \
   --cuda "${SLURM_LOCALID:-0}" \
   "${METRIC_ARGS[@]}" \
+  "${STP_ARGS[@]}" \
   "${SUBSET_ARGS[@]}"

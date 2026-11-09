@@ -8,7 +8,7 @@ import numpy as np
 import torch
 from scipy.stats import entropy, halfnorm
 
-from network_stats.run_one import run_one
+from network_stats.run_one import STPParams, run_one
 from util.util import build_reservoir, _cel_to_bin, \
     _count_edges,_shuffle_ce_weights,_conn_and_w_shuffle_ce,_conn_shuffle_ce,_sample_from_cel,scale_to_sr, \
     _signed_binary_from_cel
@@ -82,7 +82,7 @@ class VariantContext:
     ce_W_bio: np.ndarray
     ce_ei: np.ndarray | None
     ws_k: int
-    col_params: Sequence[tuple[float, ...]]
+    col_params: Sequence[tuple[float | None, ...]]
     device: torch.device
     seed: int
     sid: int
@@ -98,6 +98,9 @@ class VariantContext:
     label_normalization: bool = False
     rank_only: bool = False
     kr_only: bool = False
+    stp_params: STPParams | None = None
+    rho_trace_interval: int = 100
+    rho_trace_path: Path | None = None
 
 def evaluate_reservoir(
     Wt: torch.Tensor,
@@ -111,6 +114,8 @@ def evaluate_reservoir(
     gr_seed: int = 0,
     rank_only: bool = False,
     kr_only: bool = False,
+    stp_params: STPParams | None = None,
+    rho_trace_interval: int = 100,
 ):
     """Wrapper around run_one with shared defaults."""
     return run_one(
@@ -136,6 +141,8 @@ def evaluate_reservoir(
         gr_seed=gr_seed,
         rank_only=rank_only,
         kr_only=kr_only,
+        stp_params=stp_params,
+        rho_trace_interval=rho_trace_interval,
     )
 
 
@@ -151,13 +158,13 @@ def _apply_input_subset(Win: torch.Tensor, input_idx: np.ndarray | None) -> torc
     return Win * mask
 
 
-def _unpack_col_param(param: Sequence[float]) -> tuple[float, float, float, float]:
+def _unpack_col_param(param: Sequence[float | None]) -> tuple[float | None, float, float, float]:
     if len(param) == 3:
         target_sr, leak, in_scale = param
-        return float(target_sr), float(leak), float(in_scale), 0.0
+        return None if target_sr is None else float(target_sr), float(leak), float(in_scale), 0.0
     if len(param) == 4:
         target_sr, leak, in_scale, neuron_bias = param
-        return float(target_sr), float(leak), float(in_scale), float(neuron_bias)
+        return None if target_sr is None else float(target_sr), float(leak), float(in_scale), float(neuron_bias)
     raise ValueError(f"Expected 3 or 4 sweep parameters, got {len(param)}: {param}")
 
 
@@ -239,6 +246,8 @@ def _run_variant_row(
             gr_seed=ctx.seed + ctx.sim_params.gr_seed_offset,
             rank_only=ctx.rank_only,
             kr_only=ctx.kr_only,
+            stp_params=ctx.stp_params,
+            rho_trace_interval=ctx.rho_trace_interval,
         )
         Wt_ce = torch.from_numpy(_cel_to_bin(ctx.ce_W_bio)).to(ctx.device) ## for cos sim
         sigma_ce = scale_to_sr(Wt_ce,target_sr) ##for cos sim
@@ -247,12 +256,28 @@ def _run_variant_row(
             if ctx.label_normalization
             else mode_label
         )
+        if ctx.stp_params is not None and ctx.rho_trace_path is not None:
+            import csv
+
+            with ctx.rho_trace_path.open("a", newline="") as trace_file:
+                writer = csv.writer(trace_file)
+                writer.writerows(
+                    (
+                        row_mode_label, ctx.normalization_mode, ctx.sid, seed_base,
+                        ctx.src_tag, leak, in_scale, neuron_bias,
+                        ctx.stp_params.utilization, ctx.stp_params.tau_recovery,
+                        ctx.stp_params.tau_facilitation, ctx.stp_params.gain_mode,
+                        ctx.stp_params.update_rate,
+                        step, rho, mean_signed, mean_abs, saturation_fraction,
+                    )
+                    for step, rho, mean_signed, mean_abs, saturation_fraction in scores["rho_trace"]
+                )
         rows_local.append(
             (
                 row_mode_label,
                 ctx.normalization_mode,
                 ctx.sid,
-                target_sr,
+                float("nan") if target_sr is None else target_sr,
                 leak,
                 in_scale,
                 neuron_bias,
@@ -300,6 +325,14 @@ CSV_HEADER = [
     "ref_rho",
     "post_rho",
     "scale_factor",
+]
+
+RHO_TRACE_HEADER = [
+    "mode", "normalization", "shuffle_id", "seed", "src", "leak",
+    "input_scale", "neuron_bias", "stp_utilization", "stp_tau_recovery",
+    "stp_tau_facilitation", "stp_gain_mode", "stp_update_rate", "step", "effective_rho",
+    "mean_signed_nonzero_weight", "mean_abs_nonzero_weight",
+    "fraction_abs_pre_ge_2",
 ]
 
 RANK_ROW_KEY_COLUMNS = (

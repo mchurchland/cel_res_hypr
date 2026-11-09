@@ -8,14 +8,77 @@ import tempfile
 import torch
 
 from network_stats.run_one import (
+    STPParams,
     make_gr_input_stream_sweep,
     make_gr_input_streams,
     make_kr_input_streams,
     run_one,
     run_reservoir_stream_batch,
+    run_reservoir_with_pre,
 )
 from network_stats.stats import compute_GR, compute_KR
 from reservoir_variants import DEFAULT_SIM_PARAMS, save_rows
+from util.util import normalize_reservoir_weights
+
+
+class ShortTermPlasticityTests(unittest.TestCase):
+    def test_unscaled_weights_and_time_varying_effective_radius(self) -> None:
+        weights = torch.tensor([[0.0, 1.0], [1.0, 0.0]])
+        unscaled, info = normalize_reservoir_weights(
+            weights, target_sr=None, mode="stp_raw", reference_W=None
+        )
+        self.assertTrue(torch.equal(unscaled, weights))
+        self.assertEqual(info["scale_factor"], 1.0)
+
+        trace: list[tuple[int, float, float, float, float]] = []
+        run_reservoir_with_pre(
+            unscaled, torch.zeros(2, 1), torch.zeros(1, 1), leak=1.0,
+            stp_params=STPParams(update_rate=1.0), rho_trace_interval=1, rho_trace=trace,
+        )
+        self.assertEqual([record[0] for record in trace], [0, 1])
+        self.assertAlmostEqual(trace[0][1], 0.1, places=5)
+        # At z=0 the rate is 0.5; one update gives x=0.95 and u=0.145.
+        self.assertAlmostEqual(trace[1][1], 0.95 * 0.145, places=5)
+        self.assertAlmostEqual(trace[0][3], 0.1, places=5)
+        self.assertAlmostEqual(trace[1][3], 0.95 * 0.145, places=5)
+        self.assertTrue(math.isnan(trace[0][4]))
+        self.assertEqual(trace[1][4], 0.0)
+
+        baseline_trace: list[tuple[int, float, float, float, float]] = []
+        run_reservoir_with_pre(
+            unscaled, torch.zeros(2, 1), torch.zeros(1, 1), leak=1.0,
+            stp_params=STPParams(gain_mode="baseline", update_rate=1.0),
+            rho_trace_interval=1, rho_trace=baseline_trace,
+        )
+        self.assertAlmostEqual(baseline_trace[0][1], 1.0, places=5)
+        self.assertAlmostEqual(baseline_trace[1][1], 1.3775, places=5)
+
+        slow_trace: list[tuple[int, float, float, float, float]] = []
+        run_reservoir_with_pre(
+            unscaled, torch.zeros(2, 1), torch.zeros(1, 1), leak=1.0,
+            stp_params=STPParams(update_rate=0.1),
+            rho_trace_interval=1, rho_trace=slow_trace,
+        )
+        self.assertAlmostEqual(slow_trace[1][1], 0.995 * 0.1045, places=5)
+        self.assertLess(abs(slow_trace[1][1] - slow_trace[0][1]),
+                        abs(trace[1][1] - trace[0][1]))
+
+    def test_each_rank_stream_has_its_own_stp_state(self) -> None:
+        weights = torch.tensor([[0.0, 0.8], [-0.5, 0.0]])
+        inputs = torch.tensor([[0.4], [-0.3]])
+        streams = torch.tensor([[[1.0], [0.5], [-0.5]], [[-1.0], [0.2], [0.7]]])
+        params = STPParams()
+        batched = run_reservoir_stream_batch(
+            weights, inputs, streams, 0.8, torch.zeros(2), stp_params=params
+        )
+        separate = torch.cat([
+            run_reservoir_stream_batch(
+                weights, inputs, streams[i:i + 1], 0.8, torch.zeros(2),
+                stp_params=params,
+            )
+            for i in range(2)
+        ])
+        self.assertTrue(torch.allclose(batched, separate, atol=1e-7))
 
 
 class GeneralizationRankTests(unittest.TestCase):

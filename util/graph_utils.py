@@ -82,7 +82,7 @@ def _unique_hparam_rows(df: pd.DataFrame) -> pd.DataFrame:
     metrics = [c for c in ("MC","IPC","KR","GR") if c in df.columns]
     if not metrics:
         return df.copy()
-    return (df.groupby(keys, as_index=False)[metrics]
+    return (df.groupby(keys, as_index=False, dropna=False)[metrics]
               .mean()
               .sort_values(keys)
               .reset_index(drop=True))
@@ -138,7 +138,7 @@ def _aggregate_over_hparams(df: pd.DataFrame, metrics: list[str]) -> pd.DataFram
     keys = ["mode","src","group_id","rho_target","leak","input_scale","neuron_bias"]
     if not metrics:
         return pd.DataFrame(columns=keys)
-    return (df.groupby(keys, as_index=False)[metrics]
+    return (df.groupby(keys, as_index=False, dropna=False)[metrics]
               .mean()
               .sort_values(keys)
               .reset_index(drop=True))

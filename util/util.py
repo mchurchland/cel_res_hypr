@@ -626,9 +626,9 @@ def normalize_reservoir_weights(
         get amplified just because they changed their own raw spectral radius.
     """
     mode = str(mode)
-    if mode not in {"spectral_radius", "original_radius"}:
+    if mode not in {"spectral_radius", "original_radius", "stp", "stp_raw", "stp_baseline"}:
         raise ValueError(
-            "normalization_mode must be one of: spectral_radius, original_radius."
+            "normalization_mode must be one of: spectral_radius, original_radius, stp_raw, stp_baseline."
         )
 
     raw_rho = spectral_radius_power(W)
@@ -636,7 +636,7 @@ def normalize_reservoir_weights(
     scale = 1.0
     ref_t = None
 
-    if reference_W is not None:
+    if reference_W is not None and not mode.startswith("stp"):
         if isinstance(reference_W, torch.Tensor):
             ref_t = reference_W.to(device=W.device, dtype=W.dtype)
         else:
@@ -649,7 +649,7 @@ def normalize_reservoir_weights(
     if mode == "spectral_radius":
         if target_sr is not None and raw_rho >= 1e-9:
             scale = float(target_sr) / raw_rho
-    else:
+    elif mode == "original_radius":
         if ref_t is None:
             raise ValueError(f"normalization_mode={mode!r} requires reference_W/ce_W_bio.")
         target = 1.0 if target_sr is None else float(target_sr)
@@ -661,7 +661,7 @@ def normalize_reservoir_weights(
         "normalization": mode,
         "raw_rho": raw_rho,
         "ref_rho": ref_rho,
-        "post_rho": spectral_radius_power(W_scaled),
+        "post_rho": raw_rho if mode.startswith("stp") else spectral_radius_power(W_scaled),
         "scale_factor": float(scale),
     }
     return W_scaled, info
