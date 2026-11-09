@@ -20,10 +20,17 @@ Outputs (defaults)
 
 import os
 import argparse
+import sys
+from pathlib import Path
+
+# Support both the historical script command and python -m util.merge.
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import matplotlib
+
 matplotlib.use("Agg")
-from graph_utils import (
+from util.graph_utils import (
     _safe_path,
     _read_glob,
     _build_combined,
@@ -33,21 +40,32 @@ from graph_utils import (
 
 # ---------------------------- CLI ----------------------------
 
+
 def parse_args():
-    ap = argparse.ArgumentParser(description="Merge CE real/shuffle + variants and plot all together.")
-    ap.add_argument("--glob-shuf",
-                    default="experiment_full_chunks/chunk_*/bio_vs_shuffle_invariance.csv",
-                    help="Glob for CEL+bioW vs shuffled CSVs.")
-    ap.add_argument("--glob-variants",
-                    default="experiment_full_chunks/chunk_*/ce_real_reps.csv",
-                    help="Glob for per-chunk variants CSVs.")
-    ap.add_argument("--out-dir",
-                    default="experiment_full_merged",
-                    help="Directory to write merged CSVs and figures.")
-    ap.add_argument("--bins", type=int, default=40,
-                    help="Histogram bins for dispersion plots.")
-    ap.add_argument("--scatter-alpha", type=float, default=0.55,
-                    help="Alpha for MC-vs-GR scatter.")
+    ap = argparse.ArgumentParser(
+        description="Merge CE real/shuffle + variants and plot all together."
+    )
+    ap.add_argument(
+        "--glob-shuf",
+        default="experiment_full_chunks/chunk_*/bio_vs_shuffle_invariance.csv",
+        help="Glob for CEL+bioW vs shuffled CSVs.",
+    )
+    ap.add_argument(
+        "--glob-variants",
+        default="experiment_full_chunks/chunk_*/ce_real_reps.csv",
+        help="Glob for per-chunk variants CSVs.",
+    )
+    ap.add_argument(
+        "--out-dir",
+        default="experiment_full_merged",
+        help="Directory to write merged CSVs and figures.",
+    )
+    ap.add_argument(
+        "--bins", type=int, default=40, help="Histogram bins for dispersion plots."
+    )
+    ap.add_argument(
+        "--scatter-alpha", type=float, default=0.55, help="Alpha for MC-vs-GR scatter."
+    )
     return ap.parse_args()
 
 
@@ -68,10 +86,11 @@ def main():
     mean_tbl.to_csv(out_mean, index=False)
     print(f"[saved] {out_mean}  (rows={len(mean_tbl)})")
 
-    disp = _compute_dispersion_table(combined,mode = "cv")
+    disp = _compute_dispersion_table(combined, mode="cv")
     out_disp = _safe_path(os.path.join(args.out_dir, "dispersion_by_group.ALL.csv"))
     disp.to_csv(out_disp, index=False)
     print(f"[saved] {out_disp}  (rows={len(disp)})")
+
 
 if __name__ == "__main__":
     main()

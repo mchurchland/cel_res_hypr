@@ -1,0 +1,123 @@
+{
+  "original_commit": "749f5ab",
+  "seed": 1603,
+  "save_dpi": 50,
+  "note": "Synthetic plotting fixtures; save DPI capped to limit memory. Numerical plot expressions retained; optional missing exporter repaired separately.",
+  "files": [
+    {
+      "file": "contours/cv_performance_density_contours.png",
+      "sha256": "7e13ee8756ddc3569bbafc034b44c080f5a2c8ffccbd05ef8359dcee8cba800e",
+      "equal": true
+    },
+    {
+      "file": "differences/cv_mean_differences_table.tex",
+      "sha256": "cadcd3673b68ab614ab60de47590cbb9ca57b62285314444a119c81e1d8cc0b7",
+      "equal": true
+    },
+    {
+      "file": "differences/cv_performance_differences_3d.png",
+      "sha256": "5487fbdaaffcd4bf3cb3e7ca550f78b4c792996719d95d3fba04d378ef0f8e2d",
+      "equal": true
+    },
+    {
+      "file": "rho/rho_cv_other_perf_3d.binary_base.png",
+      "sha256": "04e640a04028abbf9abb2dc64915f45f131d4b627cba561a8269c277768ffec3",
+      "equal": true
+    },
+    {
+      "file": "rho/rho_cv_other_perf_3d.binary_base_topology_shuffle.png",
+      "sha256": "9a3249f2e942557548e0be40508790a42d0065fd806f2180ad54eeeefbabf66e",
+      "equal": true
+    },
+    {
+      "file": "rho/rho_cv_other_perf_3d.binary_conshuffle_wshuffle.png",
+      "sha256": "92be6bc5b958f015c848656910313b732ed3144b4ccb490e71feccc30a053c33",
+      "equal": true
+    },
+    {
+      "file": "rho/rho_cv_other_perf_3d.binary_shuffle.png",
+      "sha256": "e6f1fe30dd4ebcdf30967cb7fba02f52d75e27592fb6fc32586a1bcde4b4350b",
+      "equal": true
+    },
+    {
+      "file": "rho/rho_cv_other_perf_3d.celW_connShuf.png",
+      "sha256": "7923b4112a7ee8c00461c388540d620fcbb1ee7e6a576bd7e2ab0d79ebdab884",
+      "equal": true
+    },
+    {
+      "file": "rho/rho_cv_other_perf_3d.conn_shuf_only.png",
+      "sha256": "730f6a360ebed58f7aad61fa631b61b0a0a2c62ea7fe24db72e0832fa77bff27",
+      "equal": true
+    },
+    {
+      "file": "rho/rho_cv_other_perf_3d.global_sign_pres.png",
+      "sha256": "bf382d7047cada035e137b349f6e7e4494e73c3cb9c779133e01b1a040abfd93",
+      "equal": true
+    },
+    {
+      "file": "rho/rho_cv_other_perf_3d.local_sign_binary.png",
+      "sha256": "a3b7ec42d7e65e183f6c7df9d557c9fe444936452677f8ea5257255c419f6641",
+      "equal": true
+    },
+    {
+      "file": "rho/rho_cv_other_perf_3d.real.png",
+      "sha256": "5cc53193964d073aa5176099688a3e65fd85c0a3b0ecd37c05e6d18112a860b2",
+      "equal": true
+    },
+    {
+      "file": "rho/rho_cv_other_perf_3d.shuffle.png",
+      "sha256": "6d60a53d779b4b0a50c3ed4e5310685aff58cc62481937b44f98a8a231c347d8",
+      "equal": true
+    },
+    {
+      "file": "signfrac/meanpoint_frac_cv_lines.png",
+      "sha256": "d2ddb359bc6878b3d33d0d5b629ca9e507edde8c4b3ac6793e56449831724c76",
+      "equal": true
+    },
+    {
+      "file": "signnorm/sign_norm_ablation_combined.png",
+      "sha256": "4026127fc3ad5ecd48a1a493b4c757ea9b39dc7fb773549c49aca884665519c5",
+      "equal": true
+    },
+    {
+      "file": "signnorm/sign_norm_ablation_cv.csv",
+      "sha256": "48a2fa9ba4d0fe0e897021243d2e217d94c8b7979ac7234fb38d1203a7f02160",
+      "equal": true
+    },
+    {
+      "file": "signnorm/sign_norm_ablation_mean_performance.csv",
+      "sha256": "84291cd9d995f186530f17222621978be10ec18fddbf636dc5d33bd909b01d4a",
+      "equal": true
+    },
+    {
+      "file": "signnorm/sign_norm_ablation_scaling.csv",
+      "sha256": "196aa3e95ed81a1d12109651deb0b75a070fcbe7aca5489618bced968e49625d",
+      "equal": true
+    },
+    {
+      "file": "tables/cv_mean_differences_table.tex",
+      "sha256": "cadcd3673b68ab614ab60de47590cbb9ca57b62285314444a119c81e1d8cc0b7",
+      "equal": true
+    },
+    {
+      "file": "triptych/cv_performance_density_contours_triptych.png",
+      "sha256": "4a4955e23072f2bb65a80b168b08d5fa9245876d0cc0543f4241d65e424d0a4a",
+      "equal": true
+    },
+    {
+      "file": "weights/weight_gauss_diff_mean_cv_table.tex",
+      "sha256": "462896b63644f82039e4b9010c505105a6db0f956180f2f3f2db9a82e394f7e6",
+      "equal": true
+    },
+    {
+      "file": "weights/weight_gauss_diff_mean_perf_table.tex",
+      "sha256": "aef819aef5652f2cccdc6040ea69cb16be20742a9f398129fc64d2f808c909ca",
+      "equal": true
+    },
+    {
+      "file": "weights/weight_mean_cv_metric_2d.png",
+      "sha256": "d01b5101cb1cf04cd61811afe0a646842e9608406c971e84c75e6a7492ecd03b",
+      "equal": true
+    }
+  ]
+}

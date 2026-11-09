@@ -62,3 +62,30 @@ probability, dtype, row-shuffle, and rank-roundoff issues are documented and
 guarded by tests. Optional package metadata no longer prevents a smoke run.
 
 **Decision:** ACCEPT. No scientific numerical correction was applied.
+
+## 4. Plotting and result aggregation — ACCEPT
+
+**Actor:** Split plotting into styles, input handling, comparison statistics,
+tables, rendering, contours, 3D performance, sign fractions/normalization,
+weight controls, radius summaries, and triads. Preserved all original function
+exports and mutable legacy mode-filter behavior. Moved aggregation into its
+own module and shared exact path/CV/grid-averaging duplicates. Retained the
+distinct plotting and merge column policies. Repaired the optional
+weight-performance exporter's pre-existing undefined `saved_paths` crash by
+restoring its commented-out export call. Added working script/module merge
+imports and a regular `util` package to prevent name shadowing.
+
+**Validation:** 55 CPU tests passed. Actual contour/triptych and repaired
+exporter images were generated. Merge script/module outputs agree exactly;
+plotting CLI help is unchanged. All 23 PNG/CSV/LaTeX artifacts from eight
+original plotting paths match byte-for-byte (50-DPI test exports). Hashes are
+recorded in `baseline/plot_comparison.json`. Plot function ASTs are identical
+apart from the explicit exporter repair and exact shared helper aliases.
+
+**Critic:** Independently reran 55 tests (6.05 s), checked exports/backend/filter
+compatibility, inspected the exporter repair, and verified all 23 artifact
+bytes and hashes. Low follow-ups: correct merge-output and inferred-repeat
+documentation; retain a reusable plotting comparison driver.
+
+**Decision:** ACCEPT. No metric, grouping, contour, or statistical calculation
+was changed; no archived figures were overwritten.
