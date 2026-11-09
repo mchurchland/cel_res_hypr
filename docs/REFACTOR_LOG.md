@@ -38,3 +38,27 @@ and acyclic dependencies. No blocking findings. Follow-ups: clarify the
 the unused historical row-indexing defect in `_shuffle_ce_weights_except_1`.
 
 **Decision:** ACCEPT. Scientific expressions and RNG calls are unchanged.
+
+## 3. Experiments, dynamics, protocols, and persistence — ACCEPT after revision
+
+**Actor:** Separated configuration, evaluation, variant dispatch, grid/subset
+sampling, and CSV storage. Kept `reservoir_variants` exports and CLI helpers.
+Extracted dynamics and input-stream protocols while retaining `run_one`'s
+patchable imports. Consolidated repeated dispatch into one evaluation call.
+Corrected effective-rank, IPC-solver, builder, and variant documentation.
+
+**Validation:** 47 CPU tests passed, including analytical trajectories,
+single-delay MC/IPC recovery, ridge epsilon, rank distributions, seed/subset
+invariants, CSV read-back/selective updates, and an actual legacy CLI run.
+All 54 baseline rows remain exactly equal. CLI help is unchanged. Executable
+function ASTs match the original except the explicitly consolidated dispatch
+and corrected loader error text (return annotations/docstrings excluded).
+
+**Critic:** Initial decision REVISE: relocated descriptions retained informal
+and scientifically inaccurate prose. Actor replaced all descriptions with
+technical definitions, preserving keys/labels/order. Critic independently
+reran 47 tests (4.42 s) and accepted. The historical CLI fraction, ER
+probability, dtype, row-shuffle, and rank-roundoff issues are documented and
+guarded by tests. Optional package metadata no longer prevents a smoke run.
+
+**Decision:** ACCEPT. No scientific numerical correction was applied.

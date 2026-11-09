@@ -1,35 +1,44 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Invariance sweeps for C. elegans reservoirs.
-   - CSV: <out_dir>/invariance_variants.csv  (with 'src' column)
-   - CSV: <out_dir>/bio_vs_shuffle_invariance.csv  (with 'src' column)
-     Variants:
-         * real                 (C. elegans adjacency, bio weights)
-         * shuffle_weights      (C. elegans weight multiset shuffled across existing nonzeros)
-         * cel_randN            (CE adjacency, Gaussian weights)
-         * er_randN             (Std ESN, directed ER, Gaussian weights; nnz matched to CE)
-         * ws_p01_randN         (WS p=0.1, Gaussian weights; nnz matched to CE)
-         * conn_shuf            (CE weight multiset on degree-shuffled connections), repeated n_conn_shuf times
-         * local_sign           (CE adjacency; preserve sign pattern, replace magnitudes with N(0,1))
-         * sign_test            (CE adjacency; flip the sign on fraction(s) via --sign-flip-frac, 
-         * all                  (run every variant above; append to avoid clobbering)
+"""Command-line architecture, sign, weight, and normalization sweeps.
+
+Writes <out-dir>/invariance_variants.csv with repeat and seed provenance.
+Production grids and sampling helpers live in cel_res_hypr.experiments.sampling.
+The root command and its imported helper names remain compatible.
 """
 
 import os
 import argparse
-import itertools
 
 import numpy as np
 
 import matplotlib
+
 matplotlib.use("Agg")  # safe for headless cluster
 
 import torch
 
+from cel_res_hypr.experiments.sampling import (
+    WS_K,
+    ALL_JOB_KEYS,
+    TOPOLOGY_SHUFFLE_JOB_KEYS,
+    WEIGHT_TEST_JOB_KEYS,
+    SWEEP_SR,
+    SWEEP_LEAK,
+    SWEEP_U,
+    SWEEP_NEURON_BIAS,
+    NORMALIZATION_MODES,
+    _build_col_params,
+    _split_indices,
+    _pick_device,
+    _validate_subset_size,
+    _draw_node_subsets,
+)
+from cel_res_hypr.reproducibility import set_seed
+
 from reservoir_variants import VARIANT_KEYS, VariantContext, run_variant, save_rows
 
-# ---- repo helpers (reuse your utils/stats) ----
+
 from util.util import (
     UNKNOWN_SIGN_INHIBITORY_FRACTION,
     assign_random_unknown_signs,
@@ -39,155 +48,11 @@ from util.util import (
 
 # =================== Defaults (match your diagnostics) ===================
 
-WS_K = 10  # signature compatibility with util.build_reservoir
 
-ALL_JOB_KEYS = ( ## I need to change the names anyways lets do this inclass local_sign+binary should be local
-    "real",            #x
-    #"shuffle_weights",
-    "cel_randN", #x
-    "er_randN", #x
-    "ws_p01_randN", #x
-    #"conn_shuf", 
-    "local_sign", #x
-    #"conn_shuf_only",
-    #"cel_sample", 
-    "local_sign+flat", #x 
-    #"local_sign+sample", 
-    "local_sign+binary", #x
-    #"global_sign_pres", #x
-    "global_sign_pres_real_weight", #x
-    "binary_base", #x
-    #"binary_base_topology_shuffle", #x
-    #"binary+shuffle", #x
-    #"binary+conshuffle+wshuffle", #x
-    #"sign_test_og_cel",
-)
-
-#ALL_JOB_KEYS = (
-#    "real",
-#    "er_randN",
-#    "local_sign",
-#)
-
-TOPOLOGY_SHUFFLE_JOB_KEYS = (
-    "real",
-    "shuffle_weights",
-    "conn_shuf_only",
-    "conn_shuf",
-    "binary_base", ## unsigned binary
-    "binary_base_topology_shuffle", ##unsigned binary w shuffle
-    "binary+shuffle",
-    "binary+conshuffle+wshuffle",
-    "global_sign_pres",
-    "local_sign+binary", ##this is localsign+signed binary weights
-
-)
-
-WEIGHT_TEST_JOB_KEYS = (
-    "weight_test",
-    "weight_test_unsigned",
-    "weight_test_signed",
-    "weight_test_cel_to_shuffled_cel",
-    "weight_test_binary_to_cel",
-    "weight_test_binary_to_shuffled_cel",
-)
-
-SWEEP_SR   = [0.6, 0.8, 0.95, 1.05]
-SWEEP_LEAK = [0.6, 0.8, 1.0]
-SWEEP_U    = [0.1, 0.5, 1.0, 1.5]
-SWEEP_NEURON_BIAS = [0.0, 0.1]
-NORMALIZATION_MODES = ("spectral_radius", "original_radius")
+# )
 
 
 # =================== Core helpers ===================
-
-
-def _build_col_params(
-    sr_grid: list[float],
-    leak_grid: list[float],
-    u_grid: list[float],
-    neuron_bias_grid: list[float],
-) -> list[tuple[float, float, float, float]]:
-    # Cartesian product of (spectral radius target, leak, input scale, neuron bias range)
-    return [
-        (sr, leak, u, neuron_bias)
-        for sr, leak, u, neuron_bias in itertools.product(sr_grid, leak_grid, u_grid, neuron_bias_grid)
-    ]
-    ##essentially just do all combinations of the three lists
-
-
-def _split_indices(n_total: int, split: int, rank: int) -> list[int]:
-    """
-    Return the indices this rank should handle (array-job friendly).
-
-    Supports both:
-      - 0-based ranks in [0, split-1]
-      - 1-based ranks in [1, split]  (e.g. SLURM_ARRAY_TASK_ID directly)
-    """
-    if n_total == 0:
-        return []
-
-    if split <= 1:
-        # single job handles entire grid
-        return list(range(n_total))
-
-    # Normalize rank
-    if not (0 <= rank < split):
-        # try to interpret as 1-based
-        if 1 <= rank <= split:
-            rank = rank - 1
-        else:
-            raise ValueError(
-                f"--rank must be in [0, {split-1}] or [1, {split}] for --split={split}, got {rank}"
-            )
-
-    base = n_total // split
-    rem = n_total % split
-
-    start = rank * base + min(rank, rem)
-    end = start + base + (1 if rank < rem else 0)
-    return list(range(start, end))
-
-
-def _pick_device(cuda_index: int | None) -> torch.device:
-    if cuda_index is None:
-        return torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    if cuda_index >= 0 and torch.cuda.is_available():
-        return torch.device(f"cuda:{cuda_index}")
-    return torch.device("cpu")
-
-
-def set_seed(seed: int):
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed_all(seed)
-
-
-def _validate_subset_size(name: str, value: int | None, n_nodes: int) -> int:
-    if value is None:
-        raise ValueError(f"--{name} is required when --random-node-subsets is enabled.")
-    if not (1 <= value <= n_nodes):
-        raise ValueError(f"--{name} must be between 1 and {n_nodes}, got {value}.")
-    return value
-
-
-def _draw_node_subsets(
-    n_nodes: int,
-    k_in: int,
-    k_out: int,
-    seed: int,
-) -> tuple[np.ndarray, np.ndarray]:
-    if k_in + k_out > n_nodes:
-        raise ValueError(
-            f"Disjoint input/output subsets require k_in + k_out <= {n_nodes}; "
-            f"got k_in={k_in}, k_out={k_out}."
-        )
-    rng = np.random.default_rng(seed)
-    nodes = rng.choice(n_nodes, size=k_in + k_out, replace=False)
-    input_idx = np.sort(nodes[:k_in]).astype(np.int64)
-    output_idx = np.sort(nodes[k_in:]).astype(np.int64)
-    return input_idx, output_idx
 
 
 def _build_ctx(
@@ -212,7 +77,9 @@ def _build_ctx(
     kr_only: bool = False,
 ) -> VariantContext:
     if job_key not in VARIANT_KEYS:
-        if (not job_key.startswith("sign_test")) and (not job_key.startswith("weight_test")):
+        if (not job_key.startswith("sign_test")) and (
+            not job_key.startswith("weight_test")
+        ):
             raise ValueError(f"Unknown variant key: {job_key}")
     return VariantContext(
         ce_W_bio=ce_W_bio,
@@ -236,7 +103,9 @@ def _build_ctx(
     )
 
 
-def _run_and_save(job_key: str, ctx: VariantContext, out_dir: str, csv_name: str, append: bool = False):
+def _run_and_save(
+    job_key: str, ctx: VariantContext, out_dir: str, csv_name: str, append: bool = False
+):
     os.makedirs(out_dir, exist_ok=True)
     out_csv = os.path.join(out_dir, csv_name)
     rows = run_variant(job_key, ctx)
@@ -306,7 +175,9 @@ def parse_args():
 
     # IO / provenance
     p.add_argument("--csv-name", default=None, help="Optional CSV file name override.")
-    p.add_argument("--src-tag", default="chunk_0", help="Provenance tag stored in 'src'.")
+    p.add_argument(
+        "--src-tag", default="chunk_0", help="Provenance tag stored in 'src'."
+    )
     p.add_argument(
         "--append-existing",
         action="store_true",
@@ -339,9 +210,9 @@ def parse_args():
         help="Shuffle/run id for variants that need it.",
     )
     p.add_argument(
-    "--rho-test",
-    action="store_true",
-    help="Run the extended rho sweep.",
+        "--rho-test",
+        action="store_true",
+        help="Run the extended rho sweep.",
     )
     p.add_argument(
         "--rho-values",
@@ -425,7 +296,6 @@ def parse_args():
         help="Offset added to each repeat seed before drawing input/output node subsets.",
     )
 
-
     # Array-job partitioning of the parameter grid
     p.add_argument(
         "--split",
@@ -474,11 +344,11 @@ def parse_args():
         help="CUDA device index; omit for auto.",
     )
 
-
     return p.parse_args()
 
 
 # ------------------------------ main -----------------------------------------
+
 
 def main():
     args = parse_args()
@@ -492,25 +362,43 @@ def main():
             "[INFO] KR-only mode: skipping MC/IPC/GR and updating only KR "
             "in any existing output CSV."
         )
-    sign_flip_fracs = list(args.sign_flip_frac if isinstance(args.sign_flip_frac, (list, tuple)) else [args.sign_flip_frac])
-    alphas = list(args.alphas if isinstance(args.alphas, (list, tuple)) else [args.alphas])
+    sign_flip_fracs = list(
+        args.sign_flip_frac
+        if isinstance(args.sign_flip_frac, (list, tuple))
+        else [args.sign_flip_frac]
+    )
+    alphas = list(
+        args.alphas if isinstance(args.alphas, (list, tuple)) else [args.alphas]
+    )
     normalization_modes = list(args.normalization_modes)
     for frac in sign_flip_fracs:
         if not (0.0 <= frac <= 1.0):
-            raise ValueError("--sign-flip-frac values must be between 0 and 1 inclusive for sign_test.")
+            raise ValueError(
+                "--sign-flip-frac values must be between 0 and 1 inclusive for sign_test."
+            )
     # Build parameter grid and optionally slice for array jobs
     sr_grid = (
         list(args.rho_values)
         if args.rho_values is not None
-        else (SWEEP_SR if not args.rho_test else [0.5, 0.8, 0.95, 1.0, 1.05, 1.2, 1.5, 2.0, 4.0, 10.0])
+        else (
+            SWEEP_SR
+            if not args.rho_test
+            else [0.5, 0.8, 0.95, 1.0, 1.05, 1.2, 1.5, 2.0, 4.0, 10.0]
+        )
     )
     if any(sr <= 0.0 for sr in sr_grid):
         raise ValueError("--rho-values must be positive.")
     leak_grid = SWEEP_LEAK
-    u_grid    = SWEEP_U 
-    neuron_bias_grid = list(args.neuron_biases if isinstance(args.neuron_biases, (list, tuple)) else [args.neuron_biases])
+    u_grid = SWEEP_U
+    neuron_bias_grid = list(
+        args.neuron_biases
+        if isinstance(args.neuron_biases, (list, tuple))
+        else [args.neuron_biases]
+    )
     if any(b < 0.0 for b in neuron_bias_grid):
-        raise ValueError("--neuron-biases values must be non-negative uniform half-ranges.")
+        raise ValueError(
+            "--neuron-biases values must be non-negative uniform half-ranges."
+        )
     col_params_full = _build_col_params(sr_grid, leak_grid, u_grid, neuron_bias_grid)
 
     # Partition the grid so each array task does a subset
@@ -519,16 +407,12 @@ def main():
 
     device = _pick_device(args.cuda)
 
-    # Load connectome (most helpers require CE bio matrix and optional E/I)
-    # Priority:
-    #   1) explicit --ce-adj + --ce-ei
-    #   2) --ce-path
-    #   3) load_connectome() default
+    # Load processed adjacency. An empty EI path is valid for edge-signed arrays.
     if args.ce_adj is not None and args.ce_ei is not None:
-            ce_W_bio, ce_ei, _  = load_connectome(args.ce_adj, args.ce_ei)
+        ce_W_bio, ce_ei, _ = load_connectome(args.ce_adj, args.ce_ei)
     else:
         raise ValueError(
-            "You must pass both --ce-adj and --ce-ei, or --ce-path to load_connectome()."
+            "You must pass both --ce-adj and --ce-ei; use an empty EI path for signed adjacency."
         )
     if ce_W_bio is None:
         raise FileNotFoundError(f"Could not load CE adjacency from: {args.ce_adj}")
@@ -565,8 +449,9 @@ def main():
             f"one shared disjoint draw per repeat across architectures."
         )
     elif args.k_in is not None or args.k_out is not None:
-        raise ValueError("--k-in/--k-out only apply when --random-node-subsets is enabled.")
-        
+        raise ValueError(
+            "--k-in/--k-out only apply when --random-node-subsets is enabled."
+        )
 
     # Decide CSV name default per job if not overridden
     if args.csv_name is not None:
@@ -603,7 +488,6 @@ def main():
                     f"got {bad_alphas}."
                 )
 
-
         label_normalization = len(normalization_modes) > 1
         wrote_any = False
 
@@ -617,7 +501,9 @@ def main():
                     ce_W_trial = assign_random_unknown_signs(
                         ce_W_bio,
                         ce_unknown_sign_weights,
-                        np.random.default_rng(seed_base + args.unknown_sign_seed_offset),
+                        np.random.default_rng(
+                            seed_base + args.unknown_sign_seed_offset
+                        ),
                     )
                 sid_base = _sid_base(rep_idx)
                 input_idx = output_idx = None
@@ -695,9 +581,9 @@ def main():
                     continue
 
                 if job_key == "sign_test_og_cel":
-                    frac = (
-                        len(np.where(ce_W_trial < 0)[0])
-                        / (len(np.where(ce_W_trial > 0)[0]) + len(np.where(ce_W_trial < 0)[0]))
+                    frac = len(np.where(ce_W_trial < 0)[0]) / (
+                        len(np.where(ce_W_trial > 0)[0])
+                        + len(np.where(ce_W_trial < 0)[0])
                     )
                     # Build a local list for this run; do not mutate sign_flip_fracs in-place.
                     fracs_local = [frac]

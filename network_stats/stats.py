@@ -1,6 +1,13 @@
-from network_stats.stats_util import corr2_score,legendre_P,effective_rank_from_states,ridge_fit_predict
+from network_stats.stats_util import (
+    corr2_score,
+    legendre_P,
+    effective_rank_from_states,
+    ridge_fit_predict,
+)
 from torch import Tensor
-import torch ; import numpy as np
+import torch
+import numpy as np
+
 
 def compute_IPC(
     Xtr: Tensor,
@@ -13,26 +20,25 @@ def compute_IPC(
     orders: list[int] = [1, 3, 5],
     capacity_threshold: float = 0.0,
 ) -> float:
-    """
-    Information Processing Capacity (approx.): sum of for Legendre targets
-    P_k(u_{t - d}) for k in orders, d=1..max_delay.
+    """Sum squared correlations for single-delay Legendre targets.
 
-    This version batches all Legendre orders for a fixed delay d, so that
-    we do ONE Cholesky factorization per delay and solve for all targets
-    in one go.
-    Terms with corr^2 below capacity_threshold are omitted.
-
-    See: Dambre et al., 2012, Sci. Rep. 2:514; batching pattern similar to scikit-learn Ridge
-    multi-target solves (https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/linear_model/_ridge.py).
+    For each d=1..max_delay and k in orders, the target is P_k(u[t-d]).
+    Xtr/Xte are [time, features]; utr/ute are scalar streams [time] or
+    [time,1]. Alignment uses states[d:] and inputs[:-d] independently in
+    the training and test segments. This restricted IPC omits products
+    spanning multiple delays. One torch.linalg.solve handles all polynomial
+    orders at a given delay, using ridge regularization alpha + 1e-6.
+    Terms below capacity_threshold are excluded; scores are correlation
+    squared rather than normalized mean-squared-error capacities.
     """
     total = 0.0
 
     for d in range(1, max_delay + 1):
         # shared slices for this delay
-        base_tr = utr[:-d]          # [T_train - d, 1] or [T_train - d]
-        base_te = ute[:-d]          # [T_test  - d, 1] or [T_test  - d]
-        Xtr_d   = Xtr[d:]             # [T_train - d, N]
-        Xte_d   = Xte[d:]             # [T_test  - d, N]
+        base_tr = utr[:-d]  # [T_train - d, 1] or [T_train - d]
+        base_te = ute[:-d]  # [T_test  - d, 1] or [T_test  - d]
+        Xtr_d = Xtr[d:]  # [T_train - d, N]
+        Xte_d = Xte[d:]  # [T_test  - d, N]
 
         # build all Legendre targets for orders k=1..max_order
         ytr_cols = []
@@ -75,24 +81,34 @@ def compute_GR(X: Tensor) -> float:
     """Return centered Shannon effective rank of related-input states."""
     return effective_rank_from_states(X)
 
-def compute_MC(Xtr: Tensor, Xte: Tensor, utr: Tensor, ute: Tensor, max_delay: int, alpha: float,device:torch.device) -> tuple[float, np.ndarray]:
-    """
-    Linear memory capacity using Jaeger's squared-correlation definition.
-    Inputs/targets are assumed zero-mean.
-    See: Jaeger, 2002, GMD Report 152; reservoirpy metric analogue:
-         https://github.com/reservoirpy/reservoirpy/blob/master/reservoirpy/metrics/memory_capacity.py
+
+def compute_MC(
+    Xtr: Tensor,
+    Xte: Tensor,
+    utr: Tensor,
+    ute: Tensor,
+    max_delay: int,
+    alpha: float,
+    device: torch.device,
+) -> tuple[float, np.ndarray]:
+    """Return total linear memory capacity and its float32 per-delay scores.
+
+    Xtr/Xte are [time, features]; utr/ute are scalar streams [time] or
+    [time,1]. For tau=1..max_delay, regress utr[:-tau] on Xtr[tau:] and
+    score ute[:-tau] against predictions from Xte[tau:]. Segments are aligned
+    separately, so no target crosses the train/test boundary. The readout has
+    no fitted intercept; Pearson scoring centers the target and prediction.
     """
     capacities = []
     for tau in range(1, max_delay + 1):
         ytr = utr[:-tau]
         yte = ute[:-tau]
-        Xtr_d = Xtr[tau:] ##so that they are the same dimensiobn
-        Xte_d = Xte[tau:] ##so that they are the same dimesions
-        yhat = ridge_fit_predict(Xtr_d, ytr, Xte_d, alpha,DEVICE=device)
+        Xtr_d = Xtr[tau:]  ##so that they are the same dimensiobn
+        Xte_d = Xte[tau:]  ##so that they are the same dimesions
+        yhat = ridge_fit_predict(Xtr_d, ytr, Xte_d, alpha, DEVICE=device)
         capacities.append(corr2_score(yte, yhat))
     capacities = np.array(capacities, dtype=np.float32)
     return float(np.sum(capacities)), capacities
-
 
 
 def compute_GR_pilati(X_similar: Tensor, threshold: float = 1e-3) -> int:

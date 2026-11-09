@@ -1,17 +1,23 @@
 """Small CPU tests of graph, sign, normalization, and loading invariants."""
+
 import numpy as np
 import pytest
 import torch
 
 from cel_res_hypr.connectome import (
-    assign_random_unknown_signs, load_connectome, load_unknown_sign_weights,
+    assign_random_unknown_signs,
+    load_connectome,
+    load_unknown_sign_weights,
 )
 from cel_res_hypr.networks.builder import build_reservoir
 from cel_res_hypr.networks.normalization import (
-    normalize_reservoir_weights, scale_to_sr, spectral_radius_power,
+    normalize_reservoir_weights,
+    scale_to_sr,
+    spectral_radius_power,
 )
 from cel_res_hypr.networks.topology import (
-    degree_matched_shuffle_directed, ws_directed_adjacency_exact,
+    degree_matched_shuffle_directed,
+    ws_directed_adjacency_exact,
 )
 from cel_res_hypr.networks.weights import _shuffle_ce_weights
 
@@ -24,7 +30,10 @@ def adjacency():
     return W
 
 
-@pytest.mark.parametrize("feature", ["cel", "local_sign", "local_sign+flat", "local_sign+sample", "local_sign+binary"])
+@pytest.mark.parametrize(
+    "feature",
+    ["cel", "local_sign", "local_sign+flat", "local_sign+sample", "local_sign+binary"],
+)
 def test_local_controls_preserve_support_and_signs(feature):
     W = adjacency()
     result, _ = build_reservoir(None, 0.5, 7, feature, ce_W_bio=W)
@@ -42,7 +51,9 @@ def test_weight_shuffle_preserves_support_and_signed_multiset():
 
 def test_directed_shuffle_preserves_both_degrees_and_weights():
     W = adjacency()
-    result = degree_matched_shuffle_directed(W, tries=2000, rng=np.random.default_rng(5))
+    result = degree_matched_shuffle_directed(
+        W, tries=2000, rng=np.random.default_rng(5)
+    )
     np.testing.assert_array_equal((result != 0).sum(axis=0), (W != 0).sum(axis=0))
     np.testing.assert_array_equal((result != 0).sum(axis=1), (W != 0).sum(axis=1))
     np.testing.assert_array_equal(np.sort(result[result != 0]), np.sort(W[W != 0]))
@@ -75,7 +86,9 @@ def test_normalization_uses_selected_reference_and_zero_radius_convention():
     W = torch.tensor([[0.0, 2.0], [0.5, 0.0]])
     reference = W * 2
     own, own_info = normalize_reservoir_weights(W, 0.8, "spectral_radius", reference)
-    fixed, fixed_info = normalize_reservoir_weights(W, 0.8, "original_radius", reference)
+    fixed, fixed_info = normalize_reservoir_weights(
+        W, 0.8, "original_radius", reference
+    )
     torch.testing.assert_close(own, W * 0.8)
     torch.testing.assert_close(fixed, W * 0.4)
     assert own_info["post_rho"] == pytest.approx(0.8)
@@ -91,12 +104,16 @@ def test_connectome_cleaning_names_and_unknown_sign_assignment(tmp_path):
     path = tmp_path / "sample_adj.npy"
     np.save(path, [[4, np.nan, 2], [-3, 9, np.inf], [1, 0, 8]])
     np.save(tmp_path / "sample_nodes.npy", ["A", "B", "C"])
-    np.save(tmp_path / "sample_unknown_sign_weights.npy", [[0, -2, 0], [0, 0, 3], [0, 0, 0]])
+    np.save(
+        tmp_path / "sample_unknown_sign_weights.npy", [[0, -2, 0], [0, 0, 3], [0, 0, 0]]
+    )
     W, ei, names = load_connectome(str(path), None)
     np.testing.assert_array_equal(W, [[0, 0, 2], [-3, 0, 0], [1, 0, 0]])
     assert W.dtype == np.float32 and ei is None and names == {"A": 0, "B": 1, "C": 2}
     unknown = load_unknown_sign_weights(str(path), n_nodes=3)
-    assigned = assign_random_unknown_signs(W, unknown, np.random.default_rng(6), inhibitory_fraction=0.5)
+    assigned = assign_random_unknown_signs(
+        W, unknown, np.random.default_rng(6), inhibitory_fraction=0.5
+    )
     assert np.count_nonzero(assigned[unknown != 0] < 0) == 1
     np.testing.assert_array_equal(np.abs(assigned[unknown != 0]), [2, 3])
     np.testing.assert_array_equal(W, [[0, 0, 2], [-3, 0, 0], [1, 0, 0]])
@@ -104,6 +121,7 @@ def test_connectome_cleaning_names_and_unknown_sign_assignment(tmp_path):
 
 def test_legacy_util_names_are_original_function_objects():
     from util import util
+
     assert util.build_reservoir is build_reservoir
     assert util.load_connectome is load_connectome
     assert util.degree_matched_shuffle_directed is degree_matched_shuffle_directed

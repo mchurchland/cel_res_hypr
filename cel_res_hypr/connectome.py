@@ -3,12 +3,14 @@
 Adjacency convention: W[i, j] is the weight from source i to target j.
 Loading returns float32 weights and removes diagonal/nonfinite entries.
 """
+
 import os
 from pathlib import Path
 
 import numpy as np
 
 UNKNOWN_SIGN_INHIBITORY_FRACTION = 0.2425287356321839
+
 
 def _connectome_node_path_candidates(adj_path: str) -> list[Path]:
     adj = Path(adj_path)
@@ -35,7 +37,7 @@ def _connectome_unknown_sign_path_candidates(adj_path: str) -> list[Path]:
     if "_adj" in stem:
         stems.append(stem.replace("_adj", "_unknown_sign_weights", 1))
     if stem.startswith("ce_adj_"):
-        suffix = stem[len("ce_adj_"):]
+        suffix = stem[len("ce_adj_") :]
         stems.append(f"ce_{suffix}_unknown_sign_weights")
     if stem.endswith("_adj"):
         stems.append(f"{stem[:-4]}_unknown_sign_weights")
@@ -167,7 +169,9 @@ def load_connectome(adj_path: str | None, ei_path: str | None):
 
         # clean numerics & remove self-loops
         if not np.isfinite(W_bio).all():
-            W_bio = np.where(np.isfinite(W_bio), W_bio, 0.0).astype(np.float32, copy=False)
+            W_bio = np.where(np.isfinite(W_bio), W_bio, 0.0).astype(
+                np.float32, copy=False
+            )
         np.fill_diagonal(W_bio, 0.0)
 
         names = _load_connectome_names(adj_path, W_bio.shape[0])

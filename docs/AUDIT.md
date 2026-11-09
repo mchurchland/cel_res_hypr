@@ -79,6 +79,18 @@ authorized for a scientific correction in this refactor.
    IPC measure. Ridge uses `torch.linalg.solve` with `(alpha + 1e-6) I`.
 6. Centered effective rank weights singular values, not their squares. Constant
    ensembles have rank zero after centering; the absolute cutoff is `1e-12`.
+7. **Medium, unused helper:** `_shuffle_ce_weights_except_1` indexes full rows
+   using only the first coordinate returned by `np.where`. It can alter graph
+   support, diagonals, and the weight multiset. Current production paths do not
+   call it. Its output is retained and tested as a historical limitation.
+8. **Medium, optional plot:** `plot_mc_vs_gr_all_arch` plots IPC in the gray
+   background and MC in the highlighted points despite its MC label. Its
+   numerical plotting behavior is preserved pending a separate correction.
+9. **Medium, numerical edge case:** constant decimal float32 ensembles can
+   retain centering residuals above the absolute rank cutoff. In this baseline
+   environment, `torch.full((7, 4), 0.1)` has residual `7.45e-9` and effective
+   rank 1, while exactly zero centered states return 0. A scale-aware tolerance
+   would change historical rank values and requires a separate correction.
 
 Separate corrections should first define the intended protocol, compare old
 and corrected runs, label affected results, and receive scientific approval.

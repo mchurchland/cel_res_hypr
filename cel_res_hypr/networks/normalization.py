@@ -1,7 +1,9 @@
 """Spectral-radius normalization and its recorded diagnostics."""
+
 import numpy as np
 import torch
 from torch import Tensor
+
 
 @torch.no_grad()
 def spectral_radius_power(W: Tensor) -> float:
@@ -66,7 +68,9 @@ def normalize_reservoir_weights(
             scale = float(target_sr) / raw_rho
     else:
         if ref_t is None:
-            raise ValueError(f"normalization_mode={mode!r} requires reference_W/ce_W_bio.")
+            raise ValueError(
+                f"normalization_mode={mode!r} requires reference_W/ce_W_bio."
+            )
         target = 1.0 if target_sr is None else float(target_sr)
         if ref_rho >= 1e-9:
             scale = target / ref_rho
