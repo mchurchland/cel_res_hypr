@@ -30,15 +30,14 @@ from .weights import (
 
 
 def build_reservoir(
-    target_sr: float
-    | None,  # None keeps own-radius weights; baseline mode targets radius 1.
+    target_sr: float | None,
     input_scale: float,
     seed: int,
-    feature_conn: str,  # 'cel', 'deg_shuffle', 'ws_p=1.0', 'ws_p=0.1', 'ws_p=0.0', 'er_p=...'
+    feature_conn: str,
     N: int | None = None,
     ce_W_bio: np.ndarray | None = None,
     drive_idx: np.ndarray | None = None,  # targeted drive for CEL rows if desired
-    nnz_target: int | None = None,  # <--- desired number of edges (from CE)
+    nnz_target: int | None = None,
     DEVICE: torch.device | None = None,
     per_neg: float | None = None,
     alpha: float | None = None,
@@ -54,7 +53,8 @@ def build_reservoir(
     or ``(W, Win, diagnostics)`` when ``return_info=True``. ``Win`` is [N,1].
     Both recurrent and input construction retain the original float32/RNG
     conventions. Sign controls operate on edges and do not enforce Dale's law.
-    Normalization diagnostics contain raw, reference, and achieved radii plus
+    target_sr=None leaves own-radius weights unchanged; original-radius mode
+    treats it as target one. Normalization diagnostics contain raw, reference, and achieved radii plus
     the multiplicative scale. See docs/ARCHITECTURE.md for control definitions.
     """
     torch.manual_seed(seed)

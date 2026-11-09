@@ -9,3 +9,8 @@ __pycache__/
 
 # Generated experiment output
 final_results/triad_sign_fraction_experiment/triad_sign_fraction_activation_details.ALL.csv
+
+# Local package builds
+build/
+dist/
+*.egg-info/

@@ -168,7 +168,8 @@ def _compute_dispersion_table(combined: pd.DataFrame, mode: str = "cv") -> pd.Da
     """
     modes = "cv" or "v" for coefficient of variation or variation
     For each (mode, src, group_id), compute dispersion across hyper-params:
-      - group_id = shuffle_id if shuffle_id != -1 else src
+      - group_id = shuffle_id when present; for -1, infer complete repeat
+        blocks within mode/source when possible (see _assign_group_ids).
     Uses pandas groupby/melt pattern; see https://github.com/pandas-dev/pandas/blob/main/pandas/core/frame.py
     """
     disp_metrics = [m for m in ("MC", "IPC", "KR", "GR") if m in combined.columns]

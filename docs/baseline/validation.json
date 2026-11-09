@@ -1,0 +1,41 @@
+{
+  "tests_passed": 55,
+  "original_unittest_passed": 15,
+  "synthetic_baseline_rows": 54,
+  "plot_artifacts_identical": 23,
+  "connectome_example": {
+    "rows": 12,
+    "all_metrics_finite": true,
+    "first_row": {
+      "mode": "real",
+      "normalization": "spectral_radius",
+      "shuffle_id": "1",
+      "rho_target": "1.05",
+      "leak": "0.6",
+      "input_scale": "0.1",
+      "neuron_bias": "0.0",
+      "MC": "8.514588356018066",
+      "IPC": "9.909590071760817",
+      "KR": "3.711625099182129",
+      "GR": "2.9895448684692383",
+      "wt_mean": "0.0017579923151060939",
+      "cosine_similarity": "0.33029651641845703",
+      "kl_to_gaussian": "0.6822619839713603",
+      "seed": "12346",
+      "src": "cpu-example",
+      "raw_rho": "78.16561889648438",
+      "ref_rho": "78.16561889648438",
+      "post_rho": "1.0500006675720215",
+      "scale_factor": "0.013433015881196145"
+    }
+  },
+  "package": {
+    "wheel_built": true,
+    "isolated_console_help_checked": [
+      "cel-res-sweep",
+      "cel-res-plot"
+    ],
+    "isolated_smoke_baseline_exact": true
+  },
+  "slurm_shell_syntax_checked": 15
+}

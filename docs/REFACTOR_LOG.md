@@ -89,3 +89,34 @@ documentation; retain a reusable plotting comparison driver.
 
 **Decision:** ACCEPT. No metric, grouping, contour, or statistical calculation
 was changed; no archived figures were overwritten.
+
+## 5. Installation, documentation, and final verification — ACCEPT
+
+**Actor:** Added standard package metadata, compatible console aliases, direct
+dependency baseline constraints, architecture/protocol and reproducibility
+guides, a rewritten README, changelog, and final Critic report. Preserved the
+eight-path plotting driver and shared its fixture with tests. Corrected merge
+output/grouping documentation. Recorded input hashes, protected-file audit,
+and final validation evidence.
+
+**Validation:** 55 pytest tests, 15 original unittest tests, and undefined-name
+checks pass. A wheel built and installed into a temporary target; console help
+and a 54-row installed smoke run succeeded outside the checkout with exact
+original numerical/trajectory/schema equality. The committed plotting driver
+reproduces all 23 original hashes. A real connectome run produced 12 finite
+MC/IPC/KR/GR rows, three merged tables, and a histogram in temporary paths.
+All 15 SLURM/archived launchers pass shell syntax checks. SHA-256 checks cover
+8,651 protected tracked files and 607 manuscript files: none changed, went
+missing, or were added to the manuscript tree.
+
+**Critic:** Independently reviewed final code/package/docs, reran 55 pytest tests
+(5.93 s), the original unittest suite, static checks, the plotting driver, and
+installed console/smoke checks. Independently rehashed all protected files and
+inspected the complete connectome example artifacts. Previous documentation and
+driver requests are resolved; no refactor blocker remains. Historical
+scientific limitations and unexecuted GPU/SLURM/full-resolution validation are
+explicit in `CRITIC_REPORT.md`.
+
+**Decision:** ACCEPT. All five iterations are accepted. The dedicated branch
+contains local incremental commits; nothing was pushed. `thesis_tex/` remains
+untracked, unmoved, and content-identical.

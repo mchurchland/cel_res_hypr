@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cel-res-hypr"
+version = "0.1.0"
+description = "Connectome topology, weight, and sign controls for reservoir computing research"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy", "torch", "pandas", "scipy", "scikit-learn", "networkx",
+    "matplotlib", "pingouin",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff"]
+excel = ["xlrd", "openpyxl"]
+
+[project.scripts]
+cel-res-sweep = "inv_arc_test:main"
+cel-res-plot = "graph_hist:main"
+cel-res-smoke = "tools.smoke_experiment:main"
+
+[tool.setuptools]
+py-modules = ["inv_arc_test", "reservoir_variants", "graph_hist"]
+
+[tool.setuptools.packages.find]
+include = ["cel_res_hypr*", "network_stats", "util", "tools"]
+namespaces = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "network_stats/test_stats.py"]
+
+[tool.ruff]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["F821", "F822", "F823"]

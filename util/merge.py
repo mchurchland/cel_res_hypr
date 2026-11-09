@@ -1,21 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Merge ALL outputs (CE real/shuffle + variants) into ONE CSV and plot ALL model
-architectures on the SAME plots in the SAME style (histograms of dispersion).
+"""Merge chunk CSVs and write combined, mean, and dispersion tables.
 
-Non-destructive: never deletes/modifies sources; uses safe suffixed outputs.
-
-Inputs (defaults)
-  experiment_full_chunks/chunk_*/bio_vs_shuffle_invariance.csv    # CE real vs shuffle
-  experiment_full_chunks/chunk_*/invariance_variants.csv          # other architectures
-
-Outputs (defaults)
-  experiment_full_merged/combined.ALL.csv                         # row-wise merged runs
-  experiment_full_merged/mean_by_group.ALL.csv                    # per-group means (incl. invariant mean col)
-  experiment_full_merged/dispersion_by_group.ALL.csv              # per-group dispersion table
-  experiment_full_merged/all_arch_hist_grid[_pN].png              # overlaid histograms per metric (2x2 grid)
-  experiment_full_merged/mc_vs_gr_all_arch.png                    # scatter across all modes
+Source CSVs are read-only. Existing outputs receive version suffixes.
+Pass --glob-variants explicitly for current invariance_variants.csv files;
+the historical default glob targets ce_real_reps.csv. Use graph_hist.py on
+combined.ALL.csv to generate figures. Legacy plot flags remain accepted.
 """
 
 import os

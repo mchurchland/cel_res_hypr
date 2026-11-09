@@ -1,0 +1,14 @@
+{
+  "tracked_data": {
+    "files_checked": 8651,
+    "modified_or_missing": [],
+    "added_files": [],
+    "original_manifest_sha256": "7f9a7136b93b2ec2c6e2c2d124feb10bae14c00c87100eb20a8c52ba068a18da"
+  },
+  "thesis_tex": {
+    "files_checked": 607,
+    "modified_or_missing": [],
+    "added_files": [],
+    "original_manifest_sha256": "a26fa69355a43cdaa975ce775588b2ac00a35f4bd459eafd507612a8d692414f"
+  }
+}

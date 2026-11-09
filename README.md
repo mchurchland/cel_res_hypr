@@ -1,199 +1,137 @@
-# C. elegans reservoir computing experiments
+# C. elegans reservoir computing
 
-Research code and results for comparing the *C. elegans* connectome with
-synthetic and shuffled reservoir architectures. The experiments measure how
-network topology, edge weights, and excitatory/inhibitory balance affect both
-reservoir performance and robustness across hyperparameter choices.
+Research software for testing how connectome topology, synaptic weights, and
+excitatory/inhibitory edge balance affect reservoir performance and robustness
+across hyperparameter choices. Biological, synthetic, and shuffled networks are
+compared using linear memory capacity (MC), restricted information processing
+capacity (IPC), kernel rank (KR), and shared-tail generalization rank (GR).
+Higher MC/IPC/KR indicates greater capacity or separation; lower GR indicates a
+lower-dimensional final-state ensemble under the specified shared-tail protocol.
+Robustness is summarized primarily by the coefficient of variation across a
+fixed hyperparameter grid.
 
-The main metrics are:
+The repository contains reusable Python components, compatible research scripts,
+SLURM launchers, original data, and archived results. The refactor preserves
+scientific equations, seeds, grids, CSV schemas, and statistical grouping.
+Historical scientific limitations are documented in [docs/AUDIT.md](docs/AUDIT.md).
 
-- **MC** — linear memory capacity
-- **IPC** — information processing capacity
-- **KR** — kernel rank (state-space separation)
-- **GR** — shared-tail generalization rank (lower values indicate a
-  lower-dimensional family of final states under the specified protocol)
+## Installation
 
-For each architecture, the pipeline sweeps spectral radius, leak rate, input
-scale, and neuron bias. It then summarizes both mean metric performance and
-invariance, primarily as the coefficient of variation (CV) over that grid.
-
-> This is a research repository, not an installable Python package. The
-> committed SLURM files encode the production experiment settings, while the
-> committed result directories contain merged tables and generated figures
-> from several analysis stages.
-
-## Repository layout
-
-| Path | Purpose |
-|---|---|
-| `inv_arc_test.py` | Main command-line entry point for architecture and sign sweeps |
-| `reservoir_variants.py` | Reservoir variants, evaluation, and CSV output |
-| `network_stats/` | Reservoir dynamics and MC, IPC, KR, GR implementations |
-| `util/` | Connectome loading, graph construction, merging, and result-repair utilities |
-| `Connectome/` | Processed 297-node adjacency, neuron names, and unknown-sign edge weights |
-| `r_*.sbatch` | Production and methodology SLURM launchers |
-| `Parameter_justification/` | MC/IPC delay and order checks plus GR common-tail sensitivity analyses |
-| `final_results/` | Curated merged results and thesis-ready figures |
-| `final_results_GRKR_*`, `final_results_KR_*` | Rank-metric reruns and intermediate merged results |
-| `metric_figures/` | Specialized plotting and table-generation scripts |
-| `architecture_variant_figures/` | Network diagrams for the architecture variants |
-| `logs/` | Committed SLURM logs from experiment runs |
-
-## Setup
-
-Python 3.10 or newer is recommended. The launchers expect a Conda environment
-named `cel`, but any environment with the required packages will work.
+The recorded CPU baseline uses Python **3.13.9**. Package metadata allows Python
+3.10+, but other Python/dependency combinations have not received the same
+numerical validation. From a suitable virtual or Conda environment:
 
 ```bash
-conda create -n cel python=3.11
-conda activate cel
+python -m pip install -e '.[dev]' -c requirements-baseline.txt
+export MPLCONFIGDIR=/tmp/matplotlib-cel
 ```
 
-Install a PyTorch build appropriate for the machine's CPU/CUDA setup, followed
-by the remaining dependencies:
+The constraints record direct dependency versions, not a complete environment
+lock. Select an appropriate PyTorch CPU/CUDA build for your machine; production
+SLURM scripts expect a Conda environment named `cel`. Spreadsheet regeneration
+also needs `python -m pip install -e '.[excel]'`. Processed `.npy` inputs are
+already present, so spreadsheet tools are unnecessary for ordinary runs.
+
+Run research commands from the repository root. Data/results and specialized
+figure scripts remain in the checkout; they are not bundled in the Python wheel.
+
+## A small complete workflow
+
+First exercise all four metrics on a deterministic eight-node synthetic graph:
 
 ```bash
-python -m pip install torch
-python -m pip install numpy pandas scipy scikit-learn matplotlib networkx pingouin
+OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 \
+  python -m tools.smoke_experiment --out-dir /tmp/cel-smoke
+python -m pytest -q
 ```
 
-Optional development and data-import dependencies are `pytest`, `xlrd`, and
-`openpyxl`. Dependency versions are not currently locked, so record the
-environment when producing new final results.
+The smoke command writes 54 rows (27 controls, two normalization modes), an
+experiment CSV, and JSON containing settings, versions, seeds, and a trajectory.
+It uses short time series for regression testing; it does not estimate the
+manuscript capacities. Its two normalization modes should be analyzed separately.
 
-On systems where the default Matplotlib cache is not writable, set:
-
-```bash
-export MPLCONFIGDIR=/tmp/matplotlib-thesis
-```
-
-Run commands from the repository root so the local modules and relative data
-paths resolve correctly.
-
-## Quick start
-
-This small CPU run evaluates the biological-weight connectome at one target
-spectral radius. `--rank-only` computes KR and GR and leaves MC/IPC empty in a
-new output file; omit it for all four metrics.
+For the processed connectome, run a small CPU experiment and aggregate it:
 
 ```bash
-python inv_arc_test.py \
-  --job real \
-  --out-dir /tmp/cel-reservoir-smoke \
-  --ce-adj Connectome/ce_adj.npy \
-  --ce-ei "" \
+OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python inv_arc_test.py \
+  --job real --out-dir /tmp/cel-example/raw \
+  --ce-adj Connectome/ce_adj.npy --ce-ei "" \
   --unknown-sign-policy random_unknown_sign_matched \
   --ce-unknown-sign-weights Connectome/ce_unknown_sign_weights.npy \
-  --rho-values 1.05 \
-  --neuron-biases 0.0 \
-  --n-repeats 1 \
-  --rank-only \
-  --cuda -1
+  --rho-values 1.05 --neuron-biases 0.0 --n-repeats 1 \
+  --seed 12345 --src-tag cpu-example --cuda -1
+
+python util/merge.py \
+  --glob-variants '/tmp/cel-example/raw/invariance_variants.csv' \
+  --glob-shuf '/tmp/cel-example/no-shuffle-input/*.csv' \
+  --out-dir /tmp/cel-example/merged
+
+python graph_hist.py \
+  --combined /tmp/cel-example/merged/combined.ALL.csv \
+  --out-dir /tmp/cel-example/figures
 ```
 
-The result is written to:
+The empty EI path is intentional for edge-signed arrays. This run retains the
+three leak rates and four input scales at one spectral radius and bias value.
+Add `--rank-only` for a faster KR/GR check; its output leaves MC/IPC blank.
+Use fresh output directories: full runs can replace a raw experiment CSV, while
+rank-only runs patch existing rank columns. This small example is a pipeline
+check; production comparisons use many seeded repeats.
 
-```text
-/tmp/cel-reservoir-smoke/invariance_variants.csv
-```
+Installed command aliases are `cel-res-sweep`, `cel-res-plot`, and
+`cel-res-smoke`. The original Python commands and imports remain supported.
+Use `python inv_arc_test.py --help` and `python graph_hist.py --help` for options.
 
-Use `python inv_arc_test.py --help` for every architecture, normalization,
-partitioning, and sign-sweep option. An empty `--ce-ei` value is intentional
-for the processed signed adjacency currently committed in `Connectome/`.
+## Architecture
 
-## Production experiments
+| Location | Responsibility |
+|---|---|
+| `cel_res_hypr/connectome.py` | Processed connectome loading and unknown-sign preprocessing |
+| `cel_res_hypr/networks/` | Directed topology, weight/sign controls, construction, normalization |
+| `network_stats/dynamics.py`, `streams.py` | Reservoir update and KR/GR input protocols |
+| `network_stats/stats.py`, `stats_util.py`, `run_one.py` | Readouts, MC/IPC/KR/GR, evaluation orchestration |
+| `cel_res_hypr/experiments/` | Simulation settings, sampling/grids, variants, evaluation, CSV persistence |
+| `cel_res_hypr/analysis/` | Repeat grouping, hyperparameter averaging, dispersion and mean tables |
+| `cel_res_hypr/plotting/` | Figure families, styles, table statistics, rendering, and plotting CLI parsing |
+| `inv_arc_test.py`, `reservoir_variants.py`, `graph_hist.py`, `util/` | Compatible entry points and utility exports |
+| `tools/`, `tests/`, `network_stats/test_stats.py` | Reproducibility commands and deterministic CPU tests |
 
-The experiments are designed to run as SLURM arrays. Review the partition,
-GPU, time limit, array size, result root, and connectome paths in a launcher
-before submitting it.
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) describes interfaces, shapes,
+equations, controls, and grouping. [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md)
+provides experiment, seed, environment, and figure instructions.
+
+## Production experiments and manuscript figures
+
+The committed launchers encode the production settings. Review cluster-specific
+resources and output paths before submission:
 
 ```bash
 sbatch r_data.sbatch
 ```
 
-| Launcher | Experiment |
+| Launchers | Experiment |
 |---|---|
 | `r_data.sbatch` | Main architecture comparison |
-| `r_data_shuf.sbatch` | Topology and weight-shuffle controls |
-| `r_data_shuf_baseline_rho.sbatch` | Shuffles normalized to the family baseline radius |
-| `r_data_frac.sbatch` | Sign-fraction sweeps for connectome and matched ER networks |
-| `r_sign_norm_ablation.sbatch` | Sign-balance normalization ablation |
+| `r_data_shuf.sbatch`, `r_data_shuf_baseline_rho.sbatch` | Own-radius and family-baseline-radius topology/weight controls |
+| `r_data_frac.sbatch`, `r_sign_norm_ablation.sbatch` | Negative-edge-fraction sweeps and normalization ablation |
 | `r_triad_sign_fraction.sbatch` | Triad activity across sign fractions |
-| `r_mc_delay.sbatch` | Memory-capacity delay sensitivity |
-| `r_ipc_delay.sbatch` | IPC delay sensitivity |
-| `r_ipc_order.sbatch` | IPC polynomial-order sensitivity |
-| `r_ipc_methodology.sbatch` | Broader IPC methodology validation |
-| `r_gr_common_tail.sbatch` | GR common-tail-length sensitivity |
+| `r_mc_delay.sbatch`, `r_ipc_delay.sbatch`, `r_ipc_order.sbatch`, `r_ipc_methodology.sbatch` | Capacity methodology checks |
+| `r_gr_common_tail.sbatch` | Fixed-prefix/shared-continuation GR sensitivity |
 
-The primary launchers partition 200 seeded repeats over 20 array tasks. Each
-task writes a provenance-tagged CSV below a `chunk_<id>/` directory. Fixed seed
-offsets make repeat assignment, rank streams, and optional node subsets
-reproducible across architectures.
+The main launchers partition 200 seeded repeats across 20 array tasks. Rank-only
+reruns preserve existing MC/IPC. `Connectome/` contains processed inputs;
+`new_cel.xls` and `old_cel.xls` retain source spreadsheets. `final_results/` holds
+curated results and manuscript figures; the other `final_results_*` trees retain
+alternative/intermediate rank calculations. `logs/` and `depreciated/` preserve
+historical execution evidence and older launchers. `Parameter_justification/`,
+`metric_figures/`, and `architecture_variant_figures/` contain specialized workflows.
 
-The GR methodology launcher reuses the same independently sampled seven-step
-prefix for each stream while varying the length of one shared continuation.
-Total stream length is therefore `7 + common_tail_length`, and the default
-length-three condition exactly reproduces the production ten-step protocol for
-each seed. Length zero is a prefix-only diagnostic; conclusions about
-robustness should be based on stable architecture ordering across positive
-tail lengths, not equality of absolute GR values.
+For exact manuscript inputs and plotting commands, use
+[GRAPHING_README.md](GRAPHING_README.md). Prefer its rank-updated `_erank` CSVs;
+do not assume similarly named historical result directories are interchangeable.
+No archived data or figures were changed by this refactor. The local
+`thesis_tex/` manuscript tree is content-protected and was left in place.
 
-Two normalization modes are available:
-
-- `spectral_radius`: scale each generated reservoir by its own spectral radius.
-- `original_radius`: scale controls using their architecture-family baseline,
-  used by the fixed-baseline-radius shuffle experiment.
-
-## Results and figures
-
-Merged experiment directories generally contain:
-
-```text
-combined.ALL.csv              # all trial-level rows
-mean_by_group.ALL.csv         # grouped metric means
-dispersion_by_group.ALL.csv   # grouped invariance/CV summaries
-```
-
-`final_results/` is the curated result root. The similarly named
-`final_results_GRKR_*` and `final_results_KR_*` directories preserve
-intermediate and alternative rank calculations; do not assume they are the
-canonical inputs for the thesis plots.
-
-For the exact commands and input tables used to regenerate the final plots,
-see [GRAPHING_README.md](GRAPHING_README.md). For example, the main
-architecture density contours can be regenerated with:
-
-```bash
-python graph_hist.py \
-  --combined final_results/main/combined.ALL.GRKR_erank.rank_updated.csv \
-  --out-dir final_results/graphs/thesis/architecture \
-  --show-cv-performance-contours
-```
-
-Architecture diagrams have their own instructions in
-[architecture_variant_figures/README.md](architecture_variant_figures/README.md).
-
-## Tests
-
-Run the metric and rank-pipeline tests with:
-
-```bash
-python -m unittest network_stats.test_stats
-```
-
-The suite covers input-stream construction, KR/GR effective-rank behavior,
-rank-only execution, and preservation of existing metrics during CSV updates.
-
-## Reproducibility notes
-
-- Keep the `src`, `sid`, `seed`, normalization, and hyperparameter columns when
-  merging result files; downstream grouping and paired comparisons depend on
-  them.
-- Plot merged `combined.ALL.csv` files, not individual chunk outputs.
-- Plotting scripts may create safely suffixed files such as `.v1` when an
-  output already exists. Check the selected path before copying a figure into
-  the thesis.
-- Production launchers default to GPU execution. Pass `--cuda -1` for CPU
-  execution when calling the Python entry point directly.
-- The thesis LaTeX source is maintained separately; this repository contains
-  the simulation, analysis, tabular results, and generated figure assets.
+The [changelog](CHANGELOG.md), [iteration log](docs/REFACTOR_LOG.md), and
+[final Critic report](docs/CRITIC_REPORT.md) record changes, validation, and
+remaining limitations.
