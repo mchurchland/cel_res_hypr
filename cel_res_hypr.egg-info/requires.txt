@@ -1,0 +1,16 @@
+numpy
+torch
+pandas
+scipy
+scikit-learn
+networkx
+matplotlib
+pingouin
+
+[dev]
+pytest
+ruff
+
+[excel]
+xlrd
+openpyxl

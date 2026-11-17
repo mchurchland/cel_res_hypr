@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "checks": [
+    "All nine source CSV hashes match the recorded pre-analysis hashes",
+    "All 42000 seeded surfaces have 96 finite nonnegative scores, unique identities and valid metric relationships",
+    "Exact finite-design variance identities hold for all 270 architecture/metric/normalization conditions",
+    "All threshold curves are monotone, start at full attainment and end at zero; bootstrap intervals enclose estimates",
+    "Recomputed metric definitions, local slopes and variance components from 27 cached seed/configuration matrices",
+    "Architecture comparison table matches direct means of per-realization metrics",
+    "All report links resolve; 18 figures have both vector PDF and 300 dpi PNG exports"
+  ]
+}

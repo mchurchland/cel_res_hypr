@@ -1,0 +1,122 @@
+{
+  "sources": [
+    {
+      "dataset": "norm_cel_matched",
+      "path": "final_results/Rho_stuff/sign_norm/cel_matched/combined.ALL.csv",
+      "sha256": "a1d74a099f564e1b672af008644ac19aa35cf93213633c981782a3dc43125890",
+      "bytes": 43130328,
+      "n_rows": 134400,
+      "columns": [
+        "mode",
+        "shuffle_id",
+        "rho_target",
+        "leak",
+        "input_scale",
+        "neuron_bias",
+        "MC",
+        "IPC",
+        "KR",
+        "GR",
+        "src",
+        "normalization",
+        "wt_mean",
+        "cosine_similarity",
+        "kl_to_gaussian",
+        "seed",
+        "raw_rho",
+        "ref_rho",
+        "post_rho",
+        "scale_factor",
+        "architecture"
+      ],
+      "grid": {
+        "rho_target": [
+          0.6,
+          0.8,
+          0.95,
+          1.05
+        ],
+        "leak": [
+          0.6,
+          0.8,
+          1.0
+        ],
+        "input_scale": [
+          0.1,
+          0.5,
+          1.0,
+          1.5
+        ],
+        "neuron_bias": [
+          0.0,
+          0.1
+        ]
+      },
+      "rank_vintage": "archival_unverified_protocol"
+    },
+    {
+      "dataset": "norm_matched_er",
+      "path": "final_results/Rho_stuff/sign_norm/matched_er/combined.ALL.csv",
+      "sha256": "e32ef6230db2d4d71ef9c2aee7d270e316173d919d125a7d8b28b9ce581702a1",
+      "bytes": 34959701,
+      "n_rows": 115200,
+      "columns": [
+        "mode",
+        "shuffle_id",
+        "rho_target",
+        "leak",
+        "input_scale",
+        "neuron_bias",
+        "MC",
+        "IPC",
+        "KR",
+        "GR",
+        "src",
+        "normalization",
+        "wt_mean",
+        "cosine_similarity",
+        "kl_to_gaussian",
+        "seed",
+        "raw_rho",
+        "ref_rho",
+        "post_rho",
+        "scale_factor",
+        "architecture"
+      ],
+      "grid": {
+        "rho_target": [
+          0.6,
+          0.8,
+          0.95,
+          1.05
+        ],
+        "leak": [
+          0.6,
+          0.8,
+          1.0
+        ],
+        "input_scale": [
+          0.1,
+          0.5,
+          1.0,
+          1.5
+        ],
+        "neuron_bias": [
+          0.0,
+          0.1
+        ]
+      },
+      "rank_vintage": "archival_unverified_protocol"
+    }
+  ],
+  "summary_source": "analysis/robustness_reevaluation_2026-11-16/tables/per_realization.csv",
+  "summary_source_sha256": "66a492962e2512e06ceff753c28c019d368d3fd6b6b58a6130c948d97f10985e",
+  "code_sha256": "f603995ed7c6a8903db9f884d9ab004118fa0321ca4cfcb2e5ad0e6ef85480a2",
+  "bootstrap": 2000,
+  "bootstrap_seed": 20261117,
+  "comparison": "C. elegans (unknown signs matched) minus matched ER; paired seeds within each archival normalization mode",
+  "aggregation": "Mean over 96 configurations within seed, followed by mean across 100 seeds",
+  "excluded": "24.250832%: no shared matched-ER condition; no interpolation",
+  "validation": "PASS: 36 comparisons, 100 paired seeds per comparison, 96 configurations per seed, shared sign levels only; source hashes verified",
+  "figure_format": "PNG only"
+}

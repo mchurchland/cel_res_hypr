@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "synthetic_tests_passed": 5,
+  "n_conditions": 180,
+  "n_seed_parameter_rows": 96000,
+  "checks": [
+    "All seed-averaged cache surfaces reproduce dot-plot means",
+    "Every factorial component sum equals total variance",
+    "All allocated shares sum to 100%",
+    "Total involvement is bounded by 0\u2013100% and at least the main effect",
+    "All 7 E/I dot PNGs retained and their PDFs removed",
+    "All 7 new variability figures are PNG only",
+    "Seed-cluster bootstrap with shared draws for identical seed sets"
+  ],
+  "exact_sources_and_code_hashes": "manifest.json"
+}

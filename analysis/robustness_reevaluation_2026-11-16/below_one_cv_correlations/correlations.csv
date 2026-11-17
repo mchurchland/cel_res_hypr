@@ -1,0 +1,289 @@
+dataset,normalization,metric,scope,architecture,association,rho,ci_low,ci_high,n,n_clusters,n_boot_valid,n_scores,n_scores_below_1,n_surfaces_with_any_below_1,pct_scores_below_1,status
+baseline_shuf,original_radius,IPC,pooled_architectures,ALL,mean_vs_cv,0.579607878902,0.548793644168,0.609718937244,2000,200,2000,192000,7,7,0.00364583333333,estimated
+baseline_shuf,original_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_cv,0.0523584823489,0.00592989638147,0.0877610656668,2000,200,1997,192000,7,7,0.00364583333333,estimated
+baseline_shuf,original_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_mean,-0.0192760747928,-0.052998767024,0.0120601944806,2000,200,2000,192000,7,7,0.00364583333333,estimated
+baseline_shuf,original_radius,KR,pooled_architectures,ALL,mean_vs_cv,0.94016146604,0.934379621529,0.945009118751,2000,200,2000,192000,0,0,0,estimated
+baseline_shuf,original_radius,KR,pooled_architectures,ALL,pct_below_1_vs_cv,,,,2000,200,0,192000,0,0,0,undefined: at least one variable is constant
+baseline_shuf,original_radius,KR,pooled_architectures,ALL,pct_below_1_vs_mean,,,,2000,200,0,192000,0,0,0,undefined: at least one variable is constant
+baseline_shuf,original_radius,MC,pooled_architectures,ALL,mean_vs_cv,0.600402688601,0.563118992177,0.637120215791,2000,200,2000,192000,163,152,0.0848958333333,estimated
+baseline_shuf,original_radius,MC,pooled_architectures,ALL,pct_below_1_vs_cv,0.0304756009392,-0.0150189887528,0.0773002224283,2000,200,2000,192000,163,152,0.0848958333333,estimated
+baseline_shuf,original_radius,MC,pooled_architectures,ALL,pct_below_1_vs_mean,-0.113913061436,-0.155827995299,-0.0735491192309,2000,200,2000,192000,163,152,0.0848958333333,estimated
+main,spectral_radius,IPC,pooled_architectures,ALL,mean_vs_cv,0.62900076425,0.610574043363,0.64851875843,2000,200,2000,192000,0,0,0,estimated
+main,spectral_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_cv,,,,2000,200,0,192000,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_mean,,,,2000,200,0,192000,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,IPC,within_architecture,binary_base,mean_vs_cv,-0.476804920123,-0.578191871353,-0.363113711165,200,200,2000,19200,0,0,0,estimated
+main,spectral_radius,IPC,within_architecture,binary_base,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,IPC,within_architecture,binary_base,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,IPC,within_architecture,cel+randN,mean_vs_cv,-0.532787819695,-0.627379436467,-0.420117572189,200,200,2000,19200,0,0,0,estimated
+main,spectral_radius,IPC,within_architecture,cel+randN,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,IPC,within_architecture,cel+randN,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,IPC,within_architecture,er+randN,mean_vs_cv,-0.564881122028,-0.665417554921,-0.443831604388,200,200,2000,19200,0,0,0,estimated
+main,spectral_radius,IPC,within_architecture,er+randN,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,IPC,within_architecture,er+randN,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,IPC,within_architecture,global_sign_pres,mean_vs_cv,-0.198072451811,-0.338374112504,-0.0550151609907,200,200,2000,19200,0,0,0,estimated
+main,spectral_radius,IPC,within_architecture,global_sign_pres,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,IPC,within_architecture,global_sign_pres,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,IPC,within_architecture,global_sign_pres_real_weight,mean_vs_cv,0.475793894847,0.360082516245,0.573674080883,200,200,2000,19200,0,0,0,estimated
+main,spectral_radius,IPC,within_architecture,global_sign_pres_real_weight,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,IPC,within_architecture,global_sign_pres_real_weight,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,IPC,within_architecture,local_sign,mean_vs_cv,-0.19230480762,-0.333536272857,-0.0456872502363,200,200,2000,19200,0,0,0,estimated
+main,spectral_radius,IPC,within_architecture,local_sign,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,IPC,within_architecture,local_sign,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,IPC,within_architecture,local_sign+binary,mean_vs_cv,0.173749343734,0.0241631785784,0.313470301635,200,200,2000,19200,0,0,0,estimated
+main,spectral_radius,IPC,within_architecture,local_sign+binary,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,IPC,within_architecture,local_sign+binary,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,IPC,within_architecture,local_sign+flat,mean_vs_cv,-0.137491937298,-0.27419685483,0.00557913283087,200,200,2000,19200,0,0,0,estimated
+main,spectral_radius,IPC,within_architecture,local_sign+flat,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,IPC,within_architecture,local_sign+flat,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,IPC,within_architecture,real,mean_vs_cv,-0.444218105453,-0.554166239073,-0.319449272951,200,200,2000,19200,0,0,0,estimated
+main,spectral_radius,IPC,within_architecture,real,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,IPC,within_architecture,real,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,IPC,within_architecture,ws_p0.1+randN,mean_vs_cv,-0.591124278107,-0.677614812235,-0.481737343955,200,200,2000,19200,0,0,0,estimated
+main,spectral_radius,IPC,within_architecture,ws_p0.1+randN,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,IPC,within_architecture,ws_p0.1+randN,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,pooled_architectures,ALL,mean_vs_cv,0.963046584762,0.959715188718,0.965856643514,2000,200,2000,192000,0,0,0,estimated
+main,spectral_radius,KR,pooled_architectures,ALL,pct_below_1_vs_cv,,,,2000,200,0,192000,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,pooled_architectures,ALL,pct_below_1_vs_mean,,,,2000,200,0,192000,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,within_architecture,binary_base,mean_vs_cv,0.787902197555,0.713812114699,0.843793560918,200,200,2000,19200,0,0,0,estimated
+main,spectral_radius,KR,within_architecture,binary_base,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,within_architecture,binary_base,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,within_architecture,cel+randN,mean_vs_cv,0.355499887497,0.220053853712,0.486331663718,200,200,2000,19200,0,0,0,estimated
+main,spectral_radius,KR,within_architecture,cel+randN,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,within_architecture,cel+randN,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,within_architecture,er+randN,mean_vs_cv,0.237389934748,0.10211056914,0.367654580297,200,200,2000,19200,0,0,0,estimated
+main,spectral_radius,KR,within_architecture,er+randN,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,within_architecture,er+randN,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,within_architecture,global_sign_pres,mean_vs_cv,0.818570464262,0.761091531941,0.859005803404,200,200,2000,19200,0,0,0,estimated
+main,spectral_radius,KR,within_architecture,global_sign_pres,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,within_architecture,global_sign_pres,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,within_architecture,global_sign_pres_real_weight,mean_vs_cv,0.841248031201,0.785855733292,0.881635803748,200,200,2000,19200,0,0,0,estimated
+main,spectral_radius,KR,within_architecture,global_sign_pres_real_weight,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,within_architecture,global_sign_pres_real_weight,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,within_architecture,local_sign,mean_vs_cv,0.917089927248,0.890348385571,0.933809157061,200,200,2000,19200,0,0,0,estimated
+main,spectral_radius,KR,within_architecture,local_sign,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,within_architecture,local_sign,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,within_architecture,local_sign+binary,mean_vs_cv,0.87656641416,0.827242441105,0.909744114193,200,200,2000,19200,0,0,0,estimated
+main,spectral_radius,KR,within_architecture,local_sign+binary,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,within_architecture,local_sign+binary,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,within_architecture,local_sign+flat,mean_vs_cv,0.91945398635,0.894546275069,0.936107759491,200,200,2000,19200,0,0,0,estimated
+main,spectral_radius,KR,within_architecture,local_sign+flat,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,within_architecture,local_sign+flat,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,within_architecture,real,mean_vs_cv,0.29646441161,0.167681583264,0.424362750441,200,200,2000,19200,0,0,0,estimated
+main,spectral_radius,KR,within_architecture,real,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,within_architecture,real,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,within_architecture,ws_p0.1+randN,mean_vs_cv,0.13232280807,-0.0189295870617,0.275044421876,200,200,2000,19200,0,0,0,estimated
+main,spectral_radius,KR,within_architecture,ws_p0.1+randN,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,KR,within_architecture,ws_p0.1+randN,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+main,spectral_radius,MC,pooled_architectures,ALL,mean_vs_cv,0.874268570567,0.865237540052,0.883833160269,2000,200,2000,192000,93,89,0.0484375,estimated
+main,spectral_radius,MC,pooled_architectures,ALL,pct_below_1_vs_cv,-0.0738177403095,-0.116419583847,-0.0313446221644,2000,200,2000,192000,93,89,0.0484375,estimated
+main,spectral_radius,MC,pooled_architectures,ALL,pct_below_1_vs_mean,-0.141154927722,-0.18264526681,-0.0971299314261,2000,200,2000,192000,93,89,0.0484375,estimated
+main,spectral_radius,MC,within_architecture,binary_base,mean_vs_cv,-0.416503412585,-0.526525918596,-0.291904992266,200,200,2000,19200,26,24,0.135416666667,estimated
+main,spectral_radius,MC,within_architecture,binary_base,pct_below_1_vs_cv,0.218154643033,0.072742329769,0.344755885853,200,200,2000,19200,26,24,0.135416666667,estimated
+main,spectral_radius,MC,within_architecture,binary_base,pct_below_1_vs_mean,-0.141569203577,-0.274371286634,-0.00397065508636,200,200,2000,19200,26,24,0.135416666667,estimated
+main,spectral_radius,MC,within_architecture,cel+randN,mean_vs_cv,-0.265868146704,-0.396218324045,-0.132584306329,200,200,2000,19200,3,3,0.015625,estimated
+main,spectral_radius,MC,within_architecture,cel+randN,pct_below_1_vs_cv,0.110078068216,0.046046076094,0.179667727877,200,200,1903,19200,3,3,0.015625,estimated
+main,spectral_radius,MC,within_architecture,cel+randN,pct_below_1_vs_mean,-0.0602045098009,-0.154728378131,0.0435222018114,200,200,1912,19200,3,3,0.015625,estimated
+main,spectral_radius,MC,within_architecture,er+randN,mean_vs_cv,-0.626978174454,-0.713978482034,-0.524795908017,200,200,2000,19200,5,5,0.0260416666667,estimated
+main,spectral_radius,MC,within_architecture,er+randN,pct_below_1_vs_cv,0.0895852015124,-0.0495313114602,0.207734493717,200,200,1988,19200,5,5,0.0260416666667,estimated
+main,spectral_radius,MC,within_architecture,er+randN,pct_below_1_vs_mean,-0.0496462881446,-0.144387851486,0.0303419446089,200,200,1987,19200,5,5,0.0260416666667,estimated
+main,spectral_radius,MC,within_architecture,global_sign_pres,mean_vs_cv,-0.0642721068027,-0.20405291669,0.0678431464407,200,200,2000,19200,18,17,0.09375,estimated
+main,spectral_radius,MC,within_architecture,global_sign_pres,pct_below_1_vs_cv,0.22972996625,0.101700902381,0.340688246385,200,200,2000,19200,18,17,0.09375,estimated
+main,spectral_radius,MC,within_architecture,global_sign_pres,pct_below_1_vs_mean,0.00288582862975,-0.174531616425,0.16227171262,200,200,2000,19200,18,17,0.09375,estimated
+main,spectral_radius,MC,within_architecture,global_sign_pres_real_weight,mean_vs_cv,0.632852321308,0.547204879293,0.708781253749,200,200,2000,19200,1,1,0.00520833333333,estimated
+main,spectral_radius,MC,within_architecture,global_sign_pres_real_weight,pct_below_1_vs_cv,0.101296272959,0.0927050185677,0.197959838871,200,200,1273,19200,1,1,0.00520833333333,estimated
+main,spectral_radius,MC,within_architecture,global_sign_pres_real_weight,pct_below_1_vs_mean,0.0190314209801,0.00348175841837,0.048856853618,200,200,1235,19200,1,1,0.00520833333333,estimated
+main,spectral_radius,MC,within_architecture,local_sign,mean_vs_cv,0.306711167779,0.159115849969,0.437767951436,200,200,2000,19200,4,3,0.0208333333333,estimated
+main,spectral_radius,MC,within_architecture,local_sign,pct_below_1_vs_cv,0.0658100524408,-0.0349641817748,0.170607997933,200,200,1888,19200,4,3,0.0208333333333,estimated
+main,spectral_radius,MC,within_architecture,local_sign,pct_below_1_vs_mean,-0.126636437925,-0.219951828724,-0.0202603517469,200,200,1873,19200,4,3,0.0208333333333,estimated
+main,spectral_radius,MC,within_architecture,local_sign+binary,mean_vs_cv,0.114113852846,-0.040169007834,0.26021841719,200,200,2000,19200,17,17,0.0885416666667,estimated
+main,spectral_radius,MC,within_architecture,local_sign+binary,pct_below_1_vs_cv,0.261318508571,0.142680207729,0.360708144917,200,200,2000,19200,17,17,0.0885416666667,estimated
+main,spectral_radius,MC,within_architecture,local_sign+binary,pct_below_1_vs_mean,-0.130581619553,-0.249127316886,-0.00541256732148,200,200,2000,19200,17,17,0.0885416666667,estimated
+main,spectral_radius,MC,within_architecture,local_sign+flat,mean_vs_cv,0.126009150229,-0.0130072318663,0.267472092122,200,200,2000,19200,12,12,0.0625,estimated
+main,spectral_radius,MC,within_architecture,local_sign+flat,pct_below_1_vs_cv,0.140396809288,0.00729147281453,0.259677504582,200,200,2000,19200,12,12,0.0625,estimated
+main,spectral_radius,MC,within_architecture,local_sign+flat,pct_below_1_vs_mean,-0.0674634018656,-0.190180346707,0.0651810589415,200,200,2000,19200,12,12,0.0625,estimated
+main,spectral_radius,MC,within_architecture,real,mean_vs_cv,-0.391154278857,-0.518669299005,-0.264556665951,200,200,2000,19200,6,6,0.03125,estimated
+main,spectral_radius,MC,within_architecture,real,pct_below_1_vs_cv,0.116766268578,0.000811299947648,0.226919927737,200,200,2000,19200,6,6,0.03125,estimated
+main,spectral_radius,MC,within_architecture,real,pct_below_1_vs_mean,-0.118796986292,-0.220409858172,-0.0145403789454,200,200,1994,19200,6,6,0.03125,estimated
+main,spectral_radius,MC,within_architecture,ws_p0.1+randN,mean_vs_cv,-0.70762919073,-0.774523488715,-0.622102386045,200,200,2000,19200,1,1,0.00520833333333,estimated
+main,spectral_radius,MC,within_architecture,ws_p0.1+randN,pct_below_1_vs_cv,-0.0718282662798,-0.138380875574,-0.0595528709196,200,200,1252,19200,1,1,0.00520833333333,estimated
+main,spectral_radius,MC,within_architecture,ws_p0.1+randN,pct_below_1_vs_mean,-0.0141200865336,-0.0437600685397,0.0018418560996,200,200,1249,19200,1,1,0.00520833333333,estimated
+norm_cel_matched,original_radius,IPC,pooled_architectures,ALL,mean_vs_cv,0.17317252834,0.0925062654625,0.257526880573,700,100,2000,67200,10,5,0.014880952381,estimated
+norm_cel_matched,original_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_cv,0.0496898957102,-0.00044475935189,0.101072633263,700,100,1990,67200,10,5,0.014880952381,estimated
+norm_cel_matched,original_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_mean,-0.13479390243,-0.186974972943,-0.0648573814086,700,100,1990,67200,10,5,0.014880952381,estimated
+norm_cel_matched,original_radius,KR,pooled_architectures,ALL,mean_vs_cv,0.502415241081,0.437151513699,0.56015615616,700,100,2000,67200,0,0,0,estimated
+norm_cel_matched,original_radius,KR,pooled_architectures,ALL,pct_below_1_vs_cv,,,,700,100,0,67200,0,0,0,undefined: at least one variable is constant
+norm_cel_matched,original_radius,KR,pooled_architectures,ALL,pct_below_1_vs_mean,,,,700,100,0,67200,0,0,0,undefined: at least one variable is constant
+norm_cel_matched,original_radius,MC,pooled_architectures,ALL,mean_vs_cv,0.24956765801,0.16328825975,0.332906754905,700,100,2000,67200,31,24,0.046130952381,estimated
+norm_cel_matched,original_radius,MC,pooled_architectures,ALL,pct_below_1_vs_cv,-0.0223137536733,-0.109455432813,0.061678987357,700,100,2000,67200,31,24,0.046130952381,estimated
+norm_cel_matched,original_radius,MC,pooled_architectures,ALL,pct_below_1_vs_mean,-0.177500810545,-0.254805741054,-0.0904920192401,700,100,2000,67200,31,24,0.046130952381,estimated
+norm_cel_matched,spectral_radius,IPC,pooled_architectures,ALL,mean_vs_cv,0.794852619233,0.757993684209,0.829962456749,700,100,2000,67200,0,0,0,estimated
+norm_cel_matched,spectral_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_cv,,,,700,100,0,67200,0,0,0,undefined: at least one variable is constant
+norm_cel_matched,spectral_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_mean,,,,700,100,0,67200,0,0,0,undefined: at least one variable is constant
+norm_cel_matched,spectral_radius,KR,pooled_architectures,ALL,mean_vs_cv,0.900196146173,0.886174793089,0.912143483361,700,100,2000,67200,0,0,0,estimated
+norm_cel_matched,spectral_radius,KR,pooled_architectures,ALL,pct_below_1_vs_cv,,,,700,100,0,67200,0,0,0,undefined: at least one variable is constant
+norm_cel_matched,spectral_radius,KR,pooled_architectures,ALL,pct_below_1_vs_mean,,,,700,100,0,67200,0,0,0,undefined: at least one variable is constant
+norm_cel_matched,spectral_radius,MC,pooled_architectures,ALL,mean_vs_cv,0.802272237873,0.768115011687,0.836596882315,700,100,2000,67200,11,11,0.016369047619,estimated
+norm_cel_matched,spectral_radius,MC,pooled_architectures,ALL,pct_below_1_vs_cv,0.00719080643083,-0.0594904701012,0.074438946295,700,100,2000,67200,11,11,0.016369047619,estimated
+norm_cel_matched,spectral_radius,MC,pooled_architectures,ALL,pct_below_1_vs_mean,-0.0707996000759,-0.146595219818,0.0264979866117,700,100,2000,67200,11,11,0.016369047619,estimated
+norm_cel_removed,original_radius,IPC,pooled_architectures,ALL,mean_vs_cv,-0.289355086147,-0.3834268733,-0.180879036246,700,100,2000,67200,0,0,0,estimated
+norm_cel_removed,original_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_cv,,,,700,100,0,67200,0,0,0,undefined: at least one variable is constant
+norm_cel_removed,original_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_mean,,,,700,100,0,67200,0,0,0,undefined: at least one variable is constant
+norm_cel_removed,original_radius,KR,pooled_architectures,ALL,mean_vs_cv,0.235458672948,0.147651224626,0.329225439805,700,100,2000,67200,0,0,0,estimated
+norm_cel_removed,original_radius,KR,pooled_architectures,ALL,pct_below_1_vs_cv,,,,700,100,0,67200,0,0,0,undefined: at least one variable is constant
+norm_cel_removed,original_radius,KR,pooled_architectures,ALL,pct_below_1_vs_mean,,,,700,100,0,67200,0,0,0,undefined: at least one variable is constant
+norm_cel_removed,original_radius,MC,pooled_architectures,ALL,mean_vs_cv,-0.311589452223,-0.413918524657,-0.20460771959,700,100,2000,67200,13,13,0.0193452380952,estimated
+norm_cel_removed,original_radius,MC,pooled_architectures,ALL,pct_below_1_vs_cv,0.0978967898412,0.0104214729545,0.173804508545,700,100,2000,67200,13,13,0.0193452380952,estimated
+norm_cel_removed,original_radius,MC,pooled_architectures,ALL,pct_below_1_vs_mean,-0.160473234805,-0.214895437544,-0.0966220163025,700,100,2000,67200,13,13,0.0193452380952,estimated
+norm_cel_removed,spectral_radius,IPC,pooled_architectures,ALL,mean_vs_cv,0.671940461686,0.614115456884,0.728145387288,700,100,2000,67200,0,0,0,estimated
+norm_cel_removed,spectral_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_cv,,,,700,100,0,67200,0,0,0,undefined: at least one variable is constant
+norm_cel_removed,spectral_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_mean,,,,700,100,0,67200,0,0,0,undefined: at least one variable is constant
+norm_cel_removed,spectral_radius,KR,pooled_architectures,ALL,mean_vs_cv,0.731628128687,0.69976473,0.76162651211,700,100,2000,67200,0,0,0,estimated
+norm_cel_removed,spectral_radius,KR,pooled_architectures,ALL,pct_below_1_vs_cv,,,,700,100,0,67200,0,0,0,undefined: at least one variable is constant
+norm_cel_removed,spectral_radius,KR,pooled_architectures,ALL,pct_below_1_vs_mean,,,,700,100,0,67200,0,0,0,undefined: at least one variable is constant
+norm_cel_removed,spectral_radius,MC,pooled_architectures,ALL,mean_vs_cv,0.638821968441,0.570433009981,0.700317309605,700,100,2000,67200,9,9,0.0133928571429,estimated
+norm_cel_removed,spectral_radius,MC,pooled_architectures,ALL,pct_below_1_vs_cv,0.00756170611729,-0.0610566584161,0.0783457120455,700,100,2000,67200,9,9,0.0133928571429,estimated
+norm_cel_removed,spectral_radius,MC,pooled_architectures,ALL,pct_below_1_vs_mean,-0.101879086153,-0.158219120386,-0.0324501718665,700,100,2000,67200,9,9,0.0133928571429,estimated
+norm_matched_er,original_radius,IPC,pooled_architectures,ALL,mean_vs_cv,-0.634318817552,-0.664970720409,-0.599235868822,600,100,2000,57600,133,76,0.230902777778,estimated
+norm_matched_er,original_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_cv,0.470264318617,0.418605215716,0.518229510908,600,100,2000,57600,133,76,0.230902777778,estimated
+norm_matched_er,original_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_mean,-0.523007205503,-0.564882516954,-0.482401815593,600,100,2000,57600,133,76,0.230902777778,estimated
+norm_matched_er,original_radius,KR,pooled_architectures,ALL,mean_vs_cv,0.123553065425,0.0848168343022,0.160521960971,600,100,2000,57600,0,0,0,estimated
+norm_matched_er,original_radius,KR,pooled_architectures,ALL,pct_below_1_vs_cv,,,,600,100,0,57600,0,0,0,undefined: at least one variable is constant
+norm_matched_er,original_radius,KR,pooled_architectures,ALL,pct_below_1_vs_mean,,,,600,100,0,57600,0,0,0,undefined: at least one variable is constant
+norm_matched_er,original_radius,MC,pooled_architectures,ALL,mean_vs_cv,-0.458389162192,-0.501285817106,-0.410755096417,600,100,2000,57600,1692,186,2.9375,estimated
+norm_matched_er,original_radius,MC,pooled_architectures,ALL,pct_below_1_vs_cv,0.620217937676,0.584300144477,0.656637714706,600,100,2000,57600,1692,186,2.9375,estimated
+norm_matched_er,original_radius,MC,pooled_architectures,ALL,pct_below_1_vs_mean,-0.694302741881,-0.727947777775,-0.659085365209,600,100,2000,57600,1692,186,2.9375,estimated
+norm_matched_er,spectral_radius,IPC,pooled_architectures,ALL,mean_vs_cv,0.63659449054,0.602166021715,0.670130033442,600,100,2000,57600,0,0,0,estimated
+norm_matched_er,spectral_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_cv,,,,600,100,0,57600,0,0,0,undefined: at least one variable is constant
+norm_matched_er,spectral_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_mean,,,,600,100,0,57600,0,0,0,undefined: at least one variable is constant
+norm_matched_er,spectral_radius,KR,pooled_architectures,ALL,mean_vs_cv,0.903110841975,0.89298489541,0.911665745226,600,100,2000,57600,0,0,0,estimated
+norm_matched_er,spectral_radius,KR,pooled_architectures,ALL,pct_below_1_vs_cv,,,,600,100,0,57600,0,0,0,undefined: at least one variable is constant
+norm_matched_er,spectral_radius,KR,pooled_architectures,ALL,pct_below_1_vs_mean,,,,600,100,0,57600,0,0,0,undefined: at least one variable is constant
+norm_matched_er,spectral_radius,MC,pooled_architectures,ALL,mean_vs_cv,0.814079205776,0.807888737171,0.822178739941,600,100,2000,57600,22,22,0.0381944444444,estimated
+norm_matched_er,spectral_radius,MC,pooled_architectures,ALL,pct_below_1_vs_cv,-0.0348155795461,-0.0846859133523,0.0161107021671,600,100,2000,57600,22,22,0.0381944444444,estimated
+norm_matched_er,spectral_radius,MC,pooled_architectures,ALL,pct_below_1_vs_mean,-0.154980528362,-0.224107635156,-0.0808886518054,600,100,2000,57600,22,22,0.0381944444444,estimated
+shuf,spectral_radius,IPC,pooled_architectures,ALL,mean_vs_cv,0.835522206381,0.824036608727,0.846981509148,2000,200,2000,192000,1,1,0.000520833333333,estimated
+shuf,spectral_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_cv,0.0379453641452,0.0376354723096,0.0661858861311,2000,200,1265,192000,1,1,0.000520833333333,estimated
+shuf,spectral_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_mean,0.0333353607422,0.0325993240694,0.0588516623402,2000,200,1275,192000,1,1,0.000520833333333,estimated
+shuf,spectral_radius,IPC,within_architecture,binary+conshuffle+wshuffle,mean_vs_cv,-0.249306232656,-0.378992504842,-0.114322734414,200,200,2000,19200,0,0,0,estimated
+shuf,spectral_radius,IPC,within_architecture,binary+conshuffle+wshuffle,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,IPC,within_architecture,binary+conshuffle+wshuffle,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,IPC,within_architecture,binary+shuffle,mean_vs_cv,0.265977649441,0.128411142192,0.392870964124,200,200,2000,19200,0,0,0,estimated
+shuf,spectral_radius,IPC,within_architecture,binary+shuffle,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,IPC,within_architecture,binary+shuffle,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,IPC,within_architecture,binary_base,mean_vs_cv,-0.476804920123,-0.581835631665,-0.365045704609,200,200,2000,19200,0,0,0,estimated
+shuf,spectral_radius,IPC,within_architecture,binary_base,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,IPC,within_architecture,binary_base,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,IPC,within_architecture,binary_base_topology_shuffle,mean_vs_cv,-0.292168304208,-0.416254925555,-0.15756606763,200,200,2000,19200,0,0,0,estimated
+shuf,spectral_radius,IPC,within_architecture,binary_base_topology_shuffle,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,IPC,within_architecture,binary_base_topology_shuffle,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,IPC,within_architecture,celW+connShuf,mean_vs_cv,-0.0386379659491,-0.172880717255,0.0999248010759,200,200,2000,19200,1,1,0.00520833333333,estimated
+shuf,spectral_radius,IPC,within_architecture,celW+connShuf,pct_below_1_vs_cv,0.112346775463,0.106213890964,0.215283197955,200,200,1247,19200,1,1,0.00520833333333,estimated
+shuf,spectral_radius,IPC,within_architecture,celW+connShuf,pct_below_1_vs_mean,0.058322096552,0.0435906895894,0.114358513484,200,200,1262,19200,1,1,0.00520833333333,estimated
+shuf,spectral_radius,IPC,within_architecture,conn_shuf_only,mean_vs_cv,-0.0633840846021,-0.217192112675,0.0825255128102,200,200,2000,19200,0,0,0,estimated
+shuf,spectral_radius,IPC,within_architecture,conn_shuf_only,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,IPC,within_architecture,conn_shuf_only,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,IPC,within_architecture,global_sign_pres,mean_vs_cv,-0.198072451811,-0.328673095564,-0.0449226755138,200,200,2000,19200,0,0,0,estimated
+shuf,spectral_radius,IPC,within_architecture,global_sign_pres,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,IPC,within_architecture,global_sign_pres,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,IPC,within_architecture,local_sign+binary,mean_vs_cv,0.173749343734,0.027234411791,0.311951404875,200,200,2000,19200,0,0,0,estimated
+shuf,spectral_radius,IPC,within_architecture,local_sign+binary,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,IPC,within_architecture,local_sign+binary,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,IPC,within_architecture,real,mean_vs_cv,-0.444218105453,-0.553021005033,-0.314653620726,200,200,2000,19200,0,0,0,estimated
+shuf,spectral_radius,IPC,within_architecture,real,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,IPC,within_architecture,real,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,IPC,within_architecture,shuffle,mean_vs_cv,0.0805970149254,-0.0576025637551,0.22335477226,200,200,2000,19200,0,0,0,estimated
+shuf,spectral_radius,IPC,within_architecture,shuffle,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,IPC,within_architecture,shuffle,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,pooled_architectures,ALL,mean_vs_cv,0.95552023838,0.951589329948,0.959288619071,2000,200,2000,192000,0,0,0,estimated
+shuf,spectral_radius,KR,pooled_architectures,ALL,pct_below_1_vs_cv,,,,2000,200,0,192000,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,pooled_architectures,ALL,pct_below_1_vs_mean,,,,2000,200,0,192000,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,within_architecture,binary+conshuffle+wshuffle,mean_vs_cv,0.802782569564,0.737616564426,0.848058508626,200,200,2000,19200,0,0,0,estimated
+shuf,spectral_radius,KR,within_architecture,binary+conshuffle+wshuffle,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,within_architecture,binary+conshuffle+wshuffle,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,within_architecture,binary+shuffle,mean_vs_cv,0.858471461787,0.811846021977,0.894511742451,200,200,2000,19200,0,0,0,estimated
+shuf,spectral_radius,KR,within_architecture,binary+shuffle,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,within_architecture,binary+shuffle,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,within_architecture,binary_base,mean_vs_cv,0.787902197555,0.717288963251,0.843902612331,200,200,2000,19200,0,0,0,estimated
+shuf,spectral_radius,KR,within_architecture,binary_base,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,within_architecture,binary_base,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,within_architecture,binary_base_topology_shuffle,mean_vs_cv,0.77609240231,0.704811424779,0.826746857784,200,200,2000,19200,0,0,0,estimated
+shuf,spectral_radius,KR,within_architecture,binary_base_topology_shuffle,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,within_architecture,binary_base_topology_shuffle,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,within_architecture,celW+connShuf,mean_vs_cv,0.86830720768,0.818433896096,0.90013049137,200,200,2000,19200,0,0,0,estimated
+shuf,spectral_radius,KR,within_architecture,celW+connShuf,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,within_architecture,celW+connShuf,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,within_architecture,conn_shuf_only,mean_vs_cv,0.81219080477,0.752567307299,0.855486780631,200,200,2000,19200,0,0,0,estimated
+shuf,spectral_radius,KR,within_architecture,conn_shuf_only,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,within_architecture,conn_shuf_only,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,within_architecture,global_sign_pres,mean_vs_cv,0.818570464262,0.761803831773,0.861672105252,200,200,2000,19200,0,0,0,estimated
+shuf,spectral_radius,KR,within_architecture,global_sign_pres,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,within_architecture,global_sign_pres,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,within_architecture,local_sign+binary,mean_vs_cv,0.87656641416,0.828451440006,0.910997722731,200,200,2000,19200,0,0,0,estimated
+shuf,spectral_radius,KR,within_architecture,local_sign+binary,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,within_architecture,local_sign+binary,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,within_architecture,real,mean_vs_cv,0.29646441161,0.15940385087,0.419860305481,200,200,2000,19200,0,0,0,estimated
+shuf,spectral_radius,KR,within_architecture,real,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,within_architecture,real,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,within_architecture,shuffle,mean_vs_cv,0.853903847596,0.799716835106,0.892226170547,200,200,2000,19200,0,0,0,estimated
+shuf,spectral_radius,KR,within_architecture,shuffle,pct_below_1_vs_cv,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,KR,within_architecture,shuffle,pct_below_1_vs_mean,,,,200,200,0,19200,0,0,0,undefined: at least one variable is constant
+shuf,spectral_radius,MC,pooled_architectures,ALL,mean_vs_cv,0.880537394634,0.86912984732,0.89093512597,2000,200,2000,192000,120,115,0.0625,estimated
+shuf,spectral_radius,MC,pooled_architectures,ALL,pct_below_1_vs_cv,-0.0328671410283,-0.0717919577471,0.00676919146551,2000,200,2000,192000,120,115,0.0625,estimated
+shuf,spectral_radius,MC,pooled_architectures,ALL,pct_below_1_vs_mean,-0.126634807089,-0.166235884733,-0.087056097733,2000,200,2000,192000,120,115,0.0625,estimated
+shuf,spectral_radius,MC,within_architecture,binary+conshuffle+wshuffle,mean_vs_cv,-0.218547963699,-0.353492786249,-0.0744563699667,200,200,2000,19200,13,13,0.0677083333333,estimated
+shuf,spectral_radius,MC,within_architecture,binary+conshuffle+wshuffle,pct_below_1_vs_cv,0.170203057759,0.0417035835614,0.284923227951,200,200,2000,19200,13,13,0.0677083333333,estimated
+shuf,spectral_radius,MC,within_architecture,binary+conshuffle+wshuffle,pct_below_1_vs_mean,-0.234138984512,-0.345897448655,-0.0858274106101,200,200,2000,19200,13,13,0.0677083333333,estimated
+shuf,spectral_radius,MC,within_architecture,binary+shuffle,mean_vs_cv,0.150615765394,0.012604822041,0.281878194215,200,200,2000,19200,14,14,0.0729166666667,estimated
+shuf,spectral_radius,MC,within_architecture,binary+shuffle,pct_below_1_vs_cv,0.160888094406,0.0265048494227,0.276027416567,200,200,2000,19200,14,14,0.0729166666667,estimated
+shuf,spectral_radius,MC,within_architecture,binary+shuffle,pct_below_1_vs_mean,-0.070261256418,-0.221008490705,0.0942218464316,200,200,2000,19200,14,14,0.0729166666667,estimated
+shuf,spectral_radius,MC,within_architecture,binary_base,mean_vs_cv,-0.416503412585,-0.528230132929,-0.289651307781,200,200,2000,19200,26,24,0.135416666667,estimated
+shuf,spectral_radius,MC,within_architecture,binary_base,pct_below_1_vs_cv,0.218154643033,0.0781742655638,0.346683458595,200,200,2000,19200,26,24,0.135416666667,estimated
+shuf,spectral_radius,MC,within_architecture,binary_base,pct_below_1_vs_mean,-0.141569203577,-0.27268416246,-0.00718601936524,200,200,2000,19200,26,24,0.135416666667,estimated
+shuf,spectral_radius,MC,within_architecture,binary_base_topology_shuffle,mean_vs_cv,-0.610690767269,-0.687804848404,-0.519069041618,200,200,2000,19200,14,12,0.0729166666667,estimated
+shuf,spectral_radius,MC,within_architecture,binary_base_topology_shuffle,pct_below_1_vs_cv,0.30168904077,0.181377501908,0.396706860014,200,200,2000,19200,14,12,0.0729166666667,estimated
+shuf,spectral_radius,MC,within_architecture,binary_base_topology_shuffle,pct_below_1_vs_mean,-0.185777626397,-0.284525092692,-0.0698858179206,200,200,2000,19200,14,12,0.0729166666667,estimated
+shuf,spectral_radius,MC,within_architecture,celW+connShuf,mean_vs_cv,0.348832220806,0.227352912294,0.465798985067,200,200,2000,19200,4,4,0.0208333333333,estimated
+shuf,spectral_radius,MC,within_architecture,celW+connShuf,pct_below_1_vs_cv,0.0971197771435,-0.0055571294499,0.201761605985,200,200,1971,19200,4,4,0.0208333333333,estimated
+shuf,spectral_radius,MC,within_architecture,celW+connShuf,pct_below_1_vs_mean,-0.0569109522115,-0.182626186433,0.0778177738296,200,200,1969,19200,4,4,0.0208333333333,estimated
+shuf,spectral_radius,MC,within_architecture,conn_shuf_only,mean_vs_cv,0.413345833646,0.29052016969,0.538962138311,200,200,2000,19200,4,4,0.0208333333333,estimated
+shuf,spectral_radius,MC,within_architecture,conn_shuf_only,pct_below_1_vs_cv,0.0797990525574,-0.0669652675543,0.217630498691,200,200,1972,19200,4,4,0.0208333333333,estimated
+shuf,spectral_radius,MC,within_architecture,conn_shuf_only,pct_below_1_vs_mean,-0.0649527171979,-0.207052525347,0.101300877304,200,200,1973,19200,4,4,0.0208333333333,estimated
+shuf,spectral_radius,MC,within_architecture,global_sign_pres,mean_vs_cv,-0.0642721068027,-0.2069404854,0.0802705791663,200,200,2000,19200,18,17,0.09375,estimated
+shuf,spectral_radius,MC,within_architecture,global_sign_pres,pct_below_1_vs_cv,0.22972996625,0.0945761429173,0.342664395645,200,200,2000,19200,18,17,0.09375,estimated
+shuf,spectral_radius,MC,within_architecture,global_sign_pres,pct_below_1_vs_mean,0.00288582862975,-0.184396563316,0.171280636932,200,200,2000,19200,18,17,0.09375,estimated
+shuf,spectral_radius,MC,within_architecture,local_sign+binary,mean_vs_cv,0.114113852846,-0.0309818506856,0.256733774655,200,200,2000,19200,17,17,0.0885416666667,estimated
+shuf,spectral_radius,MC,within_architecture,local_sign+binary,pct_below_1_vs_cv,0.261318508571,0.149385598355,0.365587693939,200,200,2000,19200,17,17,0.0885416666667,estimated
+shuf,spectral_radius,MC,within_architecture,local_sign+binary,pct_below_1_vs_mean,-0.130581619553,-0.243691721783,-0.00850832264541,200,200,2000,19200,17,17,0.0885416666667,estimated
+shuf,spectral_radius,MC,within_architecture,real,mean_vs_cv,-0.391154278857,-0.509216939133,-0.255708960689,200,200,2000,19200,6,6,0.03125,estimated
+shuf,spectral_radius,MC,within_architecture,real,pct_below_1_vs_cv,0.116766268578,-0.00366125213818,0.221466776297,200,200,1997,19200,6,6,0.03125,estimated
+shuf,spectral_radius,MC,within_architecture,real,pct_below_1_vs_mean,-0.118796986292,-0.215470842695,-0.0159760716702,200,200,1994,19200,6,6,0.03125,estimated
+shuf,spectral_radius,MC,within_architecture,shuffle,mean_vs_cv,0.268256206405,0.131594032926,0.398796385125,200,200,2000,19200,4,4,0.0208333333333,estimated
+shuf,spectral_radius,MC,within_architecture,shuffle,pct_below_1_vs_cv,-0.00309298653323,-0.127085712254,0.123982948555,200,200,1961,19200,4,4,0.0208333333333,estimated
+shuf,spectral_radius,MC,within_architecture,shuffle,pct_below_1_vs_mean,-0.0680457037311,-0.204095302807,0.125637129163,200,200,1966,19200,4,4,0.0208333333333,estimated
+sign_cel_matched,spectral_radius,IPC,pooled_architectures,ALL,mean_vs_cv,0.810681920902,0.786839172305,0.832571001521,1400,200,2000,134400,1,1,0.000744047619048,estimated
+sign_cel_matched,spectral_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_cv,0.0344329771788,0.0328453276781,0.068688329395,1400,200,1217,134400,1,1,0.000744047619048,estimated
+sign_cel_matched,spectral_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_mean,-0.0101545859692,-0.0192058843691,-0.00869921497515,1400,200,1252,134400,1,1,0.000744047619048,estimated
+sign_cel_matched,spectral_radius,KR,pooled_architectures,ALL,mean_vs_cv,0.909572283309,0.900784323937,0.917241528879,1400,200,2000,134400,0,0,0,estimated
+sign_cel_matched,spectral_radius,KR,pooled_architectures,ALL,pct_below_1_vs_cv,,,,1400,200,0,134400,0,0,0,undefined: at least one variable is constant
+sign_cel_matched,spectral_radius,KR,pooled_architectures,ALL,pct_below_1_vs_mean,,,,1400,200,0,134400,0,0,0,undefined: at least one variable is constant
+sign_cel_matched,spectral_radius,MC,pooled_architectures,ALL,mean_vs_cv,0.830907410813,0.811543072612,0.848964801933,1400,200,2000,134400,22,22,0.016369047619,estimated
+sign_cel_matched,spectral_radius,MC,pooled_architectures,ALL,pct_below_1_vs_cv,0.00818557575955,-0.035687985023,0.0516838849644,1400,200,2000,134400,22,22,0.016369047619,estimated
+sign_cel_matched,spectral_radius,MC,pooled_architectures,ALL,pct_below_1_vs_mean,-0.075276032636,-0.12034087183,-0.0281485963701,1400,200,2000,134400,22,22,0.016369047619,estimated
+sign_cel_removed,spectral_radius,IPC,pooled_architectures,ALL,mean_vs_cv,0.689244981393,0.653701469617,0.72241586855,1400,200,2000,134400,0,0,0,estimated
+sign_cel_removed,spectral_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_cv,,,,1400,200,0,134400,0,0,0,undefined: at least one variable is constant
+sign_cel_removed,spectral_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_mean,,,,1400,200,0,134400,0,0,0,undefined: at least one variable is constant
+sign_cel_removed,spectral_radius,KR,pooled_architectures,ALL,mean_vs_cv,0.740512611049,0.715639218767,0.763092346709,1400,200,2000,134400,0,0,0,estimated
+sign_cel_removed,spectral_radius,KR,pooled_architectures,ALL,pct_below_1_vs_cv,,,,1400,200,0,134400,0,0,0,undefined: at least one variable is constant
+sign_cel_removed,spectral_radius,KR,pooled_architectures,ALL,pct_below_1_vs_mean,,,,1400,200,0,134400,0,0,0,undefined: at least one variable is constant
+sign_cel_removed,spectral_radius,MC,pooled_architectures,ALL,mean_vs_cv,0.670888216925,0.634081692189,0.707120862739,1400,200,2000,134400,17,17,0.0126488095238,estimated
+sign_cel_removed,spectral_radius,MC,pooled_architectures,ALL,pct_below_1_vs_cv,0.0159193098919,-0.0386645560364,0.0721404663615,1400,200,2000,134400,17,17,0.0126488095238,estimated
+sign_cel_removed,spectral_radius,MC,pooled_architectures,ALL,pct_below_1_vs_mean,-0.0843570121235,-0.131836612148,-0.0326230802327,1400,200,2000,134400,17,17,0.0126488095238,estimated
+sign_matched_er,spectral_radius,IPC,pooled_architectures,ALL,mean_vs_cv,0.667851234619,0.6467688318,0.690852058869,1200,200,2000,115200,1,1,0.000868055555556,estimated
+sign_matched_er,spectral_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_cv,0.0424760501187,0.0408921111346,0.0840403250959,1200,200,1289,115200,1,1,0.000868055555556,estimated
+sign_matched_er,spectral_radius,IPC,pooled_architectures,ALL,pct_below_1_vs_mean,-0.00796165414394,-0.0151021906826,-0.00671114139399,1200,200,1271,115200,1,1,0.000868055555556,estimated
+sign_matched_er,spectral_radius,KR,pooled_architectures,ALL,mean_vs_cv,0.936858976985,0.930939875393,0.942018175286,1200,200,2000,115200,0,0,0,estimated
+sign_matched_er,spectral_radius,KR,pooled_architectures,ALL,pct_below_1_vs_cv,,,,1200,200,0,115200,0,0,0,undefined: at least one variable is constant
+sign_matched_er,spectral_radius,KR,pooled_architectures,ALL,pct_below_1_vs_mean,,,,1200,200,0,115200,0,0,0,undefined: at least one variable is constant
+sign_matched_er,spectral_radius,MC,pooled_architectures,ALL,mean_vs_cv,0.821766549838,0.816856126676,0.82720972911,1200,200,2000,115200,63,63,0.0546875,estimated
+sign_matched_er,spectral_radius,MC,pooled_architectures,ALL,pct_below_1_vs_cv,-0.0442494228405,-0.0863815861588,-0.0018001996889,1200,200,2000,115200,63,63,0.0546875,estimated
+sign_matched_er,spectral_radius,MC,pooled_architectures,ALL,pct_below_1_vs_mean,-0.149542016568,-0.194369317234,-0.0995658579544,1200,200,2000,115200,63,63,0.0546875,estimated

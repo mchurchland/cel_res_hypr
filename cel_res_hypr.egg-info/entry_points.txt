@@ -1,0 +1,4 @@
+[console_scripts]
+cel-res-plot = graph_hist:main
+cel-res-smoke = tools.smoke_experiment:main
+cel-res-sweep = inv_arc_test:main

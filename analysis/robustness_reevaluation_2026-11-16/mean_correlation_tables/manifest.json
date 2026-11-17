@@ -1,0 +1,33 @@
+{
+  "sources": {
+    "analysis/robustness_reevaluation_2026-11-16/tables/associations.csv": "902012a26c4e4969621546f5c409f989756caf9c742e31367a02c2f3edd34e09",
+    "analysis/robustness_reevaluation_2026-11-16/tables/per_realization.csv": "66a492962e2512e06ceff753c28c019d368d3fd6b6b58a6130c948d97f10985e",
+    "tools/tabulate_mean_correlations.py": "32c916b9c1340af1edb14359484288c84523283b5b71ac7530c0dc7ccc6e8884"
+  },
+  "correlation": "Spearman rank correlation; finite pairs only",
+  "main_scope": "Pooled main architecture/seed observations, not within C. elegans alone",
+  "ce_scope": "Within C. elegans across seeds; mean and robustness each computed over its 96 configurations",
+  "uncertainty": "Existing bootstrap intervals retained in detail CSVs; newly tabulated CE-only and per-parameter point estimates do not introduce new intervals",
+  "metrics": {
+    "cv": "CV",
+    "sd": "Standard deviation",
+    "iqr": "Interquartile range",
+    "mad": "Median absolute deviation",
+    "minimum": "Minimum performance",
+    "p10": "10th-percentile performance",
+    "bottom10": "Bottom-decile mean",
+    "range": "Performance range",
+    "attain_q25": "Threshold attainment: main Q25",
+    "attain_q50": "Threshold attainment: main Q50",
+    "attain_q75": "Threshold attainment: main Q75",
+    "retention80": "80% retention",
+    "retention90": "90% retention",
+    "sensitivity_mean": "Mean local sensitivity",
+    "low_fraction": "Fraction below main Q25",
+    "above_q25_sd": "SD among configurations \u2265 main Q25",
+    "feasible_fraction": "Variance / conditional feasible ceiling"
+  },
+  "figure_format": "PNG only",
+  "n_main_rows": 17,
+  "validation": "PASS: 51 stored pooled coefficients; CE coefficients agree with stored within-architecture results where available"
+}

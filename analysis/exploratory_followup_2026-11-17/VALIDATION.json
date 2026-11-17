@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "checks": [
+    "180 cached metric surfaces match original plotted means",
+    "1008 conditional model comparisons and 6912 finite-grid differences preserve matched identities",
+    "504 manipulation summaries retain 100 or 200 seed clusters",
+    "CE-ER differences satisfy the IPC = MC + residual arithmetic identity",
+    "Three negative IPC-minus-MC rows retained and explicitly flagged",
+    "Four PNGs verified; no PDFs",
+    "MC best-tested-input counts checked; no claim of an unconstrained optimum",
+    "Original source hashes unchanged (manifest records exact inputs)"
+  ]
+}

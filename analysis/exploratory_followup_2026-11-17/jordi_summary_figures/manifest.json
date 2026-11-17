@@ -1,0 +1,36 @@
+{
+  "sources": [
+    {
+      "path": "analysis/robustness_reevaluation_2026-11-16/figures/ei_hyperparameter_dots/plotted_points.csv.gz",
+      "sha256": "7005a85bb36fe927892c322506901df48e5a5909acebca0216e5e97d14e30df7"
+    },
+    {
+      "path": "analysis/exploratory_followup_2026-11-17/tables/conditional_ce_minus_er.csv",
+      "sha256": "392f4339d615a26d5dbafe8880ee8f9d5230cb7b37eb9ddd1700495129009844"
+    },
+    {
+      "path": "analysis/robustness_reevaluation_2026-11-16/hyperparameter_variability/tables/across_ei_summary.csv",
+      "sha256": "6ec63897afc24428d21feec78e827cd737ee3d0e37032e1fe25530d32d8e58b8"
+    }
+  ],
+  "script_sha256": "469ccdc1d314d106431ff0ea1c7a184479aba8c0863ee48030d2e085764d1698",
+  "settings": {
+    "shared_ei_percent": [
+      0,
+      20,
+      40,
+      60,
+      80,
+      100
+    ],
+    "normalization": "spectral_radius",
+    "sign_sweep_seeds": 200,
+    "input_figure_levels": [
+      0.1,
+      1.5
+    ],
+    "inference": "reuse existing paired seed-bootstrap intervals",
+    "variance_allocation": "equal split of interactions; original family-specific E/I summaries"
+  },
+  "validation": "Complete grid counts, six shared E/I levels, interval ordering, 100% variance sums and unchanged source hashes checked."
+}

@@ -1,0 +1,2 @@
+# Additional dependency for mc_narma_crossover.py; use the existing cel environment.
+reservoirpy==0.4.2
