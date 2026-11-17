@@ -4,7 +4,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32G
-#SBATCH --time=1-00:00:00
+#SBATCH --time=04:00:00
 #SBATCH --array=0-19
 #SBATCH --output=logs/%x-%A_%a.out
 #SBATCH --error=logs/%x-%A_%a.err
@@ -40,7 +40,7 @@ fi
   --rho-values 0.6 0.95 1.05 \
   --leak-values 0.6 1.0 \
   --input-scales 0.1 0.5 1.0 1.5 \
-  --n-repeats "${TOTAL_REPEATS:-200}" \
+  --n-repeats "${TOTAL_REPEATS:-100}" \
   --seed "${BASE_SEED:-20261117}" \
   --repeat-seed-stride 100000 \
   --repeat-split "${SLURM_ARRAY_TASK_COUNT:-1}" \

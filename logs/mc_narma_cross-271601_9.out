@@ -1,0 +1,92 @@
+{
+  "configurations_per_condition": 24,
+  "fractions_percent": [
+    20.0,
+    24.0,
+    28.0,
+    32.0,
+    36.0,
+    40.0
+  ],
+  "families": [
+    "cel_matched",
+    "matched_er"
+  ],
+  "normalizations": [
+    "spectral_radius",
+    "original_radius"
+  ],
+  "assigned_repeats": [
+    9,
+    29,
+    49,
+    69,
+    89
+  ],
+  "rows_this_task": 2880,
+  "rows_full_run": 57600,
+  "neuron_bias": 0,
+  "known_edge_inhibitory_fraction": 0.2425287356321839,
+  "completed_edges": 3604,
+  "experiment_id": "f23b6c01b825dc4d9914da03b8f90d56c408fccaf1c4b5c9c87068897e26149e"
+}
+[saved] repeat_0009__cel_matched__ei_20.csv: 48 configurations
+[saved] repeat_0009__cel_matched__ei_24.csv: 48 configurations
+[saved] repeat_0009__cel_matched__ei_28.csv: 48 configurations
+[saved] repeat_0009__cel_matched__ei_32.csv: 48 configurations
+[saved] repeat_0009__cel_matched__ei_36.csv: 48 configurations
+[saved] repeat_0009__cel_matched__ei_40.csv: 48 configurations
+[saved] repeat_0009__matched_er__ei_20.csv: 48 configurations
+[saved] repeat_0009__matched_er__ei_24.csv: 48 configurations
+[saved] repeat_0009__matched_er__ei_28.csv: 48 configurations
+[saved] repeat_0009__matched_er__ei_32.csv: 48 configurations
+[saved] repeat_0009__matched_er__ei_36.csv: 48 configurations
+[saved] repeat_0009__matched_er__ei_40.csv: 48 configurations
+[saved] repeat_0029__cel_matched__ei_20.csv: 48 configurations
+[saved] repeat_0029__cel_matched__ei_24.csv: 48 configurations
+[saved] repeat_0029__cel_matched__ei_28.csv: 48 configurations
+[saved] repeat_0029__cel_matched__ei_32.csv: 48 configurations
+[saved] repeat_0029__cel_matched__ei_36.csv: 48 configurations
+[saved] repeat_0029__cel_matched__ei_40.csv: 48 configurations
+[saved] repeat_0029__matched_er__ei_20.csv: 48 configurations
+[saved] repeat_0029__matched_er__ei_24.csv: 48 configurations
+[saved] repeat_0029__matched_er__ei_28.csv: 48 configurations
+[saved] repeat_0029__matched_er__ei_32.csv: 48 configurations
+[saved] repeat_0029__matched_er__ei_36.csv: 48 configurations
+[saved] repeat_0029__matched_er__ei_40.csv: 48 configurations
+[saved] repeat_0049__cel_matched__ei_20.csv: 48 configurations
+[saved] repeat_0049__cel_matched__ei_24.csv: 48 configurations
+[saved] repeat_0049__cel_matched__ei_28.csv: 48 configurations
+[saved] repeat_0049__cel_matched__ei_32.csv: 48 configurations
+[saved] repeat_0049__cel_matched__ei_36.csv: 48 configurations
+[saved] repeat_0049__cel_matched__ei_40.csv: 48 configurations
+[saved] repeat_0049__matched_er__ei_20.csv: 48 configurations
+[saved] repeat_0049__matched_er__ei_24.csv: 48 configurations
+[saved] repeat_0049__matched_er__ei_28.csv: 48 configurations
+[saved] repeat_0049__matched_er__ei_32.csv: 48 configurations
+[saved] repeat_0049__matched_er__ei_36.csv: 48 configurations
+[saved] repeat_0049__matched_er__ei_40.csv: 48 configurations
+[saved] repeat_0069__cel_matched__ei_20.csv: 48 configurations
+[saved] repeat_0069__cel_matched__ei_24.csv: 48 configurations
+[saved] repeat_0069__cel_matched__ei_28.csv: 48 configurations
+[saved] repeat_0069__cel_matched__ei_32.csv: 48 configurations
+[saved] repeat_0069__cel_matched__ei_36.csv: 48 configurations
+[saved] repeat_0069__cel_matched__ei_40.csv: 48 configurations
+[saved] repeat_0069__matched_er__ei_20.csv: 48 configurations
+[saved] repeat_0069__matched_er__ei_24.csv: 48 configurations
+[saved] repeat_0069__matched_er__ei_28.csv: 48 configurations
+[saved] repeat_0069__matched_er__ei_32.csv: 48 configurations
+[saved] repeat_0069__matched_er__ei_36.csv: 48 configurations
+[saved] repeat_0069__matched_er__ei_40.csv: 48 configurations
+[saved] repeat_0089__cel_matched__ei_20.csv: 48 configurations
+[saved] repeat_0089__cel_matched__ei_24.csv: 48 configurations
+[saved] repeat_0089__cel_matched__ei_28.csv: 48 configurations
+[saved] repeat_0089__cel_matched__ei_32.csv: 48 configurations
+[saved] repeat_0089__cel_matched__ei_36.csv: 48 configurations
+[saved] repeat_0089__cel_matched__ei_40.csv: 48 configurations
+[saved] repeat_0089__matched_er__ei_20.csv: 48 configurations
+[saved] repeat_0089__matched_er__ei_24.csv: 48 configurations
+[saved] repeat_0089__matched_er__ei_28.csv: 48 configurations
+[saved] repeat_0089__matched_er__ei_32.csv: 48 configurations
+[saved] repeat_0089__matched_er__ei_36.csv: 48 configurations
+[saved] repeat_0089__matched_er__ei_40.csv: 48 configurations
