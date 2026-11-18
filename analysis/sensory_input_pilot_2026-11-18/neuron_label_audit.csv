@@ -1,0 +1,298 @@
+node_index,neuron,selected_sensory,legacy_sensory_sheet,type_annotation
+0,ADAL,False,False,Interneuron
+1,ADAR,False,False,Interneuron
+2,ADEL,True,True,"Sensory neuron (mechanosensory, possible pheromone-sensory)"
+3,ADER,True,True,"Sensory neuron (mechanosensory, possible pheromone-sensory)"
+4,ADFL,True,True,"Sensory neuron (chemosensory, oxygen- sensory)"
+5,ADFR,True,True,"Sensory neuron (chemosensory, oxygen- sensory)"
+6,ADLL,True,True,"Sensory neuron (chemosensory, odorsensory, pheromone-sensory, nociceptive)"
+7,ADLR,True,True,"Sensory neuron (chemosensory, odorsensory, pheromone-sensory, nociceptive)"
+8,AFDL,True,True,Sensory neuron (thermosensory and CO2- sensory)
+9,AFDR,True,True,Sensory neuron (thermosensory and CO2- sensory)
+10,AIAL,False,False,Interneuron
+11,AIAR,False,False,Interneuron
+12,AIBL,False,False,Interneuron
+13,AIBR,False,False,Interneuron
+14,AIML,False,False,Interneuron
+15,AIMR,False,False,Interneuron
+16,AINL,False,False,Interneuron
+17,AINR,False,False,Interneuron
+18,AIYL,False,False,Interneuron
+19,AIYR,False,False,Interneuron
+20,AIZL,False,False,Interneuron
+21,AIZR,False,False,Interneuron
+22,ALA,False,False,Interneuron
+23,ALML,True,True,Sensory neuron (mechanosensory)
+24,ALMR,True,True,Sensory neuron (mechanosensory)
+25,ALNL,True,True,Sensory neuron (minor oxygen-sensory)
+26,ALNR,True,True,Sensory neuron (minor oxygen-sensory)
+27,AQR,True,True,Sensory neuron (oxygen- and minor CO2-sensory)
+28,AS01,False,False,
+29,AS02,False,False,
+30,AS03,False,False,
+31,AS04,False,False,
+32,AS05,False,False,
+33,AS06,False,False,
+34,AS07,False,False,
+35,AS08,False,False,
+36,AS09,False,False,
+37,AS10,False,False,Motor neuron
+38,AS11,False,False,Motor neuron
+39,ASEL,True,True,"Sensory neuron (chemosensory (gustatory), CO2-sensory)"
+40,ASER,True,True,"Sensory neuron (chemosensory (gustatory), CO2-sensory)"
+41,ASGL,True,True,Sensory neuron (chemosensory (gustatory))
+42,ASGR,True,True,Sensory neuron (chemosensory (gustatory))
+43,ASHL,True,True,"Sensory neuron (polymodal nociceptive for osmo-, mechano- and odorsensation)"
+44,ASHR,True,True,"Sensory neuron (polymodal nociceptive for osmo-, mechano- and odorsensation)"
+45,ASIL,True,True,"Sensory neuron (chemosensory (gustatory), thermosensory)"
+46,ASIR,True,True,"Sensory neuron (chemosensory (gustatory), thermosensory)"
+47,ASJL,True,True,Sensory neuron
+48,ASJR,True,True,Sensory neuron
+49,ASKL,True,True,"Sensory neuron (chemosensory (gustatory), pheromone-sensory)"
+50,ASKR,True,True,"Sensory neuron (chemosensory (gustatory), pheromone-sensory)"
+51,AUAL,False,False,Interneuron
+52,AUAR,False,False,Interneuron
+53,AVAL,False,False,Interneuron
+54,AVAR,False,False,Interneuron
+55,AVBL,False,False,Interneuron
+56,AVBR,False,False,Interneuron
+57,AVDL,False,False,Interneuron
+58,AVDR,False,False,Interneuron
+59,AVEL,False,False,Interneuron
+60,AVER,False,False,Interneuron
+61,AVFL,False,False,Interneuron
+62,AVFR,False,False,Interneuron
+63,AVG,False,True,Interneuron
+64,AVHL,False,False,Interneuron
+65,AVHR,False,False,Interneuron
+66,AVJL,False,False,Interneuron
+67,AVJR,False,False,Interneuron
+68,AVKL,False,False,Interneuron
+69,AVKR,False,False,Interneuron
+70,AVL,False,False,"Polymodal (interneuron, motor neuron)"
+71,AVM,True,True,Sensory neuron (mechanosensory)
+72,AWAL,True,True,Sensory neuron (odorsensory)
+73,AWAR,True,True,Sensory neuron (odorsensory)
+74,AWBL,True,True,Sensory neuron (odorsensory) 
+75,AWBR,True,True,Sensory neuron (odorsensory) 
+76,AWCL,True,True,Sensory neuron (odorsensory and thermosensory)
+77,AWCR,True,True,Sensory neuron (odorsensory and thermosensory)
+78,BAGL,True,True,Sensory neuron
+79,BAGR,True,True,Sensory neuron
+80,BDUL,False,False,Interneuron
+81,BDUR,False,False,Interneuron
+82,CEPDL,True,True,Sensory neuron (mechanosensory)
+83,CEPDR,True,True,Sensory neuron (mechanosensory)
+84,CEPVL,True,True,Sensory neuron (mechanosensory)
+85,CEPVR,True,True,Sensory neuron (mechanosensory)
+86,DA01,False,False,
+87,DA02,False,False,
+88,DA03,False,False,
+89,DA04,False,False,
+90,DA05,False,False,
+91,DA06,False,False,
+92,DA07,False,False,
+93,DA08,False,False,
+94,DA09,False,False,
+95,DB01,False,False,
+96,DB02,False,False,
+97,DB03,False,False,
+98,DB04,False,False,
+99,DB05,False,False,
+100,DB06,False,False,
+101,DB07,False,False,
+102,DD01,False,False,
+103,DD02,False,False,
+104,DD03,False,False,
+105,DD04,False,False,
+106,DD05,False,False,
+107,DD06,False,False,
+108,DVA,False,False,"Interneuron, stretch sensitive sensory neuron"
+109,DVB,False,False,"Polymodal (motor neuron, interneuron) "
+110,DVC,False,False,Interneuron
+111,FLPL,True,True,Sensory neuron (polymodal nociceptive for mechanosensation and thermosensation)
+112,FLPR,True,True,Sensory neuron (polymodal nociceptive for mechanosensation and thermosensation)
+113,HSNL,False,False,Motor neuron
+114,HSNR,False,False,Motor neuron
+115,I1L,False,False,Pharyngeal interneuron (also anterior sensory?)
+116,I1R,False,False,Pharyngeal interneuron (also anterior sensory?)
+117,I2L,False,False,Pharyngeal interneuron (also anterior sensory?)
+118,I2R,False,False,Pharyngeal interneuron (also anterior sensory?)
+119,I3,False,False,Pharyngeal interneuron (also anterior sensory?)
+120,I4,False,False,Pharyngeal interneuron
+121,I5,False,False,Pharyngeal interneuron (can also be a -posterior-sensory neuron or both)
+122,I6,False,False,Pharyngeal interneuron (also posterior sensory?)
+123,IL1DL,True,True,"Polymodal neuron (sensory neuron (mechanosensory), motor neuron, interneuron]"
+124,IL1DR,True,True,"Polymodal neuron (sensory neuron (mechanosensory), motor neuron, interneuron]"
+125,IL1L,True,True,"Polymodal neuron (sensory neuron (mechanosensory), motor neuron, interneuron]"
+126,IL1R,True,True,"Polymodal neuron (sensory neuron (mechanosensory), motor neuron, interneuron]"
+127,IL1VL,True,True,"Polymodal neuron (sensory neuron (mechanosensory), motor neuron, interneuron]"
+128,IL1VR,True,True,"Polymodal neuron (sensory neuron (mechanosensory), motor neuron, interneuron]"
+129,IL2DL,True,True,"Sensory neuron (polymodal sensory?; chemosensory?, mechanosensory?)"
+130,IL2DR,True,True,"Sensory neuron (polymodal sensory?; chemosensory?, mechanosensory?)"
+131,IL2L,True,True,"Sensory neuron (polymodal sensory?; chemosensory?, mechanosensory?)"
+132,IL2R,True,True,"Sensory neuron (polymodal sensory?; chemosensory?, mechanosensory?)"
+133,IL2VL,True,True,"Sensory neuron (polymodal sensory?; chemosensory?, mechanosensory?)"
+134,IL2VR,True,True,"Sensory neuron (polymodal sensory?; chemosensory?, mechanosensory?)"
+135,LUAL,False,False,Interneuron
+136,LUAR,False,False,Interneuron
+137,M1,False,False,Pharyngeal motor neuron
+138,M2L,False,False,Pharyngeal motor neuron
+139,M2R,False,False,Pharyngeal motor neuron
+140,M3L,False,False,Pharyngeal motor neuron (also possibly proprioceptive sensory) 
+141,M3R,False,False,Pharyngeal motor neuron (also possibly proprioceptive sensory) 
+142,M4,False,False,Pharyngeal motor neuron
+143,MCL,False,False,Pharyngeal motor neuron (also putative sensory) 
+144,MCR,False,False,Pharyngeal motor neuron (also putative sensory) 
+145,MI,False,False,"Pharyngeal motor neuron, interneuron "
+146,NSML,False,False,"Pharyngeal neurosecretory, motor, sensory (proprioceptive/mechanosensory) neuron"
+147,NSMR,False,False,"Pharyngeal neurosecretory, motor, sensory (proprioceptive/mechanosensory) neuron"
+148,OLLL,True,True,Sensory neuron (mechanosensory)
+149,OLLR,True,True,Sensory neuron (mechanosensory)
+150,OLQDL,True,True,"Polymodal neuron (sensory neuron (mechanosensory), interneuron)"
+151,OLQDR,True,True,"Polymodal neuron (sensory neuron (mechanosensory), interneuron)"
+152,OLQVL,True,True,"Polymodal neuron (sensory neuron (mechanosensory), interneuron)"
+153,OLQVR,True,True,"Polymodal neuron (sensory neuron (mechanosensory), interneuron)"
+154,PDA,False,False,Motor neuron
+155,PDB,False,False,"Motor neuron in the hermaphrodite, motor neuron and interneuron in the male"
+156,PDEL,True,True,Sensory neuron
+157,PDER,True,True,Sensory neuron
+158,PHAL,True,True,Sensory neuron (chemosensory)
+159,PHAR,True,True,Sensory neuron (chemosensory)
+160,PHBL,True,True,Sensory neuron (chemosensory)
+161,PHBR,True,True,Sensory neuron (chemosensory)
+162,PHCL,True,True,"Sensory neuron (thermosensory (thermonociceptor), mechanosensory?)"
+163,PHCR,True,True,"Sensory neuron (thermosensory (thermonociceptor), mechanosensory?)"
+164,PLNL,True,True,"Sensory neuron (minor oxygen-sensory), interneuron"
+165,PLNR,True,True,"Sensory neuron (minor oxygen-sensory), interneuron"
+166,PQR,True,True,Sensory neuron (oxygen- and minor CO2-sensory)
+167,PVCL,False,False,Ventral cord interneuron
+168,PVCR,False,False,Ventral cord interneuron
+169,PVDL,True,False,Sensory neuron (polymodal nociceptive for mechanosensation and thermosensation)
+170,PVDR,True,False,Sensory neuron (polymodal nociceptive for mechanosensation and thermosensation)
+171,PVM,True,True,Sensory neuron (mechanosensory)
+172,PVNL,False,False,"Interneuron, motor neuron"
+173,PVNR,False,False,"Interneuron, motor neuron"
+174,PVPL,False,False,Interneuron
+175,PVPR,False,False,Interneuron
+176,PVQL,False,False,Interneuron
+177,PVQR,False,False,Interneuron
+178,PVR,False,True,Interneuron
+179,PVT,False,False,Interneuron
+180,PVWL,False,False,Interneuron
+181,PVWR,False,False,Interneuron
+182,RIAL,False,False,Interneuron
+183,RIAR,False,False,Interneuron
+184,RIBL,False,False,Interneuron
+185,RIBR,False,False,Interneuron
+186,RICL,False,False,Interneuron
+187,RICR,False,False,Interneuron
+188,RID,False,False,"Motor neuron, interneuron"
+189,RIFL,False,False,Interneuron
+190,RIFR,False,False,Interneuron
+191,RIGL,False,False,Interneuron
+192,RIGR,False,False,Interneuron
+193,RIH,False,False,Interneuron
+194,RIML,False,False,"Motor neuron, interneuron"
+195,RIMR,False,False,"Motor neuron, interneuron"
+196,RIPL,False,False,Ring/Pharynx interneuron
+197,RIPR,False,False,Ring/Pharynx interneuron
+198,RIR,False,False,Ring interneuron
+199,RIS,False,False,Interneuron
+200,RIVL,False,False,"Polymodal (interneuron, motor neuron)"
+201,RIVR,False,False,"Polymodal (interneuron, motor neuron)"
+202,RMDDL,False,False,Motor neuron
+203,RMDDR,False,False,Motor neuron
+204,RMDL,False,False,Motor neuron
+205,RMDR,False,False,Motor neuron
+206,RMDVL,False,False,Motor neuron
+207,RMDVR,False,False,Motor neuron
+208,RMED,False,False,Motor neuron
+209,RMEL,False,False,Motor neuron
+210,RMER,False,False,Motor neuron
+211,RMEV,False,False,Motor neuron
+212,RMFL,False,False,Motor neuron
+213,RMFR,False,False,Motor neuron
+214,RMGL,False,False,Interneuron
+215,RMGR,False,False,Interneuron
+216,RMHL,False,False,Motor neuron
+217,RMHR,False,False,Motor neuron
+218,SAADL,False,False,"Interneuron, (sublateral) motor neuron"
+219,SAADR,False,False,"Interneuron, (sublateral) motor neuron"
+220,SAAVL,False,False,"Interneuron, (sublateral) motor neuron"
+221,SAAVR,False,False,"Interneuron, (sublateral) motor neuron"
+222,SABD,False,False,"Interneuron, (sublateral) motor neuron"
+223,SABVL,False,False,"Interneuron, (sublateral) motor neuron"
+224,SABVR,False,False,"Interneuron, (sublateral) motor neuron"
+225,SDQL,False,False,"Interneuron, sensory neuron (minor oxygen-sensory)"
+226,SDQR,False,False,"Interneuron, sensory neuron (minor oxygen-sensory)"
+227,SIADL,False,False,"Interneuron, (sublateral) motor neuron"
+228,SIADR,False,False,"Interneuron, (sublateral) motor neuron"
+229,SIAVL,False,False,"Interneuron, (sublateral) motor neuron"
+230,SIAVR,False,False,"Interneuron, (sublateral) motor neuron"
+231,SIBDL,False,False,"Interneuron, (sublateral) motor neuron"
+232,SIBDR,False,False,"Interneuron, (sublateral) motor neuron"
+233,SIBVL,False,False,"Interneuron, (sublateral) motor neuron"
+234,SIBVR,False,False,"Interneuron, (sublateral) motor neuron"
+235,SMBDL,False,False,Motor neuron
+236,SMBDR,False,False,Motor neuron
+237,SMBVL,False,False,Motor neuron
+238,SMBVR,False,False,Motor neuron
+239,SMDDL,False,False,Motor neuron
+240,SMDDR,False,False,Motor neuron
+241,SMDVL,False,False,Motor neuron
+242,SMDVR,False,False,Motor neuron
+243,URADL,False,True,"Motor neuron, putative sensory neuron"
+244,URADR,False,True,"Motor neuron, putative sensory neuron"
+245,URAVL,False,True,"Motor neuron, putative sensory neuron"
+246,URAVR,False,True,"Motor neuron, putative sensory neuron"
+247,URBL,False,True,Interneuron
+248,URBR,False,True,Interneuron
+249,URXL,True,True,"Sensory neuron (oxygen- and minor CO2 -sensory), also ring interneuron"
+250,URXR,True,True,"Sensory neuron (oxygen- and minor CO2 -sensory), also ring interneuron"
+251,URYDL,True,True,Sensory neuron
+252,URYDR,True,True,Sensory neuron
+253,URYVL,True,True,Sensory neuron
+254,URYVR,True,True,Sensory neuron
+255,VA01,False,False,
+256,VA02,False,False,
+257,VA03,False,False,
+258,VA04,False,False,
+259,VA05,False,False,
+260,VA06,False,False,
+261,VA07,False,False,
+262,VA08,False,False,
+263,VA09,False,False,
+264,VA10,False,False,Motor neuron
+265,VA11,False,False,Motor neuron
+266,VA12,False,False,Motor neuron
+267,VB01,False,False,
+268,VB02,False,False,
+269,VB03,False,False,
+270,VB04,False,False,
+271,VB05,False,False,
+272,VB06,False,False,
+273,VB07,False,False,
+274,VB08,False,False,
+275,VB09,False,False,
+276,VB10,False,False,"Motor neuron, sensory neuron (proprioceptive)"
+277,VB11,False,False,"Motor neuron, sensory neuron (proprioceptive)"
+278,VC01,False,False,
+279,VC02,False,False,
+280,VC03,False,False,
+281,VC04,False,False,
+282,VC05,False,False,
+283,VC06,False,False,
+284,VD01,False,False,
+285,VD02,False,False,
+286,VD03,False,False,
+287,VD04,False,False,
+288,VD05,False,False,
+289,VD06,False,False,
+290,VD07,False,False,
+291,VD08,False,False,
+292,VD09,False,False,
+293,VD10,False,False,Motor neuron
+294,VD11,False,False,Motor neuron
+295,VD12,False,False,Motor neuron
+296,VD13,False,False,Motor neuron

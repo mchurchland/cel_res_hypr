@@ -1,0 +1,23 @@
+{
+  "reason": "Canonicalize in-memory tuple parameters to JSON lists before strict resume comparison.",
+  "original_runner_sha256": "bda870a013e22bff52f096a997b9902633d1d1fcc9ae075f766c6db41cff75cc",
+  "updated_runner_sha256": "93d3f22832f264a180119dcdc285fbdd5c5a15747128ce4ec7f1e5adef83e5fd",
+  "simulation_functions_AST_identical": [
+    "evaluate",
+    "run_repeat"
+  ],
+  "other_code_hashes_unchanged": true,
+  "original_sources_retained": "analysis/stp_mc_narma_full_sweep_2026-11-18/sources",
+  "completed_realizations_reused": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "remaining_realizations": [
+    4,
+    5,
+    6,
+    7
+  ]
+}

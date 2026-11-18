@@ -1,0 +1,4 @@
+-r requirements-stp-controls.txt
+# NVIDIA-maintained CUDA backend and CUDA 12 toolkit dependencies.
+# Install in the cluster's existing GPU-capable cel environment before submitting.
+numba-cuda[cu12]

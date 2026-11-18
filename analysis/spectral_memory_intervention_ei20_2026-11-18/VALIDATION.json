@@ -1,0 +1,19 @@
+{
+  "n_realizations": 20,
+  "n_evaluations": 1800,
+  "n_delay_scores": 54000,
+  "complete_design": true,
+  "max_curve_sum_error": 3.5837292671203613e-06,
+  "finite_scores": true,
+  "max_radius_change": 2.5496687539039442e-08,
+  "max_frobenius_pair_mismatch": 1.9103294002231763e-08,
+  "max_frobenius_prediction_error": 1.7498745313870856e-08,
+  "analysis_code_sha256": "01be9816fea3c0de10cb0526ee57dc11cfcea8c6148e2b6428bcb90bd6b6b402",
+  "bootstrap": {
+    "n_resamples": 5000,
+    "method": "percentile",
+    "unit": "paired realization",
+    "seed": 20261118
+  },
+  "intervals": "Pointwise exploratory 95% intervals; no multiplicity correction."
+}

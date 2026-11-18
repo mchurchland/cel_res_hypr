@@ -1,0 +1,24 @@
+{
+  "n_realizations": 8,
+  "total_condition_pairs": 1536,
+  "new_condition_pairs": 384,
+  "reused_condition_pairs": 1152,
+  "original_scores_reused_exactly": true,
+  "all_scores_finite": true,
+  "complete_design": true,
+  "max_memory_curve_error": 3.1097151804715395e-06,
+  "stp_states_bounded": true,
+  "n_facilitating": 148,
+  "n_depressing": 149,
+  "initial_radius_grid": false,
+  "dynamic_renormalization": false,
+  "mixed_tests_passed": 4,
+  "shared_analysis_code_sha256": "97a50a76f3c965336e3025ac9be729c17e465508a8b03b6972e427a9ee1d1eb7",
+  "analysis_code_sha256": "b30a11f9063836f234cf83e4ee23a7879163cb73e168ed3c82701b829dd6f56a",
+  "bootstrap": {
+    "n_resamples": 5000,
+    "method": "percentile",
+    "unit": "paired realization",
+    "seed": 20261118
+  }
+}

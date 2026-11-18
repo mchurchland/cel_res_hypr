@@ -1,0 +1,47 @@
+{
+  "settings": {
+    "out_dir": "/home/saki/Documents/Organized/Reed/Thesis/analysis/ei_network_mode_video",
+    "seed": 20261117,
+    "rho": 0.95,
+    "leak": 1.0,
+    "input_scale": 0.1,
+    "normalization": "spectral_radius",
+    "washout": 500,
+    "analysis_steps": 2000,
+    "fps": 15,
+    "seconds_per_condition": 8.0,
+    "steps_per_frame": 2,
+    "max_edge_width": 2.4
+  },
+  "fractions": [
+    0.0,
+    0.2,
+    0.4,
+    0.6,
+    0.8,
+    1.0
+  ],
+  "sources": {
+    "Connectome/ce_adj.npy": "3efb994aaf7ef7981633f51adfdcff9b82f882eb4e9619b20321617f66681937",
+    "Connectome/ce_unknown_sign_weights.npy": "7ee3cfdd637994431b7911da53249e2ba8e2a9840e61599be4b376caad3d5e95"
+  },
+  "unknown_sign_inhibitory_fraction": 0.2425287356321839,
+  "code": {
+    "tools/animate_ei_network_modes.py": "e63b4c98ef47c412c2ad05c910fd7dc19ceaff1b5ee6724728c37b183c8a57c7",
+    "mc_narma_crossover.py": "cf7e0034b1b809a2497106949ff9fc7f3108eb2f3ac1f6104fc715098f8de9f0",
+    "util/util.py": "644c26d045ee5785cb0719cdc4bcc6b1c7e38a35db6d4d9c4a04fe792f4d9d1b",
+    "network_stats/run_one.py": "ba808d029ff361c1af7c560a5f7a6e84a7a2d0da10fa7fcf7460ab1380145201",
+    "architecture_variant_figures/make_weighted_graph_examples.py": "c9836fe7dea8a32ae927e8444bd71854a2bab0ba652bd721db34d77c17df9a2f"
+  },
+  "packages": {
+    "numpy": "2.2.6",
+    "torch": "2.7.1+cu126",
+    "matplotlib": "3.10.0",
+    "sklearn": "1.8.0",
+    "networkx": "3.5"
+  },
+  "width_rule": "max_width * abs(W_post) / max(abs(W_post)), separately per model and fraction; no minimum width",
+  "activity_color": "one shared fixed scale across models and fractions",
+  "pca": "sklearn PCA on mean-centered post-washout activity; PR=1/sum(explained_variance_ratio**2)",
+  "inference": "One illustrative realization at one parameter setting; no uncertainty interval or task score"
+}

@@ -1,0 +1,10 @@
+# Add these to the existing cel environment before submitting; jobs never install.
+reservoirpy==0.4.2
+numba>=0.61.2
+numpy>=1.24,<2.3
+scipy
+scikit-learn
+pandas
+torch
+networkx
+matplotlib

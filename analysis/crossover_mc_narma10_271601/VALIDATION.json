@@ -1,0 +1,29 @@
+{
+  "rows": 57600,
+  "repeats": 100,
+  "shards": 1200,
+  "chunks": 20,
+  "merged_matches_all_shards": true,
+  "source_code_matches": {
+    "mc_narma_crossover.py": true,
+    "network_stats/temporal_tasks.py": true,
+    "network_stats/run_one.py": true,
+    "network_stats/stats.py": true,
+    "network_stats/stats_util.py": true,
+    "util/util.py": true
+  },
+  "source_data_matches": {
+    "Connectome/ce_adj.npy": true,
+    "Connectome/ce_unknown_sign_weights.npy": true
+  },
+  "devices": [
+    "NVIDIA A30",
+    "NVIDIA L40S"
+  ],
+  "source_hashes_unchanged": true,
+  "all_numeric_values_finite": true,
+  "rows_filtered": 0,
+  "bootstrap_resamples": 2000,
+  "uncertainty_unit": "whole paired realization",
+  "analysis_and_factorial_unit_tests_passed": 11
+}

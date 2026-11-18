@@ -1,0 +1,8 @@
+{
+  "widths_normalized_independently_for_each_model_and_fraction": true,
+  "maximum_display_width_pt": 2.4,
+  "all_edge_counts": 3604,
+  "all_spectral_radii_match_target_095": true,
+  "states_finite_and_bounded": true,
+  "unit_tests_passed": 5
+}
