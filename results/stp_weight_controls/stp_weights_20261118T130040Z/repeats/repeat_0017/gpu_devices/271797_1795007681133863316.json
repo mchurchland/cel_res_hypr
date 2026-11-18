@@ -1,0 +1,8 @@
+{
+  "compute_capability": [
+    8,
+    0
+  ],
+  "name": "NVIDIA A30",
+  "simulated": false
+}

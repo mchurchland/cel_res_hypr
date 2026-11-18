@@ -1,0 +1,7 @@
+{
+  "analysis_code_sha256": "7662a1e55f7fb11e9dde6659abba8e85fe82e635312965c17c5d37034847bb2a",
+  "experiment_id": "d62c4049cbc4959bc560a6774e238351826a8cfe279e6b915361846d3d8b7f40",
+  "n_bootstrap": 2000,
+  "source_csv_sha256": "009be66364c3e0e4989fb699e7bc54139b888cc4d754275347f5c1b51b8d913f",
+  "unit": "paired computational realization; configurations are not independent biological samples"
+}
