@@ -36,10 +36,10 @@ fi
   --ce-unknown-sign-weights "${CE_UNKNOWN_SIGN_WEIGHTS:-Connectome/ce_unknown_sign_weights.npy}" \
   --families cel_matched matched_er \
   --normalization-modes spectral_radius original_radius \
-  --sign-fracs 0.20 0.24 0.28 0.32 0.36 0.40 \
+  --sign-fracs 0 0.1 0.2 0.3 0.4 0.5 \
   --rho-values 0.6 0.95 1.05 \
   --leak-values 0.6 1.0 \
-  --input-scales 0.1 0.5 1.0 1.5 \
+  --input-scales 0.001 0.05 0.01 0.1 0.5 \
   --n-repeats "${TOTAL_REPEATS:-100}" \
   --seed "${BASE_SEED:-20261117}" \
   --repeat-seed-stride 100000 \
