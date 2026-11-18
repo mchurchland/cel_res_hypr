@@ -1,0 +1,104 @@
+{
+  "experiment_id": "b996e8c9b89f4a01808ea739d96f4272f11d33d5842483f86579ac9863ee47e4",
+  "spec": {
+    "protocol": "mc-narma10-crossover-v1",
+    "families": [
+      "cel_matched",
+      "matched_er"
+    ],
+    "normalizations": [
+      "spectral_radius",
+      "original_radius"
+    ],
+    "sign_fracs": [
+      0.0,
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5
+    ],
+    "rho_values": [
+      0.6,
+      0.95,
+      1.05
+    ],
+    "leak_values": [
+      0.6,
+      1.0
+    ],
+    "input_scales": [
+      0.001,
+      0.05,
+      0.01,
+      0.1,
+      0.5
+    ],
+    "neuron_bias": 0.0,
+    "n_repeats": 100,
+    "seed": 20261117,
+    "repeat_seed_stride": 100000,
+    "tasks": {
+      "washout": 500,
+      "train": 1500,
+      "validation": 500,
+      "test": 500,
+      "mc_max_delay": 30,
+      "mc_ridge_alpha": 0.0001,
+      "narma_burnin": 1000,
+      "narma_ridge_alphas": [
+        1e-08,
+        1e-06,
+        0.0001,
+        0.01,
+        1.0
+      ]
+    },
+    "seed_offsets": {
+      "network": 1,
+      "unknown_sign": 23000000,
+      "mc_input": 31000003,
+      "narma_input": 37000003
+    },
+    "sources": [
+      {
+        "path": "/home/milesc/Thesis/Connectome/ce_adj.npy",
+        "sha256": "3efb994aaf7ef7981633f51adfdcff9b82f882eb4e9619b20321617f66681937"
+      },
+      {
+        "path": "/home/milesc/Thesis/Connectome/ce_unknown_sign_weights.npy",
+        "sha256": "7ee3cfdd637994431b7911da53249e2ba8e2a9840e61599be4b376caad3d5e95"
+      }
+    ],
+    "code_sha256": {
+      "mc_narma_crossover.py": "cf7e0034b1b809a2497106949ff9fc7f3108eb2f3ac1f6104fc715098f8de9f0",
+      "network_stats/temporal_tasks.py": "7090bd9f213df8153096e3a181165d415a6a662f102d1a7dd9e6890db84c48de",
+      "network_stats/run_one.py": "ba808d029ff361c1af7c560a5f7a6e84a7a2d0da10fa7fcf7460ab1380145201",
+      "network_stats/stats.py": "6c5e0335c5b81a720619eee35d5832f1e5887454b717c3b122e592eb30d7c494",
+      "network_stats/stats_util.py": "943653f7dff92b6eb3b51a6cb22cf97e5c7cbf1bb5e76f76bacad8b57515f43c",
+      "util/util.py": "644c26d045ee5785cb0719cdc4bcc6b1c7e38a35db6d4d9c4a04fe792f4d9d1b"
+    },
+    "packages": {
+      "numpy": "2.2.6",
+      "torch": "2.8.0",
+      "scipy": "1.15.3",
+      "scikit-learn": "1.7.2",
+      "reservoirpy": "0.4.2"
+    },
+    "python": "3.10.18",
+    "narma_generator": "reservoirpy.datasets.narma(order=10,a1=.3,a2=.05,b=1.5,c=.1)",
+    "narma_generator_sha256": "0bbc3c776a7a32d03fb98f8f84ac0a14f84b8fb78eaa35eaa633808b78fa1b75",
+    "narma_alignment": "package inputs u[9:-1] paired with returned y[10:]; discard target burn-in",
+    "narma_readout": "sklearn Ridge; train-only fit; validation chooses alpha; test held out",
+    "mc_readout": "existing compute_MC; float64 readout; float32 reservoir dynamics"
+  },
+  "repeat_ids": [
+    10,
+    30,
+    50,
+    70,
+    90
+  ],
+  "device": "cuda:0",
+  "device_name": "NVIDIA A30"
+}
