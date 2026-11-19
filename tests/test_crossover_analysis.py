@@ -1,5 +1,9 @@
 import unittest
+import itertools
+from pathlib import Path
+import tempfile
 import numpy as np
+import pandas as pd
 
 from util.crossover_analysis import bootstrap_panel, curve_crossings, summarize_crossing
 from util.hyperparameter_variability import factorial_variability
@@ -47,6 +51,59 @@ class TestCrossoverAnalysis(unittest.TestCase):
         pure = factorial_variability((a*b).ravel(), [2, 2, 2])
         np.testing.assert_allclose(pure["allocated_fraction"], [[.5, .5, 0]])
         self.assertEqual(len(pure["subsets"]), 7)
+
+
+class TestExpandedCrossoverGrid(unittest.TestCase):
+    def fixture(self):
+        from tools.analyze_mc_narma_crossover import FAMILIES, NORMS
+        spec = dict(n_repeats=2, families=FAMILIES, normalizations=NORMS,
+                    sign_fracs=[0., .1, .2, .3, .4, .5], rho_values=[.6, .95, 1.05],
+                    leak_values=[.6, 1.], input_scales=[.001, .05, .01, .1, .5],
+                    tasks=dict(mc_max_delay=30, mc_ridge_alpha=.0001))
+        rows = []
+        for repeat, family, norm, fraction, rho, leak, scale in itertools.product(
+                range(2), FAMILIES, NORMS, spec["sign_fracs"], spec["rho_values"], spec["leak_values"], spec["input_scales"]):
+            rows.append(dict(repeat_id=repeat, family=family, normalization=norm, negative_fraction=fraction,
+                             rho_target=rho, leak=leak, input_scale=scale,
+                             MC=5 + scale + fraction + rho + leak + repeat * .1,
+                             NARMA10_val_nmse=(scale - .05)**2 + (rho - .95)**2 + (leak - 1)**2 + .1,
+                             NARMA10_test_nmse=.2 + scale + repeat * .01))
+        return pd.DataFrame(rows), spec
+
+    def test_expanded_unsorted_input_grid_keeps_every_setting_and_test_is_held_out(self):
+        from tools.analyze_mc_narma_crossover import assemble
+        d, spec = self.fixture()
+        panel, tuned, selected, ei, grid, levels = assemble(d, spec)
+        self.assertEqual(panel.shape, (2, 2, 2, 2, 6, 30))
+        np.testing.assert_array_equal(ei, [0, 10, 20, 30, 40, 50])
+        self.assertEqual(levels[-1], [.001, .01, .05, .1, .5])
+        self.assertTrue((selected.input_scale == .05).all())
+        changed = d.copy()
+        changed.NARMA10_test_nmse = 100 - changed.NARMA10_test_nmse
+        other = assemble(changed, spec)
+        np.testing.assert_array_equal(selected.index, other[2].index)
+        self.assertFalse(np.array_equal(tuned, other[1]))
+
+    def test_expanded_report_counts_and_tables_are_derived_from_data(self):
+        from tools.analyze_mc_narma_crossover import assemble, summarize, variance_allocation, report
+        d, spec = self.fixture()
+        panel, tuned, _, ei, grid, levels = assemble(d, spec)
+        mean, boot = bootstrap_panel(panel, 100, seed=7)
+        tuned_mean, tuned_boot = bootstrap_panel(tuned, 100, seed=7)
+        with tempfile.TemporaryDirectory() as directory:
+            out = Path(directory)
+            (out / "tables").mkdir()
+            tables = summarize(mean, boot, tuned_mean, tuned_boot, ei, grid, out)
+            allocation = variance_allocation(mean, boot, levels, ei, out)
+            validation = dict(run_id="synthetic_expanded", repeats=2, rows=len(d), shards=24, devices=["synthetic"])
+            report(tables, allocation, pd.DataFrame(), spec, validation, out)
+            text = (out / "REPORT.md").read_text()
+            self.assertIn("synthetic_expanded", text)
+            self.assertIn("30 settings", text)
+            self.assertIn("0, 10, 20, 30, 40, 50", text)
+            self.assertNotIn("24-setting", text)
+            self.assertEqual(tables["contrasts"].scope.nunique(), 6)
+            self.assertEqual(len(tables["contrasts"]), 144)
 
 
 if __name__ == "__main__":

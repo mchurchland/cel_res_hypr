@@ -1,0 +1,114 @@
+{
+  "source": "results/crossover_mc_narma10/271800/mc_narma_crossover.ALL.csv",
+  "source_sha256": "785da4476c9b3f847f2cfd59984d885b8adb79c40681a618189c2f7c28e27839",
+  "analysis_manifest_sha256": "f04435b2eafe35bb66b24aa2133b7143079077047b5f29c94aac015d879a9f8b",
+  "reused_bootstrap_cache_sha256": "4adb277e2926cfa435251a3335753f2aa31ab2a75acb90c4418f4a1e4aac7b69",
+  "script_sha256": "6c6e67d6a30f2b4c57cd8763d1ae00963be87fae5d811ccb3026a6365b93d71c",
+  "experiment_spec": {
+    "protocol": "mc-narma10-crossover-v1",
+    "families": [
+      "cel_matched",
+      "matched_er"
+    ],
+    "normalizations": [
+      "spectral_radius",
+      "original_radius"
+    ],
+    "sign_fracs": [
+      0.0,
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5
+    ],
+    "rho_values": [
+      0.6,
+      0.95,
+      1.05
+    ],
+    "leak_values": [
+      0.6,
+      1.0
+    ],
+    "input_scales": [
+      0.001,
+      0.05,
+      0.01,
+      0.1,
+      0.5
+    ],
+    "neuron_bias": 0.0,
+    "n_repeats": 100,
+    "seed": 20261117,
+    "repeat_seed_stride": 100000,
+    "tasks": {
+      "washout": 500,
+      "train": 1500,
+      "validation": 500,
+      "test": 500,
+      "mc_max_delay": 30,
+      "mc_ridge_alpha": 0.0001,
+      "narma_burnin": 1000,
+      "narma_ridge_alphas": [
+        1e-08,
+        1e-06,
+        0.0001,
+        0.01,
+        1.0
+      ]
+    },
+    "seed_offsets": {
+      "network": 1,
+      "unknown_sign": 23000000,
+      "mc_input": 31000003,
+      "narma_input": 37000003
+    },
+    "sources": [
+      {
+        "path": "/home/milesc/Thesis/Connectome/ce_adj.npy",
+        "sha256": "3efb994aaf7ef7981633f51adfdcff9b82f882eb4e9619b20321617f66681937"
+      },
+      {
+        "path": "/home/milesc/Thesis/Connectome/ce_unknown_sign_weights.npy",
+        "sha256": "7ee3cfdd637994431b7911da53249e2ba8e2a9840e61599be4b376caad3d5e95"
+      }
+    ],
+    "code_sha256": {
+      "mc_narma_crossover.py": "cf7e0034b1b809a2497106949ff9fc7f3108eb2f3ac1f6104fc715098f8de9f0",
+      "network_stats/temporal_tasks.py": "7090bd9f213df8153096e3a181165d415a6a662f102d1a7dd9e6890db84c48de",
+      "network_stats/run_one.py": "ba808d029ff361c1af7c560a5f7a6e84a7a2d0da10fa7fcf7460ab1380145201",
+      "network_stats/stats.py": "6c5e0335c5b81a720619eee35d5832f1e5887454b717c3b122e592eb30d7c494",
+      "network_stats/stats_util.py": "943653f7dff92b6eb3b51a6cb22cf97e5c7cbf1bb5e76f76bacad8b57515f43c",
+      "util/util.py": "644c26d045ee5785cb0719cdc4bcc6b1c7e38a35db6d4d9c4a04fe792f4d9d1b"
+    },
+    "packages": {
+      "numpy": "2.2.6",
+      "torch": "2.8.0",
+      "scipy": "1.15.3",
+      "scikit-learn": "1.7.2",
+      "reservoirpy": "0.4.2"
+    },
+    "python": "3.10.18",
+    "narma_generator": "reservoirpy.datasets.narma(order=10,a1=.3,a2=.05,b=1.5,c=.1)",
+    "narma_generator_sha256": "0bbc3c776a7a32d03fb98f8f84ac0a14f84b8fb78eaa35eaa633808b78fa1b75",
+    "narma_alignment": "package inputs u[9:-1] paired with returned y[10:]; discard target burn-in",
+    "narma_readout": "sklearn Ridge; train-only fit; validation chooses alpha; test held out",
+    "mc_readout": "existing compute_MC; float64 readout; float32 reservoir dynamics"
+  },
+  "definitions": "strict lower mean test NMSE wins; mean across paired seeds before comparing; no test-score reservoir tuning",
+  "extrapolation": false,
+  "source_rows_filtered": 0,
+  "existing_analysis_files_unchanged": true,
+  "validation": "raw and cached means/grid match; 12 overall counts match existing configuration_win_counts.csv",
+  "outputs": {
+    "narma10_win_fraction_sweep.png": "5989fa05e5b7ee84122d8217625d090966201351a88900271b18e4dc97a508fd",
+    "narma10_win_fraction_by_input.png": "b906d575cc4e10aedaacf673306acb387d5975f70cb121ca2deccd06f1d089e5",
+    "narma10_mean_error_sweep.png": "1956be0525651c39bdea2e45369717b7331925b74e3c7506f4f31db9b43e970d",
+    "narma10_win_fraction_auc.png": "a96dac58664100e36d0ffe222251f3116caa8683b0a6dfb8a3fb804d65541dbf",
+    "narma10_win_fraction_summary.csv": "4b753d3b7c820e9790dd95f724e0c55d2119eac3ab7f8c2c0cb69f44929f401e",
+    "narma10_win_fraction_auc.csv": "01028dc4b2520f7d1c11eac6f837b7bb622033e1644e87892581b36987774cf4",
+    "narma10_mean_error_summary.csv": "3923a789c83f7c859654effd55f9c21479a82cd7bca6e6041a7205022ffa7ca3",
+    "NARMA10_WIN_FRACTIONS.md": "73d249f0fcb1aac54c8e65e77a775720d043f0cd5b6b0ea87b929b0fca98d300"
+  }
+}

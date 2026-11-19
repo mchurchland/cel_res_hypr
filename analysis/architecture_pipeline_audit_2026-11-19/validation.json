@@ -1,0 +1,111 @@
+{
+  "environment": {
+    "python": "3.13.9",
+    "packages": {
+      "numpy": "2.2.5",
+      "scipy": "1.16.0",
+      "scikit-learn": "1.8.0",
+      "torch": "2.7.1",
+      "networkx": "3.5",
+      "pandas": "2.3.1",
+      "matplotlib": "3.10.0"
+    }
+  },
+  "unit_tests": {
+    "passed": 20,
+    "failed": 0,
+    "log": "unit_tests.log"
+  },
+  "shell_syntax": "passed: submit + three sbatch scripts",
+  "python_compile": "passed",
+  "default_experiment": {
+    "paired_evaluations": 432000,
+    "trajectories": 864000,
+    "models": 10,
+    "fractions": [
+      0,
+      10,
+      20,
+      30,
+      40,
+      50
+    ],
+    "grid_size": 24,
+    "realizations": 100,
+    "normalizations": 3
+  },
+  "cpu_integration": {
+    "paired_evaluations": 1440,
+    "realizations": 2,
+    "nodes": 297,
+    "models": 10,
+    "normalizations": 3,
+    "fractions": 3,
+    "grid_size": 8,
+    "tasks": {
+      "mc_diagnostic_delay": 30,
+      "mc_max_delay": 20,
+      "narma_burnin": 100,
+      "ridge_alphas": [
+        1e-08,
+        1e-06,
+        0.0001,
+        0.01,
+        1.0
+      ],
+      "test": 80,
+      "train": 120,
+      "validation": 60,
+      "washout": 60
+    },
+    "purpose": "short-trajectory pipeline validation only",
+    "elapsed_seconds": 72.38493477300108,
+    "experiment_id": "a0f138c2f0830bf4b40554bf3311e74cb8a653805075acdd189dd5371fd1e7b7",
+    "merge": "passed",
+    "analysis": "passed",
+    "png_figures": 21,
+    "pdf_figures": 0,
+    "source_manifest_sha256": "7a845a38a0701f36b555607c1de324b83c275b53dac90c317ea5f7c6ca2c980d",
+    "analysis_manifest_sha256": "23d41ae54f5f1f44247e90da4622c3ebfbcf214efac353b635782b0744eaeb27"
+  },
+  "narma_default_stream_screen": {
+    "screened": 100,
+    "rejected_seeds_by_repeat": {
+      "5": [
+        57761122
+      ],
+      "12": [
+        58461122
+      ],
+      "30": [
+        60261122
+      ],
+      "96": [
+        66861122
+      ]
+    },
+    "replacements_per_rejected_repeat": 1
+  },
+  "precision_check": "precision_check.csv",
+  "gpu_validation": "not available locally; required Orca GPU preflight",
+  "source_sha256": {
+    "ARCHITECTURE_SWEEP.md": "9ebf0533dcac8bf5280371189fb428b5c9e3d55db6b99e1876a4222016ff3974",
+    "architecture_mc_narma.py": "3bf10224e14ec876b5e3fbc5f5f28927d66735b80ffd592122f10d5837e7daba",
+    "network_stats/architecture_sweep.py": "555c8005f2792db5aa52dfc41575a4f378331a9a15d5b5d44802893fa54d2c39",
+    "network_stats/audited_temporal_tasks.py": "499f5ba118dad40459e91498577a3d7628c2dcf67f5c0ee101089c6becb44b9b",
+    "util/util.py": "644c26d045ee5785cb0719cdc4bcc6b1c7e38a35db6d4d9c4a04fe792f4d9d1b",
+    "third_party/echotorch/NARMADataset.py": "07a9a4edf2ae6b7b70a2e97590172159b6fac516eab94462293747dbdf71256f",
+    "third_party/echotorch/COPYING": "edaef632cbb643e4e7a221717a6c441a4c1a7c918e6e4d56debc3d8739b233f6",
+    "third_party/echotorch/README.md": "907c846dd1f0db0bf8b8cba69d812efae315ff4995f9091b3ebd6b91295596cc",
+    "tests/test_architecture_pipeline.py": "cf07c4c401a921f8433e55909853e28a6ab0d55f3157d06b910a451ded456cd6",
+    "tools/analyze_architecture_mc_narma.py": "571b65c6e7b97d105356e8359727f77d45f1c66570e25da3fe374a3717e86824",
+    "tools/submit_architecture_mc_narma.sh": "415824d70dde581743c1243dc5be242941a094b557e6089245e4bfb777b424b5",
+    "r_architecture_mc_narma.sbatch": "dbfeb5d29aa94c8fd5c37d4f24e05d972be5d1dc26fec8f7866544f6ec5b3399",
+    "r_architecture_mc_narma_preflight.sbatch": "51f0c64ff8d2a6fc65b79be939686d6992640ef9188625f3a4f5625d52871429",
+    "r_architecture_mc_narma_analyze.sbatch": "d6c015f86c5bb9329e98889c7eef279579c983e70f924b87bcd642076d6798b0",
+    "Connectome/ce_adj.npy": "3efb994aaf7ef7981633f51adfdcff9b82f882eb4e9619b20321617f66681937",
+    "Connectome/ce_unknown_sign_weights.npy": "7ee3cfdd637994431b7911da53249e2ba8e2a9840e61599be4b376caad3d5e95"
+  },
+  "archived_results_overwritten": false,
+  "production_jobs_submitted": false
+}

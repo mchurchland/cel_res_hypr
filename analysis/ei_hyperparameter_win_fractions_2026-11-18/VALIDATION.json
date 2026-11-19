@@ -1,0 +1,32 @@
+{
+  "status": "passed",
+  "synthetic_unit_tests": 7,
+  "independent_primary_counts_checked": 36,
+  "n_summary_rows": 540,
+  "n_configuration_rows": 10368,
+  "png_dimensions": {
+    "01_ce_winning_hyperparameter_fraction.png": [
+      4047,
+      1384
+    ],
+    "02_ce_winning_fraction_by_input.png": [
+      4045,
+      2432
+    ],
+    "03_normalization_controls_mc_ipc.png": [
+      2966,
+      2372
+    ],
+    "04_normalization_controls_kr_archival.png": [
+      2966,
+      1220
+    ],
+    "05_mean_per_realization_win_fraction.png": [
+      4047,
+      1384
+    ]
+  },
+  "no_pdfs": true,
+  "complete_main_grid": 96,
+  "input_stratified_grid": 24
+}

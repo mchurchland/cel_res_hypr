@@ -1,0 +1,131 @@
+{
+  "sources": [
+    {
+      "path": "final_results/sign_frac/cel_matched/combined.ALL.GRKR_erank.rank_updated.csv",
+      "sha256": "c534a60b7e61765cb8943bde7d0b604349f2983c0abe5738adec594949903aa8",
+      "n_rows": 134400,
+      "experiment": "sign",
+      "family": "cel_matched",
+      "grid": {
+        "rho_target": [
+          0.6,
+          0.8,
+          0.95,
+          1.05
+        ],
+        "leak": [
+          0.6,
+          0.8,
+          1.0
+        ],
+        "input_scale": [
+          0.1,
+          0.5,
+          1.0,
+          1.5
+        ],
+        "neuron_bias": [
+          0.0,
+          0.1
+        ]
+      },
+      "rank_provenance": "updated effective rank"
+    },
+    {
+      "path": "final_results/sign_frac/cel_removed/combined.ALL.GRKR_erank.rank_updated.csv",
+      "sha256": "f01eca46dc0c1aab0a4af7167913481362102f17e5521bb0a6a4e55a2385a32b",
+      "n_rows": 134400,
+      "experiment": "sign",
+      "family": "cel_removed",
+      "grid": {
+        "rho_target": [
+          0.6,
+          0.8,
+          0.95,
+          1.05
+        ],
+        "leak": [
+          0.6,
+          0.8,
+          1.0
+        ],
+        "input_scale": [
+          0.1,
+          0.5,
+          1.0,
+          1.5
+        ],
+        "neuron_bias": [
+          0.0,
+          0.1
+        ]
+      },
+      "rank_provenance": "updated effective rank"
+    },
+    {
+      "path": "final_results/sign_frac/matched_er/combined.ALL.GRKR_erank.rank_updated.csv",
+      "sha256": "f9c37322348e21a1a6e90dfd2a5f565e5138341f869a5a22a33c4496c0f4970d",
+      "n_rows": 115200,
+      "experiment": "sign",
+      "family": "matched_er",
+      "grid": {
+        "rho_target": [
+          0.6,
+          0.8,
+          0.95,
+          1.05
+        ],
+        "leak": [
+          0.6,
+          0.8,
+          1.0
+        ],
+        "input_scale": [
+          0.1,
+          0.5,
+          1.0,
+          1.5
+        ],
+        "neuron_bias": [
+          0.0,
+          0.1
+        ]
+      },
+      "rank_provenance": "updated effective rank"
+    }
+  ],
+  "script": {
+    "path": "tools/plot_ei_mean_performance.py",
+    "sha256": "a97b3893107d5319ede10525d4bc71437e87846ef51c8191030abb2c73d0342f"
+  },
+  "estimand": "Mean within each seed over all 96 configurations, then mean across 200 seeds",
+  "n_bootstrap": 2000,
+  "random_seed": 20261118,
+  "bootstrap_unit": "whole seed; same draws across curves and fractions",
+  "shared_fractions_percent": [
+    0.0,
+    20.0,
+    40.0,
+    60.0,
+    80.0,
+    100.0
+  ],
+  "ce_only_reference_points_excluded": true,
+  "metric_directions": "MC/IPC capacity; KR separation, not generic task performance",
+  "normalization": "own spectral radius",
+  "er_control": "archived binary-weight ER",
+  "validation": {
+    "n_summary_rows": 54,
+    "all_means_match_direct_balanced_raw_averages": true,
+    "all_existing_analysis_files_unchanged": true,
+    "n_seeds": 200,
+    "configurations_per_seed_and_fraction": 96
+  },
+  "outputs": {
+    "06_mean_performance_sweep.png": "42541b6bd4dc4e1d1298e811c1d1819f915f97f095ff9c035b983c02c262ea7e",
+    "mean_performance_MC.png": "0eb15ad7b7770899424451a86f3313021f223ad9248576d8c46d6e9c3daf7ef3",
+    "mean_performance_IPC.png": "e329a423d8df9f072559ca33854b793c67e5c6b07d77db34f57f0ff84dbee7ba",
+    "mean_performance_KR.png": "9f9b62fbe78b4d216268d6e6b58cd0c3b154134fa50ffe9fe749757117d92810",
+    "mean_performance_summary.csv": "f8364afd8c87253d166696af029cd24d5bf1cf0aaec89fc0769830d1ce0073f0"
+  }
+}

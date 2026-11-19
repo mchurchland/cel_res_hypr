@@ -1,0 +1,229 @@
+{
+  "sources": [
+    {
+      "path": "final_results/sign_frac/cel_matched/combined.ALL.GRKR_erank.rank_updated.csv",
+      "sha256": "c534a60b7e61765cb8943bde7d0b604349f2983c0abe5738adec594949903aa8",
+      "n_rows": 134400,
+      "experiment": "sign",
+      "family": "cel_matched",
+      "grid": {
+        "rho_target": [
+          0.6,
+          0.8,
+          0.95,
+          1.05
+        ],
+        "leak": [
+          0.6,
+          0.8,
+          1.0
+        ],
+        "input_scale": [
+          0.1,
+          0.5,
+          1.0,
+          1.5
+        ],
+        "neuron_bias": [
+          0.0,
+          0.1
+        ]
+      },
+      "rank_provenance": "updated effective rank"
+    },
+    {
+      "path": "final_results/sign_frac/cel_removed/combined.ALL.GRKR_erank.rank_updated.csv",
+      "sha256": "f01eca46dc0c1aab0a4af7167913481362102f17e5521bb0a6a4e55a2385a32b",
+      "n_rows": 134400,
+      "experiment": "sign",
+      "family": "cel_removed",
+      "grid": {
+        "rho_target": [
+          0.6,
+          0.8,
+          0.95,
+          1.05
+        ],
+        "leak": [
+          0.6,
+          0.8,
+          1.0
+        ],
+        "input_scale": [
+          0.1,
+          0.5,
+          1.0,
+          1.5
+        ],
+        "neuron_bias": [
+          0.0,
+          0.1
+        ]
+      },
+      "rank_provenance": "updated effective rank"
+    },
+    {
+      "path": "final_results/sign_frac/matched_er/combined.ALL.GRKR_erank.rank_updated.csv",
+      "sha256": "f9c37322348e21a1a6e90dfd2a5f565e5138341f869a5a22a33c4496c0f4970d",
+      "n_rows": 115200,
+      "experiment": "sign",
+      "family": "matched_er",
+      "grid": {
+        "rho_target": [
+          0.6,
+          0.8,
+          0.95,
+          1.05
+        ],
+        "leak": [
+          0.6,
+          0.8,
+          1.0
+        ],
+        "input_scale": [
+          0.1,
+          0.5,
+          1.0,
+          1.5
+        ],
+        "neuron_bias": [
+          0.0,
+          0.1
+        ]
+      },
+      "rank_provenance": "updated effective rank"
+    },
+    {
+      "path": "final_results/Rho_stuff/sign_norm/cel_matched/combined.ALL.csv",
+      "sha256": "a1d74a099f564e1b672af008644ac19aa35cf93213633c981782a3dc43125890",
+      "n_rows": 134400,
+      "experiment": "normalization",
+      "family": "cel_matched",
+      "grid": {
+        "rho_target": [
+          0.6,
+          0.8,
+          0.95,
+          1.05
+        ],
+        "leak": [
+          0.6,
+          0.8,
+          1.0
+        ],
+        "input_scale": [
+          0.1,
+          0.5,
+          1.0,
+          1.5
+        ],
+        "neuron_bias": [
+          0.0,
+          0.1
+        ]
+      },
+      "rank_provenance": "archival rank protocol unverified"
+    },
+    {
+      "path": "final_results/Rho_stuff/sign_norm/cel_removed/combined.ALL.csv",
+      "sha256": "dd1b720dc078bfce90732d27555525155b2eca8a3425e679c3ed30bdc1fa0d2f",
+      "n_rows": 134400,
+      "experiment": "normalization",
+      "family": "cel_removed",
+      "grid": {
+        "rho_target": [
+          0.6,
+          0.8,
+          0.95,
+          1.05
+        ],
+        "leak": [
+          0.6,
+          0.8,
+          1.0
+        ],
+        "input_scale": [
+          0.1,
+          0.5,
+          1.0,
+          1.5
+        ],
+        "neuron_bias": [
+          0.0,
+          0.1
+        ]
+      },
+      "rank_provenance": "archival rank protocol unverified"
+    },
+    {
+      "path": "final_results/Rho_stuff/sign_norm/matched_er/combined.ALL.csv",
+      "sha256": "e32ef6230db2d4d71ef9c2aee7d270e316173d919d125a7d8b28b9ce581702a1",
+      "n_rows": 115200,
+      "experiment": "normalization",
+      "family": "matched_er",
+      "grid": {
+        "rho_target": [
+          0.6,
+          0.8,
+          0.95,
+          1.05
+        ],
+        "leak": [
+          0.6,
+          0.8,
+          1.0
+        ],
+        "input_scale": [
+          0.1,
+          0.5,
+          1.0,
+          1.5
+        ],
+        "neuron_bias": [
+          0.0,
+          0.1
+        ]
+      },
+      "rank_provenance": "archival rank protocol unverified"
+    }
+  ],
+  "n_bootstrap": 2000,
+  "random_seed": 20261118,
+  "metrics": [
+    "MC",
+    "IPC",
+    "KR"
+  ],
+  "win_rule": "strict mean paired CE minus ER > 0; ties are not wins",
+  "seed_pairing": "exact numeric seed",
+  "bootstrap_unit": "paired whole realization, jointly across its grid and sign fractions",
+  "versions": {
+    "python": "3.13.9",
+    "numpy": "2.2.6",
+    "pandas": "2.3.1",
+    "matplotlib": "3.10.0"
+  },
+  "scripts": [
+    {
+      "path": "tools/plot_ei_win_fractions.py",
+      "sha256": "6b3a08bf7389b584efe63aa3c91195d6bafc2562274d8d27303652889dd44b19"
+    },
+    {
+      "path": "util/ei_win_fraction.py",
+      "sha256": "12c3b3fe72c7b786193e28793f00420b28b14ada4f9df5d3e11572b69ee00bfc"
+    }
+  ],
+  "outputs": {
+    "01_ce_winning_hyperparameter_fraction.png": "fe8eb7a037a535c0cb62b03d51e69200fde8ba0d53e7c997a1b2ad79f348381b",
+    "02_ce_winning_fraction_by_input.png": "3d989ced2f258d97b8463fe4f24480aeda9203e6e7870787068fcc8a8c67de4c",
+    "03_normalization_controls_mc_ipc.png": "91bdf1d379aa9f7ce7a3a0f03d2dbde94ebe52e32f9323e7f8bfe322b85ce02b",
+    "04_normalization_controls_kr_archival.png": "6c15f6f6c6b253bab7df1321cb651310eab58fe501d4a6cf86e04a64dcb44ed0",
+    "05_mean_per_realization_win_fraction.png": "51eea4cbf739c92dd95d3f2c0891b5ceb9d1e5fdb11e614b4bf29721692b42e9",
+    "REPORT.md": "18bb8b68838d23bd5f1ce70b9744ff8ebb08bfa47a5d4cced5741623b5c3627b",
+    "configuration_comparisons.csv": "33c1c9ceb8bc0fd514ff2de31860bfc590758174b3c411730dda3b9c490905d3",
+    "pairing_audit.csv": "5be22261c57336e2aaf2f2240f8082ef6ebd5cf15155d7d927ab114766616a3b",
+    "per_realization_win_fractions.csv": "ccaa852e9afc444a7fed3945396a81bf63e6510293d740e2c4c72a73a56293bf",
+    "win_fraction_summary.csv": "f3f1d6d8ff563aa43389fb438bdaace8723dafeeb0f73d1735f4311f70f57add",
+    "VALIDATION.json": "2c6a64d47c74842503bb121fb9b7c2089ab3fac88660be72058f861b8608ebd9"
+  }
+}

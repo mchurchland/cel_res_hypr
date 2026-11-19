@@ -30,7 +30,7 @@ METRICS = ["MC", "NARMA10_test_nmse"]
 PARAMS = ["rho_target", "leak", "input_scale"]
 NORM_NAMES = {"spectral_radius": "Own-radius scaling", "original_radius": "Fixed-reference scaling"}
 METRIC_NAMES = {"MC": "MC", "NARMA10_test_nmse": "NARMA10 test NMSE"}
-INPUT_COLORS = ["#332288", "#0077bb", "#009988", "#ee7733"]
+INPUT_COLORS = ["#332288", "#0077bb", "#009988", "#ee7733", "#cc3311", "#aa4499"]
 MODEL_COLORS = ["#332288", "#0077bb"]
 
 
@@ -63,7 +63,12 @@ def validate_run(source):
                    negative_fraction=spec["sign_fracs"], rho_target=spec["rho_values"],
                    leak=spec["leak_values"], input_scale=spec["input_scales"])
     for column, domain in domains.items():
-        if not d[column].isin(domain).all():
+        numeric_domain = np.asarray(list(domain))
+        if np.issubdtype(numeric_domain.dtype, np.number):
+            valid = np.isclose(d[column].to_numpy()[:, None], numeric_domain.astype(float)[None, :], atol=1e-12, rtol=0).any(axis=1)
+        else:
+            valid = d[column].isin(domain)
+        if not np.all(valid):
             raise ValueError(f"Unexpected levels in {column}.")
     numeric = d.select_dtypes(include="number")
     if not np.isfinite(numeric).all().all() or not (d.neuron_bias == 0).all():
@@ -91,7 +96,7 @@ def validate_run(source):
     for item in spec["sources"]:
         local = ROOT / "Connectome" / Path(item["path"]).name
         data_matches[str(local.relative_to(ROOT))] = local.exists() and digest(local) == item["sha256"]
-    return d, spec, dict(rows=len(d), repeats=spec["n_repeats"], shards=len(shard_paths), chunks=len(paths),
+    return d, spec, dict(run_id=source.name, rows=len(d), repeats=spec["n_repeats"], shards=len(shard_paths), chunks=len(paths),
                          merged_matches_all_shards=True, source_code_matches=matches, source_data_matches=data_matches,
                          devices=sorted(set(m["device_name"] for m in manifests)))
 
@@ -230,14 +235,108 @@ def old_grid_comparison(d, out):
         grouped = sub.groupby(["experiment", "normalization", "negative_percent", "family"]).performance.agg(["mean", "size"]).reset_index()
         grouped["analysis_grid"] = label
         rows.extend(grouped.to_dict("records"))
+    grid_size = len(d[PARAMS].drop_duplicates())
     new = d[d.negative_fraction.isin([.2, .4])].groupby(["normalization", "negative_fraction", "family"]).MC.mean().reset_index()
     for row in new.to_dict("records"):
-        rows.append(dict(experiment="new_100_seed_crossover", analysis_grid="new_reduced_24",
+        rows.append(dict(experiment="current_crossover_run", analysis_grid=f"current_grid_{grid_size}",
                          normalization=row["normalization"], negative_percent=row["negative_fraction"] * 100,
-                         family=row["family"], mean=row["MC"], size=24))
+                         family=row["family"], mean=row["MC"], size=grid_size))
     result = pd.DataFrame(rows)
     result.to_csv(out / "tables/old_grid_comparison.csv", index=False)
     return result, path
+
+
+def reference_run_comparison(d, spec, reference, out):
+    """Audit exact overlap without treating the expanded seed grid as replication."""
+    merged = reference / "mc_narma_crossover.ALL.csv"
+    manifests = sorted(reference.glob("chunk_*/manifest.json"))
+    if not merged.exists() or not manifests:
+        return []
+    metadata = [json.loads(p.read_text()) for p in manifests]
+    reference_spec = metadata[0]["spec"]
+    old = pd.read_csv(merged)
+    keys = ["repeat_id", "family", "normalization", "negative_fraction", *PARAMS]
+    for c in ["negative_fraction", *PARAMS]:
+        old[c] = old[c].round(12)
+    if old.duplicated(keys).any():
+        raise ValueError("Reference run has duplicate configurations.")
+    metrics = ["MC", "NARMA10_val_nmse", "NARMA10_test_nmse"]
+    overlap = d[keys + metrics].merge(old[keys + metrics], on=keys, suffixes=("_current", "_reference"), validate="one_to_one")
+    if overlap.empty:
+        return []
+    for metric in metrics:
+        overlap[metric + "_difference"] = overlap[metric + "_current"] - overlap[metric + "_reference"]
+    overlap.to_csv(out / "tables/reference_run_overlap.csv", index=False)
+    same = {k: spec.get(k) == reference_spec.get(k) for k in
+            ["protocol", "seed", "repeat_seed_stride", "seed_offsets", "tasks", "code_sha256", "packages", "sources"]}
+    audit = dict(reference_run=reference.name, current_run=out.name, matched_rows=len(overlap),
+                 paired_seed_ids=sorted(overlap.repeat_id.unique().tolist()),
+                 same_seed_ids_not_independent_replication=True, shared_protocol_checks=same,
+                 overlap_fractions_percent=sorted((overlap.negative_fraction.unique() * 100).tolist()),
+                 overlap_input_scales=sorted(overlap.input_scale.unique().tolist()),
+                 differences={m: dict(mean=float(overlap[m + "_difference"].mean()),
+                                      mean_abs=float(overlap[m + "_difference"].abs().mean()),
+                                      max_abs=float(overlap[m + "_difference"].abs().max())) for m in metrics})
+    (out / "tables/reference_run_overlap_audit.json").write_text(json.dumps(audit, indent=2) + "\n")
+    return [merged, *manifests]
+
+
+def narma_tail_diagnostics(d, out):
+    """Retain extreme errors; contrast means with typical paired realizations."""
+    columns = ["repeat_id", "family", "normalization", "negative_fraction", *PARAMS,
+               "NARMA10_val_nmse", "NARMA10_test_nmse", "NARMA10_ridge_alpha", "MC"]
+    d.nlargest(20, "NARMA10_test_nmse")[columns].to_csv(out / "tables/largest_narma_test_errors.csv", index=False)
+    rows = []
+    scopes = [("grid_mean", d)] + [(f"input_{v:g}", d[np.isclose(d.input_scale, v)]) for v in sorted(d.input_scale.unique())]
+    for scope, subset in scopes:
+        paired = subset.groupby(["repeat_id", "family", "normalization", "negative_fraction"]).NARMA10_test_nmse.mean().reset_index()
+        for (norm, fraction), g in paired.groupby(["normalization", "negative_fraction"]):
+            panel = g.pivot(index="repeat_id", columns="family", values="NARMA10_test_nmse").sort_index()
+            delta = panel.matched_er - panel.cel_matched
+            # Influence diagnostic removes a whole paired realization, not an
+            # isolated unfavorable configuration; no primary analysis is filtered.
+            leave_one = (delta.sum() - delta) / (len(delta) - 1)
+            rows.append(dict(scope=scope, normalization=norm, ei_percent=fraction * 100,
+                             n_realizations=len(panel), ce_mean_error=float(panel.cel_matched.mean()),
+                             er_mean_error=float(panel.matched_er.mean()),
+                             ce_median_seed_mean_error=float(panel.cel_matched.median()),
+                             er_median_seed_mean_error=float(panel.matched_er.median()),
+                             mean_ce_advantage=float(delta.mean()), median_paired_ce_advantage=float(delta.median()),
+                             fraction_seeds_favoring_ce=float((delta > 0).mean()),
+                             leave_one_seed_out_mean_advantage_min=float(leave_one.min()),
+                             leave_one_seed_out_mean_advantage_max=float(leave_one.max())))
+    pd.DataFrame(rows).to_csv(out / "tables/narma_seed_tail_diagnostics.csv", index=False)
+
+
+def plot_advantage_by_input(contrasts, out, nmse_limits=(-.5, .5)):
+    """Render figure 03 from stored contrasts; limits only change the viewport."""
+    with plt.rc_context({"font.family": "DejaVu Sans", "font.size": 10,
+                         "axes.spines.top": False, "axes.spines.right": False}):
+        inputs = sorted(float(s.removeprefix("input_")) for s in contrasts.scope.unique() if s.startswith("input_"))
+        fractions = sorted(contrasts.ei_percent.unique())
+        fig, axes = plt.subplots(2, 2, figsize=(11, 7), sharex=True, sharey="col", layout="constrained")
+        for n, norm in enumerate(NORMS):
+            for k, metric in enumerate(METRICS):
+                ax = axes[n, k]
+                for i, value in enumerate(inputs):
+                    color = INPUT_COLORS[i % len(INPUT_COLORS)]
+                    h = contrasts[(contrasts.scope == f"input_{value:g}") & (contrasts.normalization == norm) & (contrasts.metric == metric)].sort_values("ei_percent")
+                    ax.plot(h.ei_percent, h.ce_advantage, "o-", color=color, label=f"Input {value:g}")
+                    ax.fill_between(h.ei_percent, h.ci_low, h.ci_high, color=color, alpha=.13)
+                ax.axhline(0, color="#555555", ls="--", lw=1)
+                ax.set(title=f"{NORM_NAMES[norm]} · {METRIC_NAMES[metric]}",
+                       ylabel="CE − ER MC" if k == 0 else "ER − CE test NMSE",
+                       xlabel="Inhibitory edges (%)", xticks=fractions)
+                ax.grid(axis="y", color="#e6e9ee", lw=.7)
+                ax.set_axisbelow(True)
+                if k == 1:
+                    ax.set_ylim(*nmse_limits)
+        axes[0, 0].legend(frameon=False, fontsize=8, ncol=2)
+        fig.suptitle("Crossovers are conditional on input drive\nRadius/leak averaged uniformly; positive favors CE; 95% seed-bootstrap intervals", fontsize=12)
+        path = out / "figures/03_advantage_by_input.png"
+        fig.savefig(path, dpi=240, bbox_inches="tight", facecolor="white")
+        plt.close(fig)
+        return path
 
 
 def plot_all(tables, allocation, d, out):
@@ -247,7 +346,7 @@ def plot_all(tables, allocation, d, out):
         fig.savefig(out / "figures" / name, dpi=240, bbox_inches="tight", facecolor="white")
         plt.close(fig)
     def axis(ax, title, ylabel):
-        ax.set(title=title, ylabel=ylabel, xlabel="Inhibitory edges (%)", xticks=[20, 24, 28, 32, 36, 40])
+        ax.set(title=title, ylabel=ylabel, xlabel="Inhibitory edges (%)", xticks=sorted(d.negative_fraction.unique() * 100))
         ax.grid(axis="y", color="#e6e9ee", lw=.7)
         ax.set_axisbelow(True)
     for kind in ["performance", "contrasts"]:
@@ -273,22 +372,9 @@ def plot_all(tables, allocation, d, out):
                 axis(ax, f"{NORM_NAMES[norm]} · {METRIC_NAMES[metric]}", label)
         if kind == "performance":
             axes[0, 0].legend(frameon=False, fontsize=8)
-        fig.suptitle("Uniform average over the reduced 24-setting grid\n95% paired seed-bootstrap intervals; 100 realizations" if kind == "performance" else "Grid-averaged architecture advantage\nPositive favors CE; 95% paired seed-bootstrap intervals", fontsize=12)
+        fig.suptitle(f"Uniform average over the {len(d[PARAMS].drop_duplicates())}-setting grid\n95% paired seed-bootstrap intervals; {d.repeat_id.nunique()} realizations" if kind == "performance" else "Grid-averaged architecture advantage\nPositive favors CE; 95% paired seed-bootstrap intervals", fontsize=12)
         save(fig, "01_overall_performance.png" if kind == "performance" else "02_paired_advantage.png")
-    fig, axes = plt.subplots(2, 2, figsize=(11, 7), sharex=True, sharey="col", layout="constrained")
-    for n, norm in enumerate(NORMS):
-        for k, metric in enumerate(METRICS):
-            ax = axes[n, k]
-            for color, value in zip(INPUT_COLORS, sorted(d.input_scale.unique())):
-                h = tables["contrasts"]
-                h = h[(h.scope == f"input_{value:g}") & (h.normalization == norm) & (h.metric == metric)].sort_values("ei_percent")
-                ax.plot(h.ei_percent, h.ce_advantage, "o-", color=color, label=f"Input {value:g}")
-                ax.fill_between(h.ei_percent, h.ci_low, h.ci_high, color=color, alpha=.13)
-            ax.axhline(0, color="#555555", ls="--", lw=1)
-            axis(ax, f"{NORM_NAMES[norm]} · {METRIC_NAMES[metric]}", "CE − ER MC" if k == 0 else "ER − CE test NMSE")
-    axes[0, 0].legend(frameon=False, fontsize=8, ncol=2)
-    fig.suptitle("Crossovers are conditional on input drive\nRadius/leak averaged uniformly; positive favors CE; 95% seed-bootstrap intervals", fontsize=12)
-    save(fig, "03_advantage_by_input.png")
+    plot_advantage_by_input(tables["contrasts"], out)
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.7), sharey=True, layout="constrained")
     for n, norm in enumerate(NORMS):
         ax = axes[n]
@@ -319,7 +405,7 @@ def plot_all(tables, allocation, d, out):
             ax.invert_yaxis()
     fig.legend(handles=[Patch(facecolor=c, label=p) for c, p in zip(colors, ["Radius target", "Leak rate", "Input scale"])],
                loc="outside lower center", ncol=3, frameon=False)
-    fig.suptitle("Hyperparameter contributions on this reduced grid\nInteractions split equally; point estimates across the six E/I fractions", fontsize=12)
+    fig.suptitle(f"Hyperparameter contributions on this grid\nInteractions split equally; point estimates across {d.negative_fraction.nunique()} E/I fractions", fontsize=12)
     save(fig, "05_parameter_contributions.png")
     fig, axes = plt.subplots(2, 2, figsize=(10, 6.4), sharex=True, layout="constrained")
     for f, family in enumerate(FAMILIES):
@@ -346,91 +432,44 @@ def plot_all(tables, allocation, d, out):
                 g = configurations[(configurations.metric == metric) & (configurations.normalization == norm)]
                 values = g.pivot(index="ei_percent", columns=PARAMS, values="ce_advantage").sort_index()
                 image = ax.imshow(values, cmap="RdBu", vmin=-limit, vmax=limit, aspect="auto", origin="lower")
-                ax.set_yticks(range(6), [20, 24, 28, 32, 36, 40])
+                ax.set_yticks(range(len(values.index)), [f"{v:g}" for v in values.index])
                 ax.set_xticks(range(len(grid)), [f"{v:g}" for v in grid.input_scale], fontsize=7)
                 ax.set(title=f"{NORM_NAMES[norm]} · {METRIC_NAMES[metric]}", xlabel="Input scale (within each radius/leak block)", ylabel="Inhibitory edges (%)")
-                for x in np.arange(3.5, len(grid) - 1, 4):
+                n_inputs = grid.input_scale.nunique()
+                for x in np.arange(n_inputs - .5, len(grid) - 1, n_inputs):
                     ax.axvline(x, color="white", lw=1)
                 top = ax.secondary_xaxis("top")
-                top.set_xticks(np.arange(1.5, len(grid), 4),
+                top.set_xticks(np.arange((n_inputs - 1) / 2, len(grid), n_inputs),
                               [f"{r:g}/{l:g}" for r, l in grid[["rho_target", "leak"]].drop_duplicates().itertuples(index=False, name=None)], fontsize=7)
                 top.set_xlabel("Radius target / leak", fontsize=8)
                 fig.colorbar(image, ax=ax, shrink=.75, label="CE advantage")
-        fig.suptitle("Which matched settings favor the connectome?\nBlue: CE higher MC / lower NARMA error; red: ER favored; means over 100 realizations", fontsize=12)
+        fig.suptitle(f"Which matched settings favor the connectome?\nBlue: CE higher MC / lower NARMA error; red: ER favored; means over {d.repeat_id.nunique()} realizations", fontsize=12)
         save(fig, "07_matched_configuration_advantages.png")
+    fig, axes = plt.subplots(2, 2, figsize=(12, 8), sharex=True, sharey="col", layout="constrained")
+    for n, norm in enumerate(NORMS):
+        for k, metric in enumerate(METRICS):
+            ax = axes[n, k]
+            for i, value in enumerate(sorted(d.input_scale.unique())):
+                color = INPUT_COLORS[i % len(INPUT_COLORS)]
+                for f, family in enumerate(FAMILIES):
+                    h = tables["performance"]
+                    h = h[(h.scope == f"input_{value:g}") & (h.normalization == norm) &
+                          (h.metric == metric) & (h.family == family)].sort_values("ei_percent")
+                    ax.plot(h.ei_percent, h["mean"], "o-" if f == 0 else "s--", color=color,
+                            ms=3, lw=1.4, label=f"{'CE' if f == 0 else 'ER'} · input {value:g}")
+                    ax.fill_between(h.ei_percent, h.ci_low, h.ci_high, color=color, alpha=.06)
+            axis(ax, f"{NORM_NAMES[norm]} · {METRIC_NAMES[metric]}", "MC" if k == 0 else "NARMA10 test NMSE (log)")
+            if k == 1:
+                ax.set_yscale("log")
+    handles, labels = axes[0, 0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="outside lower center", ncol=min(5, len(labels)), fontsize=8, frameon=False)
+    fig.suptitle("Absolute performance by input drive\nRadius/leak averaged within realization; paired seed-bootstrap intervals", fontsize=12)
+    save(fig, "08_performance_by_input.png")
 
 
 def report(t, allocation, old, spec, validation, out):
-    def contrast_text(scope, norm, metric, fraction):
-        g = t["contrasts"]
-        r = g[(g.scope == scope) & (g.normalization == norm) & (g.metric == metric)
-              & np.isclose(g.ei_percent, fraction)].iloc[0]
-        return f"{r.ce_advantage:+.4f} [{r.ci_low:+.4f}, {r.ci_high:+.4f}]"
-    overall = t["contrasts"].query("scope == 'grid_mean'")
-    overall_statement = ("ER has higher mean MC and lower mean NARMA10 test error at every sampled fraction when all 24 settings are weighted equally; every corresponding paired pointwise 95% interval favors ER."
-                         if (overall.ce_advantage < 0).all() and (overall.ci_high < 0).all()
-                         else f"ER is favored in {int((overall.ce_advantage < 0).sum())}/{len(overall)} grid-averaged point estimates; {int((overall.ci_high < 0).sum())} paired intervals favor ER.")
-    tuned_statement = ("**ER has lower validation-selected mean test error at all six fractions under both normalizations; all paired pointwise intervals favor ER.**"
-                       if (t["validation_selected_narma"].ci_high < 0).all()
-                       else "The complete validation-selected contrasts and intervals are retained below.")
-    old_detail = ""
-    if len(old):
-        g = old[(old.experiment == "sign") & (old.analysis_grid == "old_matched_reduced_24")
-                & (old.normalization == "spectral_radius") & np.isclose(old.negative_percent, 20)]
-        if set(g.family) == set(FAMILIES):
-            v = g.set_index("family")["mean"]
-            old_detail = f" At 20%, the old updated sign sweep restricted to the same 24 settings gives CE − ER MC = {v.cel_matched-v.matched_er:+.3f}; the new grid-average contrast is {contrast_text('grid_mean', 'spectral_radius', 'MC', 20)}."
-    example_lines = []
-    if "configuration_advantages" in t:
-        g = t["configuration_advantages"]
-        g = g[np.isclose(g.ei_percent, 20) & np.isclose(g.rho_target, 1.05)
-              & np.isclose(g.leak, 1.) & np.isclose(g.input_scale, .1)]
-        example_lines = ["", "**Illustrative matched condition:** at 20% inhibitory edges, radius target 1.05, leak 1.0 and input scale 0.1, CE outperforms ER on both metrics under both normalizations. This example was identified after inspecting the full configuration map; it is descriptive and its intervals are not multiplicity-adjusted.", "",
-                         "| Normalization | Metric | CE advantage [pointwise 95% interval] |",
-                         "| --- | --- | --- |"]
-        for r in g.itertuples():
-            example_lines.append(f"| {NORM_NAMES[r.normalization]} | {METRIC_NAMES[r.metric]} | {r.ce_advantage:+.4f} [{r.ci_low:+.4f}, {r.ci_high:+.4f}] |")
-    lines = ["# Under which conditions does a connectome-derived reservoir outperform matched ER?", "",
-             f"Stored run 271601: **{validation['repeats']} paired computational realizations, {validation['rows']:,} rows, 24 settings per condition**. Both normalization modes; zero reservoir bias; fractions 20, 24, 28, 32, 36 and 40%. No simulations were launched for this analysis.", "",
-             "## Main findings", "",
-             "**The general grid-averaged crossover is not reproduced inside 20–40%.** " + overall_statement + " After averaging radius and leak, CE's positive advantage appears at weak input and is narrower for NARMA10. Individual matched configurations can retain CE advantages under both normalizations. This answers a conditional performance question rather than supporting general biological superiority.", "",
-             "![Mean performance](figures/01_overall_performance.png)", "",
-             "![Paired advantage](figures/02_paired_advantage.png)", "",
-             "Both panels average within realization before bootstrapping complete paired realizations. NARMA advantage is ER error minus CE error, so positive always favors CE. Bands are marginal 95% seed-bootstrap intervals, not simultaneous confidence bands.", "",
-             "## Conditional crossover locations", "",
-             "| Metric | Normalization | Input scope | Mean sign-change bracket (%) | Interpolated crossing (%) | Bootstrap interval (%) | Unique-root bootstrap fraction |",
-             "| --- | --- | --- | --- | --- | --- | ---: |"]
-    for row in t["crossovers"].itertuples():
-        if row.n_mean_crossings:
-            lines.append(f"| {METRIC_NAMES[row.metric]} | {NORM_NAMES[row.normalization]} | {row.scope} | {row.bracket_low:.0f}–{row.bracket_high:.0f} | {row.root:.2f} | [{row.ci_low:.2f}, {row.ci_high:.2f}] | {row.bootstrap_unique_fraction:.3f} |")
-    lines += ["", f"At input scale 0.1 and 20% inhibitory edges, CE's own-radius MC advantage is {contrast_text('input_0.1', 'spectral_radius', 'MC', 20)}; its NARMA advantage is {contrast_text('input_0.1', 'spectral_radius', 'NARMA10_test_nmse', 20)} NMSE, where positive means lower CE error. At 24%, the NARMA difference is {contrast_text('input_0.1', 'spectral_radius', 'NARMA10_test_nmse', 24)}, so the models are not clearly separated there. Under fixed-reference scaling, even the weak-input NARMA advantage at 20% reverses: {contrast_text('input_0.1', 'original_radius', 'NARMA10_test_nmse', 20)}.", "",
-              "Scopes without a crossing are retained in `tables/crossovers.csv`; they are not assigned extrapolated roots. The intervals describe seed uncertainty of a **piecewise-linear interpolant**, conditional on a unique crossing. They do not identify the unknown curve shape between 4-percentage-point grid samples. A narrow interval is not evidence of sub-grid experimental resolution.", "",
-              "![Input dependence](figures/03_advantage_by_input.png)", "",
-              "The biological approximately 24.25% edge fraction is not an independently predicted optimum. That fraction already enters unknown-sign completion and the fixed-reference construction; the sweep randomizes edge signs. Input setting and normalization change the comparison.", "",
-              "![Matched-setting comparisons](figures/07_matched_configuration_advantages.png)", "",
-              "The configuration heatmap retains parameter-specific counterexamples hidden by averages. Counts of favorable point estimates and intervals are in `tables/configuration_win_counts.csv`; these 24 grid settings are not independent network samples.", "",
-              *example_lines, "",
-              "## NARMA10 with validation-selected configurations", "",
-              "For each realization, architecture, normalization and E/I fraction, select the lowest **validation** NMSE among 24 configurations; report its untouched test score. Ridge alpha was already selected using validation within each configuration. Test scores do not choose either parameter setting or ridge penalty. These selection results and the uniformly averaged surfaces answer different questions.", "",
-              "![Selected performance](figures/04_validation_selected_narma.png)", "",
-              tuned_statement + " Thus the observed weak-input matched-setting advantage does not establish a tuning advantage over the random reservoir.", "",
-              "| Normalization | E/I (%) | CE test NMSE | ER test NMSE | ER − CE error [95% interval] |", "| --- | ---: | ---: | ---: | --- |"]
-    for r in t["validation_selected_narma"].itertuples():
-        lines.append(f"| {NORM_NAMES[r.normalization]} | {r.ei_percent:.0f} | {r.cel_matched_test_nmse:.4f} | {r.matched_er_test_nmse:.4f} | {r.ce_advantage:+.4f} [{r.ci_low:+.4f}, {r.ci_high:+.4f}] |")
-    lines += ["", "## Hyperparameter contributions", "",
-              "![Parameter shares](figures/05_parameter_contributions.png)", "",
-              "Exact finite-grid factorial variance decomposition includes all main effects and interactions of radius, leak and input scale. Each interaction is allocated equally among its participating parameters. Summaries divide the sum of within-E/I component variances by the sum of within-E/I total variances. They exclude changes between E/I means and depend on this reduced grid. Bootstrap recomputes each seed-averaged surface and decomposition; intervals are in the tables.", "",
-              "## Normalization and provenance", "",
-              "![Radius diagnostics](figures/06_spectral_diagnostics.png)", "",
-              "The same raw realizations and input weights are paired across normalization schemes. Fixed-reference scaling changes the effective recurrent gain across fractions. Its effects are descriptive protocol contrasts; a radius correlation does not identify topology's causal contribution.", "",
-              "The old 96-setting results and this 24-setting run must not be pooled. The new run has fresh seeds, shared NumPy-generated task inputs, and float64 MC readout fitting. Its reservoir dynamics remain float32." + old_detail + " Changes in grid composition alone therefore cannot explain the altered ordering. The old full grid, bias-zero subset, exactly matched reduced grid and new endpoint means are exported in `tables/old_grid_comparison.csv`. The available tables do not isolate the contribution of numerical precision from input/realization changes.", "",
-              "NARMA10 is generated by ReservoirPy 0.4.2 with its upstream recurrence/lag conventions unchanged; states after input u[t] predict the next output. Inputs are U[0,0.5], with 1,000 target burn-in, 500 state washout, 1,500 training, 500 validation and 500 test steps. Readout is scikit-learn Ridge with intercept. MC uses U[-1,1], delays 1–30, 1,500 training and 500 test after 500 washout. Full settings are copied to the manifest. ReservoirPy's specific lag convention should be cited when comparing to other NARMA implementations.", "",
-              "CE retains biological weight magnitudes, while matched ER uses the existing binary sign-sweep weights. This is an architecture-and-weight comparison, not an isolated test of topology. Seed repeats are computational realizations of one anatomical connectome, not independent animals. All settings/fractions are a chosen finite design; no configuration is treated as an independent biological replicate. MC is truncated at delay 30 and some individual scores approach that ceiling; it is not unrestricted memory capacity.", "",
-              "The run used both NVIDIA L40S and A30 GPUs. Every realization has a complete paired panel on its assigned device. Device-stratified descriptive contrasts are exported; GPU and repeat IDs are confounded, so between-device differences cannot be interpreted as hardware effects.", "",
-              "## Validation and files", "",
-              f"All {validation['shards']:,} source shards match the merged table; all grid cells are complete and unique; all metrics are finite; all MC values lie within the documented bound; NRMSE squared matches NMSE. Simulation code and connectome hashes match the manifests. No filtering or score clipping was applied.", "",
-              "`tables/performance.csv`, `contrasts.csv`, `crossovers.csv`, `validation_selected_narma.csv`, `parameter_contributions.csv`, and configuration-level tables retain counterexamples and uncertainty. `manifest.json` records source hashes and analysis settings. `VALIDATION.json` records the audit. All figures are PNGs."]
-    (out / "REPORT.md").write_text("\n".join(lines) + "\n")
+    from util.crossover_report import write_report
+    write_report(t, allocation, old, spec, validation, out)
 
 
 def main():
@@ -439,7 +478,13 @@ def main():
     p.add_argument("--out-dir", type=Path, default=ROOT / "analysis/crossover_mc_narma10_271601")
     p.add_argument("--n-boot", type=int, default=2000)
     p.add_argument("--seed", type=int, default=271601)
+    p.add_argument("--reference-source", type=Path, default=ROOT / "results/crossover_mc_narma10/271601")
     args = p.parse_args()
+    args.source = args.source.resolve()
+    args.out_dir = args.out_dir.resolve()
+    args.reference_source = args.reference_source.resolve()
+    if args.n_boot < 100:
+        p.error("Use at least 100 bootstrap resamples.")
     out = args.out_dir
     out.mkdir(parents=True, exist_ok=False)
     for directory in ["tables", "figures", "cache"]:
@@ -462,6 +507,9 @@ def main():
     old, old_path = old_grid_comparison(d, out)
     if old_path is not None:
         hashes[str(old_path.relative_to(ROOT))] = digest(old_path)
+    if args.reference_source.resolve() != args.source.resolve():
+        reference_files = reference_run_comparison(d, spec, args.reference_source, out)
+        hashes.update({str(p.relative_to(ROOT)): digest(p) for p in reference_files})
     rows = []
     for n, norm in enumerate(NORMS):
         for k, metric in enumerate(METRICS):
@@ -480,6 +528,7 @@ def main():
     d["device_name"] = d.repeat_id.map(devices)
     dev = d.groupby(["device_name", "family", "normalization", "negative_fraction"])[METRICS].mean().reset_index()
     dev.to_csv(out / "tables/device_stratified_means.csv", index=False)
+    narma_tail_diagnostics(d, out)
     plot_all(tables, allocation, d, out)
     report(tables, allocation, old, spec, validation, out)
     if any(digest(ROOT / path) != value for path, value in hashes.items()):
@@ -489,6 +538,7 @@ def main():
     (out / "VALIDATION.json").write_text(json.dumps(validation, indent=2) + "\n")
     manifest = dict(source_files=hashes, experiment_spec=spec, bootstrap=dict(method="SciPy percentile bootstrap", n=args.n_boot, seed=args.seed),
                     analysis_code={str(Path(__file__).relative_to(ROOT)): digest(__file__),
+                                   "util/crossover_report.py": digest(ROOT / "util/crossover_report.py"),
                                    "util/crossover_analysis.py": digest(ROOT / "util/crossover_analysis.py"),
                                    "util/hyperparameter_variability.py": digest(ROOT / "util/hyperparameter_variability.py")},
                     environment=dict(python=platform.python_version(), numpy=np.__version__, pandas=pd.__version__, scipy=scipy.__version__, matplotlib=matplotlib.__version__),
