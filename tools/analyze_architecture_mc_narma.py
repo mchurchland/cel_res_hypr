@@ -26,6 +26,11 @@ from architecture_mc_narma import load_run, merge, digest, write_json
 
 PARAMETERS=['rho_target','leak','input_scale']
 METRICS={'MC':1,'NARMA10_test_nmse':-1}
+
+
+def metric_directions(data):
+    return {name:direction for name,direction in dict(METRICS,IPC=1).items() if name in data.columns}
+
 LABELS={'ce_empirical':'CE empirical','ce_shuffled':'CE shuffled magnitudes',
  'ce_degree_rewired':'CE degree rewired','ce_binary':'CE binary',
  'ce_halfnormal':'CE half-normal','er_signed_empirical':'ER exact CE signed weights',
@@ -75,7 +80,7 @@ def summarize(d,m,weights):
     records=[]; wins=[]; advantages=[]; decomposition=[]
     repeats=range(m['config']['repeats'])
     for (norm,fraction,family),g in d.groupby(['normalization','negative_fraction','family'],sort=False):
-        for metric in METRICS:
+        for metric in metric_directions(d):
             values=g.groupby('repeat_id')[metric].mean().reindex(repeats).to_numpy()
             ci=np.quantile(weights@values,[.025,.975]) if len(values)>1 else [np.nan,np.nan]
             records.append(dict(normalization=norm,negative_fraction=fraction,family=family,metric=metric,
@@ -90,7 +95,7 @@ def summarize(d,m,weights):
                         variance_share=comp['variance']/total if total>0 else np.nan))
     for (norm,fraction),g in d.groupby(['normalization','negative_fraction'],sort=False):
         if 'ce_empirical' not in set(g.family): continue
-        for metric,direction in METRICS.items():
+        for metric,direction in metric_directions(d).items():
             ce=g[g.family=='ce_empirical'].pivot(index='repeat_id',columns=PARAMETERS,values=metric).reindex(repeats)
             for family in m['config']['families']:
                 if family=='ce_empirical': continue
@@ -119,7 +124,7 @@ def save(fig,out,name):
 def plots(summary,wins,advantages,components,out,m):
     plt.rcParams.update({'font.size':10,'axes.spines.top':False,'axes.spines.right':False,'legend.fontsize':8})
     for norm in m['config']['normalizations']:
-        for metric in METRICS:
+        for metric in summary.metric.unique():
             panel=summary[(summary.normalization==norm)&(summary.metric==metric)]
             fig,ax=plt.subplots(figsize=(9,5.8))
             for family in m['config']['families']:
@@ -127,8 +132,10 @@ def plots(summary,wins,advantages,components,out,m):
                 x=100*g.negative_fraction
                 ax.plot(x,g['mean'],marker='o',ms=3,color=COLORS[family],label=LABELS[family])
                 ax.fill_between(x,g.ci_low,g.ci_high,color=COLORS[family],alpha=.12)
-            ax.set(xlabel='Inhibitory edges (%)',ylabel='MC (higher is better)' if metric=='MC' else 'NARMA10 NMSE (lower is better)',
-                   title=f'{norm}: mean performance over the grid',ylim=(0,None))
+            ylabel={'MC':'MC (higher is better)','NARMA10_test_nmse':'NARMA10 NMSE (lower is better)','IPC':'Held-out IPC estimate (higher is better)'}[metric]
+            ax.set(xlabel='Inhibitory edges (%)',ylabel=ylabel,title=f'{norm}: mean performance over the grid')
+            if metric!='IPC': ax.set_ylim(bottom=0)
+            else: ax.axhline(0,color='.5',lw=.7)
             ax.legend(ncol=2,loc='upper center',bbox_to_anchor=(.5,-.17),frameon=False)
             ax.grid(axis='y',alpha=.15)
             fig.text(.5,-.02,'Pointwise 95% whole-realization bootstrap intervals; equal weight per grid configuration.',ha='center',fontsize=8)
@@ -140,7 +147,7 @@ def plots(summary,wins,advantages,components,out,m):
                 g=wins[(wins.normalization==norm)&(wins.metric==metric)&(wins.control==family)].sort_values('negative_fraction')
                 ax.plot(100*g.negative_fraction,100*g.ce_winning_fraction,marker='o',ms=3,color=COLORS[family],label=LABELS[family])
                 ax.fill_between(100*g.negative_fraction,100*g.ci_low,100*g.ci_high,color=COLORS[family],alpha=.1)
-            ax.set(xlabel='Inhibitory edges (%)',ylabel='Grid configurations where mean CE performance wins (%)',
+            ax.set(xlabel='Inhibitory edges (%)',ylabel='Matched hyperparameter settings CE wins (%)',
                    title=f'{metric} / {norm}: CE empirical versus each control',ylim=(-2,102))
             ax.axhline(50,color='.5',lw=.7,ls=':'); ax.grid(axis='y',alpha=.15)
             ax.legend(ncol=2,loc='upper center',bbox_to_anchor=(.5,-.17),frameon=False)
@@ -167,8 +174,10 @@ def plots(summary,wins,advantages,components,out,m):
             shares.append(dict(zip(['normalization','negative_fraction','family','metric','repeat_id'],keys),parameter=parameter,share=share))
     pd.DataFrame(shares).to_csv(out/'hyperparameter_allocated_shares.csv',index=False)
     for norm in m['config']['normalizations']:
-        fig,axes=plt.subplots(1,2,figsize=(12,5.5),layout='constrained')
-        for ax,metric in zip(axes,METRICS):
+        metrics=list(summary.metric.unique())
+        fig,axes=plt.subplots(1,len(metrics),figsize=(6*len(metrics),5.5),layout='constrained',squeeze=False)
+        axes=axes[0]
+        for ax,metric in zip(axes,metrics):
             g=pd.DataFrame(shares)
             table=g[(g.normalization==norm)&(g.metric==metric)].groupby(['family','parameter']).share.mean().unstack().reindex(m['config']['families'])
             bottom=np.zeros(len(table))
@@ -203,8 +212,15 @@ def main(argv=None):
     diagnostics.to_csv(args.out_dir/'dynamics_diagnostics.csv',index=False)
     streams=d[['repeat_id','narma_generator_seed','narma_rejected_streams']].drop_duplicates()
     streams.to_csv(args.out_dir/'narma_streams.csv',index=False)
+    if 'IPC' in d:
+        columns=['IPC','IPC_positive_part','IPC_linear','IPC_nonlinear','IPC_crossdelay','IPC_single_delay','IPC_mean_predictor_baseline','IPC_excess_over_mean','IPC_negative_terms']
+        d.groupby(['normalization','family','negative_fraction'])[columns].mean().reset_index().to_csv(args.out_dir/'ipc_component_diagnostics.csv',index=False)
     plots(summary,wins,advantages,components,args.out_dir,m)
     report=f'''# Unified architecture sweep\n\nProtocol: `{m['protocol']}`. {len(d):,} paired observations; {m['config']['repeats']} realizations; {len(m['config']['rhos'])*len(m['config']['leaks'])*len(m['config']['inputs'])} grid settings.\n\nThe primary comparison is CE empirical versus each control at identical hyperparameters. MC is the sum of held-out squared correlations over delays 1–{task_delay(m)}; larger is better. NARMA10 NMSE is test MSE divided by test-target variance; smaller is better. Readout penalties use separate validation data. Mean curves average every grid setting; winning fractions compare realization-averaged scores at each configuration. They are different summaries.\n\nIntervals resample whole paired realizations jointly across models, fractions and configurations ({args.bootstrap} draws, seed {args.seed}); they are pointwise, descriptive intervals. The fixed grid is not a random hyperparameter population. One-realization intervals are undefined.\n\n`hyperparameter_variance_components.csv` contains exact balanced-grid main effects and interactions within each realization. The allocated-share plot splits each interaction equally across its participating parameters; that allocation is descriptive and depends on the grid and score scale. Constant surfaces have undefined percentage shares.\n\nInspect `configuration_advantages.csv` for the settings driving any crossover and `dynamics_diagnostics.csv` for initialization sensitivity, actual scaled radii, memory beyond the primary cutoff, and large errors. No poor-performing configurations were discarded. NARMA generator-only nonfinite streams were replaced by the prespecified recorded seed rule before network evaluation; `narma_streams.csv` records counts and accepted seeds, and task caches contain rejected seed lists.\n\nOwn-radius scaling equalizes current raw radius. Fixed-reference uses each family's radius at the known-edge CE reference fraction, held fixed across the sweep. Shared-CE scaling applies the CE multiplier at the current fraction to all families; it varies across fractions. Only the shared multiplier preserves exact signed-weight matching after scaling. The removed-edge CE control has fewer edges and is not density-matched to the full-CE ER controls. WS is a directed WS-like control. All edge signs are randomized quotas; these are reservoir controls, not inferred biological sign balances.\n\nThe protocol uses conventional NARMA10 and a new stabilized readout; it must not be silently pooled with archived NARMA results. Performance differences do not alone isolate eigenmode causality or establish biological optimality.\n'''
+    if 'ipc' in m['config']:
+        spec=m['config']['ipc']
+        report+=f"\nIPC is the signed sum of held-out 1 - MSE/target-second-moment estimates for {spec['target_count']} orthonormal Legendre-product targets, lags 1–{spec['max_delay']}, total degree 1–{spec['max_degree']}. Cross-delay products are included. Higher is better; finite estimates may be negative and are retained. This is a finite-basis, regularized adaptation of Dambre et al. (2012), not full population IPC. IPC_positive_part is a separately named diagnostic with a positive clipping floor; it is not used for the primary win curves. Linear/nonlinear, cross-delay and mean-predictor diagnostics are included. Old lower-half data do not acquire IPC automatically; do not substitute archived restricted IPC scores.\n"
+    report+='\nPrimary comparison: fraction of identical hyperparameter settings won at each E/I fraction, after averaging each setting over paired realizations. Grid-averaged performance is supporting context.\n'
     (args.out_dir/'REPORT.md').write_text(report)
     write_json(args.out_dir/'manifest.json',dict(experiment_id=m['experiment_id'],source=str(source.resolve()),
         source_sha256=digest(source.read_bytes()),analysis_sha256=digest(Path(__file__).read_bytes()),

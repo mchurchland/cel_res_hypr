@@ -1,0 +1,46 @@
+{
+  "source_analysis": "/home/saki/Documents/Organized/Reed/Thesis/analysis/architecture_mc_narma/architecture_mc_narma_271846",
+  "sources": {
+    "ce_winning_fraction.csv": "152d639ffc1e7f20ec6cda352a8830f496b47119dd54c7380c52f77e1de1d0bc",
+    "configuration_advantages.csv": "78d9ee8fa09b56c220b8e35caa8066a3fd426f0a86a1755b2b0be2b1ab73acf2"
+  },
+  "plot_script_sha256": "e9b56a68457a5e578e842db4d54cb92bfad9eca4e21f629776c7e6e3f20f77c1",
+  "models": [
+    "ce_shuffled",
+    "ce_degree_rewired",
+    "ce_binary",
+    "ce_halfnormal",
+    "er_signed_empirical",
+    "er_binary",
+    "er_halfnormal",
+    "ws_signed_empirical",
+    "ce_unknown_removed"
+  ],
+  "reference_model": "ce_empirical",
+  "primary_estimand": "fraction of matched settings whose 100-realization mean score favors CE at each inhibitory-edge fraction",
+  "all_324_curve_points_independently_reconstructed": true,
+  "outputs": {
+    "input_win_curves.csv": "8e246e886cf1e78974dacf264bbcc45eeac6a266c33036d5ba37ee883758bc1c",
+    "overview_MC_all_controls.png": "53fc97c0dc9078b4cd8483306a8e5428f272344933718ee24b190657cc656b41",
+    "overview_NARMA10_all_controls.png": "0c4ddd77655bad5df0423f1d622dc1e30467c85342966e735464e418988369a6",
+    "ce_shuffled_full_grid.png": "004e462751b374f61a3ffb2dc7aa726f78ca29c6987b158a4ec0b0e326dbce18",
+    "ce_shuffled_by_input.png": "b220b00680c99c077315d0ffd09b685360d226ea34dc5a4284ef62aa740e9dfe",
+    "ce_degree_rewired_full_grid.png": "4cd1b152796d90636eac64a254cf83f976280689e539f1d5dffc459fc88e19ff",
+    "ce_degree_rewired_by_input.png": "6da01c3d42fc1ace23e300af3f1ee07f2136c02b60d9ec3411892361ac77f04b",
+    "ce_binary_full_grid.png": "274b14c92ef26056c6427e89e44b5cf8957c918b7d7e69d7e661a097d020852f",
+    "ce_binary_by_input.png": "cc746314ebd7d068e24719303e2fb32e4ec54be35a7a1b515633383e575e6ef8",
+    "ce_halfnormal_full_grid.png": "6541e20b7b58b47ea5a44bf9992189d339efbcd01b9b8cb73cf482f6fe775955",
+    "ce_halfnormal_by_input.png": "bf120aec605ac84ece1d613bc5d689ec5e1bc4e1f4c7de0abcc5435feff618f0",
+    "er_signed_empirical_full_grid.png": "91c6a569a6614ae86d7574e72e3415947c0e04c73279bf25c2cfc46e34aaa019",
+    "er_signed_empirical_by_input.png": "1d57e09b0869e37b9242672701888238187abeb84cc337655561280b6eef4954",
+    "er_binary_full_grid.png": "e220016d76f1f0e8af0e75288451fa68a1b94b19222a319b71bba14083d8fcd2",
+    "er_binary_by_input.png": "a51fa289323e565dc25d764c9ec21b07807b5a9540eb37852b95ede3f7fefe53",
+    "er_halfnormal_full_grid.png": "c547c45ec7ad71a1488e629495e35586ff4b900a3ff02f2b197cadde678bdede",
+    "er_halfnormal_by_input.png": "0d55f1f88bdc49bb4109a7e6536290aa46805694b0e304d485f9d78092aec427",
+    "ws_signed_empirical_full_grid.png": "9d2daadee01c6e986f92fc2a9f692c02eefc34b5c5e2b69e9e53164cf303f9d7",
+    "ws_signed_empirical_by_input.png": "03e7b9fea97c3195b73a840d83d6bbb7a0a75d6c1b42fe67063c6137ba27d444",
+    "ce_unknown_removed_full_grid.png": "217844367eb1159e0c48f45273a12e3a1ad1335e39c4906a99f1bd3397c61509",
+    "ce_unknown_removed_by_input.png": "46415cfa22d08b8b49de1088cc7c7f6346f04354edde38587216c1edc39ce9ac",
+    "README.md": "d5d414cdb58214aad2592689756e0a96379d9f4ea2e9a1f6e03ac97dfe50fc72"
+  }
+}

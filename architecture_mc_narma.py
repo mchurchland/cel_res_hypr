@@ -19,9 +19,11 @@ import torch
 from network_stats.architecture_sweep import (FAMILIES, NORMALIZATIONS, DEFINITIONS,
     make_assets, raw_networks, rng_for, scaling_factor, spectrum, validate_connectomes)
 from network_stats.audited_temporal_tasks import TaskSettings, make_task_data, score_states, simulate_batch
+from network_stats.ipc_capacity import IPCSettings, add_ipc_data, score_ipc
 
 ROOT = Path(__file__).resolve().parent
 PROTOCOL = 'architecture-mc-narma-v2-conventional'
+IPC_PROTOCOL = 'architecture-mc-narma-ipc-v3-delayed-legendre'
 SOURCES = ('ARCHITECTURE_SWEEP.md', 'architecture_mc_narma.py', 'network_stats/architecture_sweep.py',
     'network_stats/audited_temporal_tasks.py', 'util/util.py',
     'third_party/echotorch/NARMADataset.py', 'third_party/echotorch/COPYING',
@@ -29,6 +31,9 @@ SOURCES = ('ARCHITECTURE_SWEEP.md', 'architecture_mc_narma.py', 'network_stats/a
     'tools/analyze_architecture_mc_narma.py', 'tools/submit_architecture_mc_narma.sh',
     'r_architecture_mc_narma.sbatch', 'r_architecture_mc_narma_preflight.sbatch',
     'r_architecture_mc_narma_analyze.sbatch')
+SOURCES += ('network_stats/ipc_capacity.py', 'tests/test_architecture_ipc.py',
+    'r_architecture_mc_narma_ipc_50_100.sbatch', 'ARCHITECTURE_IPC_EXTENSION.md',
+    'tools/plot_architecture_duels_by_model.py')
 DATA = ('Connectome/ce_adj.npy', 'Connectome/ce_unknown_sign_weights.npy')
 KEY = ('repeat_id', 'family', 'negative_fraction', 'normalization', 'rho_target', 'leak', 'input_scale')
 
@@ -107,6 +112,7 @@ def repeat_seed(manifest, repeat):
 
 
 def prepare(args):
+    ipc = IPCSettings(args.ipc_max_delay,args.ipc_max_degree) if args.with_ipc else None
     c = dict(families=args.families, normalizations=args.normalizations, fractions=args.fractions,
              rhos=args.rhos, leaks=args.leaks, inputs=args.inputs, repeats=args.repeats,
              seed=args.seed, seed_stride=100000, swaps_per_edge=args.swaps_per_edge,
@@ -116,6 +122,21 @@ def prepare(args):
              tasks=asdict(TaskSettings(washout=args.washout, train=args.train,
                  validation=args.validation, test=args.test, narma_burnin=args.narma_burnin,
                  mc_max_delay=args.mc_max_delay, mc_diagnostic_delay=args.mc_diagnostic_delay)))
+    if ipc is not None:
+        if ipc.max_delay>args.washout: raise ValueError('IPC delay exceeds washout')
+        c['ipc']=ipc.definition()
+    if args.overlap_parent is not None:
+        parent=args.overlap_parent.resolve()
+        old=json.loads((parent/'manifest.json').read_text())
+        for relative in DATA+('network_stats/architecture_sweep.py','network_stats/audited_temporal_tasks.py','util/util.py','third_party/echotorch/NARMADataset.py'):
+            if old['source_sha256'][relative]!=digest((ROOT/relative).read_bytes()):
+                raise ValueError(f'Overlap parent uses different model/task/data source: {relative}')
+        for key in ('families','normalizations','rhos','leaks','inputs','seed','seed_stride','tasks','state_dtype','swaps_per_edge'):
+            if canonical(old['config'][key])!=canonical(c[key]):
+                raise ValueError(f'Overlap parent has different {key}')
+        if old['config']['repeats']<c['repeats'] or .5 not in old['config']['fractions'] or .5 not in c['fractions']:
+            raise ValueError('Overlap requires 50% in both runs and enough paired parent repeats')
+        c['overlap_parent']=dict(path=str(parent),manifest_sha256=digest((parent/'manifest.json').read_bytes()))
     for name in ('families', 'normalizations', 'fractions', 'rhos', 'leaks', 'inputs'):
         if not c[name] or len(c[name]) != len(set(c[name])):
             raise ValueError(f'Empty/duplicate {name}')
@@ -127,7 +148,7 @@ def prepare(args):
         raise ValueError('Invalid grid coordinates')
     hashes = {p: digest((ROOT/p).read_bytes()) for p in SOURCES+DATA}
     known, unknown = validate_connectomes(*(np.load(ROOT/p) for p in DATA))
-    identity = dict(protocol=PROTOCOL, config=c, source_sha256=hashes)
+    identity = dict(protocol=IPC_PROTOCOL if ipc else PROTOCOL, config=c, source_sha256=hashes)
     experiment_id = digest(canonical(identity))
     total = args.repeats*len(args.families)*len(args.normalizations)*len(args.fractions)*len(list(itertools.product(args.rhos,args.leaks,args.inputs)))
     out = args.run_dir.resolve()
@@ -148,14 +169,15 @@ def prepare(args):
                      reference_fraction=float(np.count_nonzero(known<0)/np.count_nonzero(known))),
         'created_utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())}
     write_json(out/'manifest.json', manifest)
-    print(f'Prepared {out}: {total:,} paired MC/NARMA10 evaluations; {2*total:,} trajectories.', flush=True)
+    suffix='; IPC reuses the MC trajectory' if ipc else ''
+    print(f'Prepared {out}: {total:,} paired MC/NARMA10 evaluations; {2*total:,} trajectories{suffix}.', flush=True)
 
 
 def load_run(run_dir):
     run_dir = Path(run_dir)
     manifest = json.loads((run_dir/'manifest.json').read_text())
     identity = {k: manifest[k] for k in ('protocol','config','source_sha256')}
-    if manifest['protocol'] != PROTOCOL or digest(canonical(identity)) != manifest['experiment_id']:
+    if manifest['protocol'] not in (PROTOCOL,IPC_PROTOCOL) or digest(canonical(identity)) != manifest['experiment_id']:
         raise ValueError('Invalid manifest protocol/identity')
     for p, expected in manifest['source_sha256'].items():
         if digest((run_dir/'snapshot'/p).read_bytes()) != expected:
@@ -173,12 +195,18 @@ def tasks_cached(run, m, repeat):
         data = read_cache(path, m['experiment_id'])
     else:
         data = make_task_data(task_settings(m), repeat_seed(m, repeat))
+        if 'ipc' in m['config']:
+            spec=m['config']['ipc']
+            data=add_ipc_data(data,task_settings(m),IPCSettings(spec['max_delay'],spec['max_degree']))
         write_cache(path, data, m['experiment_id'])
         if len(data['narma_rejected_seeds']):
             print(f'Repeat {repeat}: rejected nonfinite NARMA seeds {data["narma_rejected_seeds"].tolist()}; accepted {int(data["narma_generator_seed"])}',flush=True)
     s = task_settings(m)
     if any(data[k].shape != (s.length,1) or not np.isfinite(data[k]).all() for k in ('mc_input','narma_input','narma_target')) or float(data['generator_residual']) > 1e-12:
         raise ValueError('Invalid task cache')
+    if 'ipc' in m['config']:
+        if data['ipc_targets'].shape!=(s.length,m['config']['ipc']['target_count']) or not np.isfinite(data['ipc_targets'][s.washout:]).all():
+            raise ValueError('Invalid IPC target cache')
     return data
 
 
@@ -252,10 +280,13 @@ def condition_rows(m, cache, data, repeat, family, fi, normalization, points, de
             states, gaps = simulate_batch(ws,win,leaks,data[input_key],s.washout,device,getattr(torch,state_dtype))
             for j in range(len(batch)):
                 scores[j].update(score_states(states[j],data,s,task))
+                if task=='MC' and 'ipc' in m['config']:
+                    spec=m['config']['ipc']
+                    scores[j].update(score_ipc(states[j],data,s,IPCSettings(spec['max_delay'],spec['max_degree'])))
                 scores[j][f'{task}_washout_initialization_rms_gap'] = float(gaps[j])
             del states
         for j, ((rho,leak,inp), factor) in enumerate(zip(batch,factors)):
-            row = dict(experiment_id=m['experiment_id'], protocol=PROTOCOL, repeat_id=repeat,
+            row = dict(experiment_id=m['experiment_id'], protocol=m.get('protocol',PROTOCOL), repeat_id=repeat,
                 seed=repeat_seed(m,repeat), family=family, negative_fraction=m['config']['fractions'][fi],
                 normalization=normalization, rho_target=rho, leak=leak, input_scale=inp, neuron_bias=0.,
                 nodes=n, edges=int(edge_count), realized_negative_fraction=float(np.count_nonzero(w<0)/edge_count),
@@ -299,6 +330,12 @@ def validate_rows(rows, m, repeat, family, fi, norm):
             raise ValueError('Invalid memory capacity/curve')
         if float(r['NARMA10_test_nmse']) < 0 or float(r['NARMA10_val_nmse']) < 0 or not np.isclose(float(r['NARMA10_test_nrmse'])**2,float(r['NARMA10_test_nmse'])):
             raise ValueError('Invalid NARMA scores')
+        if 'ipc' in m['config']:
+            spec=m['config']['ipc'];value=float(r['IPC'])
+            if int(r['IPC_target_count'])!=spec['target_count'] or value>spec['target_count']+1e-8 or not np.isclose(value,float(r['IPC_linear'])+float(r['IPC_nonlinear'])) or not np.isclose(value,float(r['IPC_crossdelay'])+float(r['IPC_single_delay'])):
+                raise ValueError('Invalid IPC components/basis')
+            if float(r['IPC_positive_part'])<max(0,value)-1e-8:
+                raise ValueError('Invalid IPC positive-part diagnostic')
         fac = scaling_factor(norm,point[0],float(r['raw_radius']),float(r['fixed_reference_radius']),float(r['shared_ce_radius']))
         if not np.isclose(fac,float(r['scaling_factor']),rtol=1e-12) or not np.isclose(float(r['post_scaling_radius']),fac*float(r['raw_radius']),rtol=1e-12):
             raise ValueError('Invalid spectral normalization')
@@ -384,7 +421,7 @@ def preflight(args):
         print('Existing preflight already passed',flush=True)
         return
     import subprocess,sys
-    subprocess.run([sys.executable,'-m','unittest','discover','-s',str(ROOT/'tests'),'-p','test_architecture_pipeline.py'],check=True,cwd=ROOT)
+    subprocess.run([sys.executable,'-m','unittest','discover','-s',str(ROOT/'tests'),'-p','test_architecture*.py'],check=True,cwd=ROOT)
     parity=parity_check(args.device)
     # Screen every prespecified task stream before starting the expensive array.
     for repeat in range(m['config']['repeats']):
@@ -396,23 +433,54 @@ def preflight(args):
     cpu=condition_rows(m,cache,data,0,'ce_empirical',stable_fi,'own_radius',check_point,'cpu',1)[0]
     gpu=condition_rows(m,cache,data,0,'ce_empirical',stable_fi,'own_radius',check_point,args.device,1)[0]
     scoring_parity={k:abs(cpu[k]-gpu[k]) for k in ('MC','MC_extended','NARMA10_test_nmse')}
+    if 'ipc' in m['config']: scoring_parity['IPC']=abs(cpu['IPC']-gpu['IPC'])
     tolerance=1e-6 if m['config']['state_dtype']=='float64' else .02
     if any(error>tolerance for error in scoring_parity.values()):
         raise ValueError(f'CPU/GPU metric mismatch: {scoring_parity}')
     points=grid(m); selected=[points[i] for i in sorted({0,len(points)//2,len(points)-1})]
     fractions=m['config']['fractions']
-    indices=sorted({int(np.argmin(abs(np.asarray(fractions)-f))) for f in (0,.2,.5)})
+    indices=sorted({0,len(fractions)//2,len(fractions)-1})
     smoke=[]; start=time.monotonic()
     for family,fi,norm in itertools.product(m['config']['families'],indices,m['config']['normalizations']):
         smoke.extend(condition_rows(m,cache,data,0,family,fi,norm,selected,args.device,args.batch_size))
         print(f'Preflight {family} EI={fractions[fi]:.0%} {norm}',flush=True)
+    overlap=check_parent_overlap(m,cache,smoke) if 'overlap_parent' in m['config'] else None
     write_csv(args.run_dir/'preflight/smoke.csv',smoke)
-    gate=dict(experiment_id=m['experiment_id'],runtime=runtime,parity=parity,scoring_parity=scoring_parity,
+    gate=dict(experiment_id=m['experiment_id'],runtime=runtime,parity=parity,scoring_parity=scoring_parity,parent_overlap=overlap,
               tested_conditions=len(smoke),all_task_streams_checked=m['config']['repeats'],
               smoke_sha256=digest((args.run_dir/'preflight/smoke.csv').read_bytes()),
               smoke_seconds=time.monotonic()-start)
     write_json(passed,gate)
     print('GPU preflight PASSED; production array may start',flush=True)
+
+
+def check_parent_overlap(m,cache,smoke):
+    """Verify paired matrices/streams and stable 50% MC/NARMA scores before launch."""
+    parent=m['config']['overlap_parent'];root=Path(parent['path'])
+    if digest((root/'manifest.json').read_bytes())!=parent['manifest_sha256']:
+        raise ValueError('Overlap parent manifest changed')
+    old=json.loads((root/'manifest.json').read_text())
+    previous=read_cache(root/'cache/networks_0000.npz',old['experiment_id'])
+    old_fi=old['config']['fractions'].index(.5);new_fi=m['config']['fractions'].index(.5)
+    np.testing.assert_array_equal(cache['input_vector'],previous['input_vector'])
+    for family in m['config']['families']:
+        current=raw_from_cache(cache,family,new_fi);prior=raw_from_cache(previous,family,old_fi)
+        np.testing.assert_array_equal(current[0],prior[0])
+        np.testing.assert_allclose(current[2],prior[2],rtol=1e-10)
+    checked=0;largest=0.
+    for row in smoke:
+        if row['negative_fraction']!=.5 or row['rho_target']!=min(m['config']['rhos']):continue
+        prior=read_shard(shard_path(root,0,row['family'],old_fi,row['normalization']),old,0,row['family'],old_fi,row['normalization'])
+        match=[r for r in prior if tuple(float(r[k]) for k in ('rho_target','leak','input_scale'))==tuple(row[k] for k in ('rho_target','leak','input_scale'))]
+        if len(match)!=1:raise ValueError('Missing parent overlap configuration')
+        if match[0]['raw_network_sha256']!=row['raw_network_sha256'] or match[0]['input_vector_sha256']!=row['input_vector_sha256']:
+            raise ValueError('Overlap raw matrix/input projection differs')
+        for key in ('MC','NARMA10_test_nmse'):
+            difference=abs(float(match[0][key])-row[key]);largest=max(largest,difference)
+            if difference>1e-6:raise ValueError(f'50% overlap {key} differs by {difference}; inspect environment/protocol')
+        checked+=1
+    if checked==0:raise ValueError('No stable 50% overlap conditions checked')
+    return dict(paired_models_checked=len(m['config']['families']),stable_conditions_checked=checked,max_absolute_score_difference=largest)
 
 
 def merge(args):
@@ -451,6 +519,10 @@ def parser():
     q.add_argument('--seed',type=int,default=20261119)
     q.add_argument('--swaps-per-edge',type=int,default=20)
     q.add_argument('--state-dtype',choices=['float64','float32'],default='float64')
+    q.add_argument('--with-ipc',action='store_true')
+    q.add_argument('--ipc-max-delay',type=int,default=10)
+    q.add_argument('--ipc-max-degree',type=int,default=3)
+    q.add_argument('--overlap-parent',type=Path,help='Optional earlier run for a 50%% preflight pairing/score check')
     for name,default in [('washout',500),('train',1500),('validation',500),('test',500),('narma-burnin',1000),('mc-max-delay',30),('mc-diagnostic-delay',60)]:
         q.add_argument('--'+name,type=int,default=default)
     for command in ('preflight','run','merge'):

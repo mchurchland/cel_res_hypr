@@ -14,3 +14,5 @@ if [[ -n "${PYTHON_BIN:-}" ]]; then RUNNER=("${PYTHON_BIN}"); fi
 "${RUNNER[@]}" "${OUTROOT:?}/snapshot/architecture_mc_narma.py" merge --run-dir "${OUTROOT}"
 "${RUNNER[@]}" "${OUTROOT}/snapshot/tools/analyze_architecture_mc_narma.py" \
     --run-dir "${OUTROOT}" --out-dir "${ANALYSIS_DIR:?}" --bootstrap "${BOOTSTRAP:-1000}"
+"${RUNNER[@]}" "${OUTROOT}/snapshot/tools/plot_architecture_duels_by_model.py" \
+    --analysis-dir "${ANALYSIS_DIR}" --out-dir "${ANALYSIS_DIR}/duel_plots_by_model"

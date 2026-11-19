@@ -1,0 +1,29 @@
+{
+  "source": "results/architecture_mc_narma/architecture_mc_narma_271846/architecture_mc_narma.ALL.csv",
+  "source_sha256": "c5939609492cd4b7ba791d21579b3048e3d1ea8c2885692a01e7938b99cf6d8b",
+  "rows": 432000,
+  "repeats": 100,
+  "grid_size": 24,
+  "bootstrap_replicates": 2000,
+  "bootstrap_seed": 20261119,
+  "bootstrap_unit": "whole paired realization; average grid within realization before bootstrap",
+  "exploratory_initialization_cutoffs": [
+    0.001,
+    1e-06
+  ],
+  "filters": "None: all finite scores retained; task-stream replacement is inherited from recorded experiment protocol",
+  "largest_narma_error": 73.12959939884536,
+  "elapsed_seconds": 10.505788949998532,
+  "frozen_source_and_data_hashes_verified": 16,
+  "report_relative_links_verified": 6,
+  "reproduction": "From repository root: python analysis/architecture_mc_narma/architecture_mc_narma_271846/control_interpretation/compute_contrasts.py --out-dir /tmp/recomputed-architecture-contrasts",
+  "primary_estimand": "fraction of matched hyperparameter settings won at each inhibitory-edge fraction; seed means within each setting",
+  "primary_duel_validation": {
+    "configuration_comparisons": 7776,
+    "curve_rows": 324,
+    "all_counts_reconstructed": true,
+    "configurations_per_fraction": 24,
+    "exact_ties": 0,
+    "mean_win_disagreement_examples_verified": 4
+  }
+}
