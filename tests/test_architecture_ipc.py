@@ -112,8 +112,8 @@ class IPC(unittest.TestCase):
         self.assertEqual(float(wins[wins.metric=='IPC'].ce_winning_fraction.iloc[0]),1)
         self.assertAlmostEqual(float(advantages[advantages.metric=='IPC'].ce_advantage.iloc[0]),.1)
 
-    def test_upper_sbatch_forwarding(self):
-        script=runner.ROOT/'r_architecture_mc_narma_ipc_50_100.sbatch'
+    def test_full_sbatch_forwarding(self):
+        script=runner.ROOT/'r_architecture_mc_narma_ipc_full.sbatch'
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);(root/'tools').mkdir();log=root/'args.json'
             (root/'tools/submit_architecture_mc_narma.sh').write_text(
@@ -124,8 +124,9 @@ class IPC(unittest.TestCase):
             for k in ['PROJECT_ROOT','RUN_ID','OUTROOT','ANALYSIS_DIR','EI_FRACTIONS']:env.pop(k,None)
             subprocess.run(['bash',str(script)],env=env,check=True)
             result=json.loads(log.read_text());args=result['args']
-            self.assertEqual(args[:7],['--fractions','0.5','0.6','0.7','0.8','0.9','1.0'])
-            self.assertIn('--with-ipc',args);self.assertIn('architecture_mc_narma_ipc_50_100',result['out'])
+            self.assertEqual(args[:12],['--fractions','0','.1','.2','.3','.4','.5','.6','.7','.8','.9','1'])
+            self.assertEqual(args[args.index('--reuse-parent-through')+1],'.5')
+            self.assertIn('--with-ipc',args);self.assertIn('architecture_mc_narma_ipc_full',result['out'])
             self.assertEqual(result['repeats'],'20')
 
 if __name__=='__main__':unittest.main()

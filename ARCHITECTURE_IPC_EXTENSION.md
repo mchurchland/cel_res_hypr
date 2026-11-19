@@ -1,21 +1,48 @@
-# Upper-half E/I extension with IPC
+# Full E/I sweep: upper-half extension and lower-half IPC backfill
 
 From the Thesis repository root on Orca:
 
 ```bash
-sbatch r_architecture_mc_narma_ipc_50_100.sbatch
+sbatch r_architecture_mc_narma_ipc_full.sbatch
 ```
 
 The setup job queues the existing GPU preflight, GPU array and dependent
 merge/analysis. Simulation jobs each request one GPU; there is no CPU simulation
 array. The setup job itself only prepares and submits the GPU jobs.
 
-The extension uses all ten models, all three normalization protocols, the same
+The sweep uses all ten models, all three normalization protocols, the same
 24 radius/leak/input settings, zero bias, and 100 paired realizations with the
-same base seed as run 271846. Fractions are **50%, 60%, 70%, 80%, 90%, 100%**.
-The 50% point overlaps the existing run; 60–100% are the new fractions. By default, preflight checks the overlap against `results/architecture_mc_narma/architecture_mc_narma_271846`: raw matrices/input projections must match, and stable-condition MC/NARMA scores must agree within 1e-6. Set `PARENT_RUN_DIR` if that run is stored elsewhere. Input
-streams and model component seeds remain paired. There are 432,000 condition
-rows, each with MC, conventional NARMA10 and IPC estimates. No STP is added.
+same base seed as run 271846. Fractions are **0%, 10%, 20%, …, 100%**.
+
+| Fraction | MC and NARMA | IPC |
+|---|---|---|
+| 0–50% | Reuse existing scores from run 271846 | Compute from regenerated MC trajectories |
+| 60–100% | Compute new scores | Compute from those MC trajectories |
+
+**50% is already covered for MC/NARMA and is not rerun in the production
+array.** A few 50% conditions are recalculated during GPU preflight to verify
+compatibility. Existing raw matrices, input projections, scaling factors and
+task streams are validated before reusing parent scores. IPC requires the
+lower-half MC state trajectories, which were not saved in the earlier results;
+those trajectories are regenerated, but MC readout fitting and NARMA simulation
+are skipped for the reused fractions.
+
+The default merged dataset has **792,000 rows**: 432,000 rows with reused
+MC/NARMA scores and new IPC, plus 360,000 rows with all-new scores. Production
+uses 792,000 MC trajectories and 360,000 NARMA trajectories, rather than
+rerunning both tasks over the entire grid. Each reused row records its parent
+experiment ID and parent-shard checksum. Source files are not changed.
+
+By default the parent is
+`results/architecture_mc_narma/architecture_mc_narma_271846`.
+Set `PARENT_RUN_DIR` if it is stored elsewhere. The parent manifest, shards and
+task/network caches must remain available. The configuration and model/task/data
+source hashes must match. Paired input streams and model component seeds are
+retained. Validated parent input/target streams are loaded from its caches for
+all fractions, preserving the exact previously accepted sequences. No STP is added.
+
+The old filename `r_architecture_mc_narma_ipc_50_100.sbatch` remains a compatibility
+entry point and now launches this same full-range sweep.
 
 MC/NARMA definitions, lengths and readouts are unchanged. IPC reuses the MC
 trajectory, so it does not require another reservoir simulation. New results
@@ -56,7 +83,7 @@ readout settings and provenance are recorded in the manifest.
 
 Preflight tests the basis, timing alignment and known synthetic capacities,
 and includes IPC in the actual CPU/GPU scoring comparison. Its representative
-conditions cover the first, middle and last requested fractions (50%, 80%, 100%
+conditions cover the first, middle and last requested fractions (0%, 50%, 100%
 by default). Failed preflight prevents the production array from starting.
 
 ## Results and figures
@@ -64,7 +91,7 @@ by default). Failed preflight prevents the production array from starting.
 Results:
 
 ```
-results/architecture_mc_narma_ipc_50_100/architecture_upper_ipc_<submission-job-ID>/
+results/architecture_mc_narma_ipc_full/architecture_full_ipc_<submission-job-ID>/
 ```
 
 The merged CSV keeps the existing filename `architecture_mc_narma.ALL.csv` and
@@ -74,31 +101,32 @@ files, and `preflight/` contains the GPU checks.
 Analysis (PNG, CSV, Markdown):
 
 ```
-analysis/architecture_mc_narma_ipc_50_100/architecture_upper_ipc_<submission-job-ID>/
+analysis/architecture_mc_narma_ipc_full/architecture_full_ipc_<submission-job-ID>/
 ```
 
 The `duel_plots_by_model/` subfolder provides separate plots for all nine controls, with MC/NARMA/IPC and input-specific panels. IPC gets the same mean curves, matched-setting win curves, input-conditioned
 comparisons and hyperparameter variance decomposition as MC/NARMA. Win fractions
 remain the primary comparison of breadth across the fixed grid.
 
-**IPC covers this requested upper half only.** The old 0–40% data do not gain
-IPC automatically. Full 0–100% IPC curves require computing those lower-half
-trajectories too; do not fill the missing values or substitute archived IPC
-scores with different definitions. If wanted later, reuse the launcher with
-a direct helper invocation with `--with-ipc --fractions 0 .1 .2 .3 .4` and a new `RUN_ID`/`OUTROOT` (the upper-half wrapper requires its 50% overlap). That invocation also recomputes
-MC/NARMA under the same protocol and preserves the old results.
+**All three metrics now cover 0–100% in the new merged dataset.** The lower-half
+MC/NARMA values are inherited exactly from validated parent shards; their
+provenance is explicit in `MC_NARMA_reused`, `MC_NARMA_source_experiment_id`
+and `MC_NARMA_parent_shard_sha256`. IPC uses the same configured basis for
+every fraction. Do not substitute archived restricted IPC scores.
 
-The preflight 50% overlap check validates representative stable conditions before launching; the complete overlap should still be checked before joining old and new MC/NARMA sweeps.
-Neither the raw matrices nor the MC/NARMA definitions changed, but numerical
-chaotic trajectories can depend on hardware/library versions. Keep the recorded
-source hashes, environment, input seeds and raw-network hashes when checking it.
+Merge streams validated shards to disk instead of keeping the full CSV in
+memory. Analysis and per-model duel plots include the full E/I domain. The
+parent cache comparison and preflight overlap checks guard against mixing
+incompatible model/task protocols. Numerical trajectories can still depend on
+hardware/library versions; the raw matrices and task streams must match, and
+stable-condition overlap scores must agree within 1e-6 before the array starts.
 
 ## Adjustable settings
 
 Edit the defaults near the top of the sbatch file, or supply environment values:
 
 ```bash
-TOTAL_REPEATS=20 ARRAY_TASKS=10 sbatch r_architecture_mc_narma_ipc_50_100.sbatch
+TOTAL_REPEATS=20 ARRAY_TASKS=10 sbatch r_architecture_mc_narma_ipc_full.sbatch
 ```
 
 `IPC_MAX_DELAY` and `IPC_MAX_DEGREE` control basis size; changing them changes

@@ -1,0 +1,75 @@
+{
+  "unit_tests_passed": 35,
+  "unit_tests_failed": 0,
+  "tests_log": "tests.log",
+  "actual_parent_run": "results/architecture_mc_narma/architecture_mc_narma_271846",
+  "real_parent_cpu_check": {
+    "rows": 90,
+    "reused_MC_NARMA": 60,
+    "new_MC_NARMA": 30,
+    "models": 10,
+    "normalizations": 3,
+    "fractions": [
+      0,
+      0.5,
+      1
+    ],
+    "settings": "radius .6, leak 1, input .1",
+    "sequence_lengths": {
+      "mc_diagnostic_delay": 60,
+      "mc_max_delay": 30,
+      "narma_burnin": 1000,
+      "ridge_alphas": [
+        1e-08,
+        1e-06,
+        0.0001,
+        0.01,
+        1.0
+      ],
+      "test": 500,
+      "train": 1500,
+      "validation": 500,
+      "washout": 500
+    },
+    "IPC_basis_targets": 285,
+    "seconds": 50.99252288799835,
+    "parent_task_streams_verified": true,
+    "parent_raw_matrices_input_projections_and_scales_verified": true,
+    "source_csv": "real_parent_reuse_smoke.csv",
+    "sha256": "4be4a7ec5b636cdb2f978febe092d43e4dc2b2b4eb1b7ccf94edb0b687c4fa7e"
+  },
+  "default_plan": {
+    "rows": 792000,
+    "reused_MC_NARMA": 432000,
+    "new_MC_NARMA": 360000,
+    "trajectories": 1152000
+  },
+  "local_gpu_tested": false,
+  "production_jobs_submitted": false,
+  "gpu_preflight": "Mandatory; fresh CPU/GPU scoring, stored-score reuse branch and stable 50% parent overlap",
+  "source_sha256": {
+    "ARCHITECTURE_SWEEP.md": "93c111e1739281d6e09cbbcf8301ca6c68327ef8f83584e887e30dba9355b150",
+    "architecture_mc_narma.py": "4d9d6384eaeedcce7b63750c3d6a599d5d03eadd845f4a0629786c6f4aaf24b6",
+    "network_stats/architecture_sweep.py": "555c8005f2792db5aa52dfc41575a4f378331a9a15d5b5d44802893fa54d2c39",
+    "network_stats/audited_temporal_tasks.py": "499f5ba118dad40459e91498577a3d7628c2dcf67f5c0ee101089c6becb44b9b",
+    "util/util.py": "644c26d045ee5785cb0719cdc4bcc6b1c7e38a35db6d4d9c4a04fe792f4d9d1b",
+    "third_party/echotorch/NARMADataset.py": "07a9a4edf2ae6b7b70a2e97590172159b6fac516eab94462293747dbdf71256f",
+    "third_party/echotorch/COPYING": "edaef632cbb643e4e7a221717a6c441a4c1a7c918e6e4d56debc3d8739b233f6",
+    "third_party/echotorch/README.md": "907c846dd1f0db0bf8b8cba69d812efae315ff4995f9091b3ebd6b91295596cc",
+    "tests/test_architecture_pipeline.py": "cf07c4c401a921f8433e55909853e28a6ab0d55f3157d06b910a451ded456cd6",
+    "tools/analyze_architecture_mc_narma.py": "b2aeaafbda2f43d1ef02b195b4c6f3cba3ac92f9afc2d9ccc77a5aa4e3fc47d2",
+    "tools/submit_architecture_mc_narma.sh": "415824d70dde581743c1243dc5be242941a094b557e6089245e4bfb777b424b5",
+    "r_architecture_mc_narma.sbatch": "dbfeb5d29aa94c8fd5c37d4f24e05d972be5d1dc26fec8f7866544f6ec5b3399",
+    "r_architecture_mc_narma_preflight.sbatch": "51f0c64ff8d2a6fc65b79be939686d6992640ef9188625f3a4f5625d52871429",
+    "r_architecture_mc_narma_analyze.sbatch": "7a752f962b9623b5aa9d939a269f8eb19d6ea3025431f47f34361f08fc1ec0ee",
+    "network_stats/ipc_capacity.py": "5169d0b2fe8f5daaaa2395d59777b7aa4c2cd3673bde85e1f59119b273548b8a",
+    "tests/test_architecture_ipc.py": "ebd77d88653c0b19859c9b3c5d6af3bcc45bab84b5ce907475665624107f49e2",
+    "r_architecture_mc_narma_ipc_50_100.sbatch": "416e12887588be4535ded335f00e6f2515aecba6a434cc976dec51300fdb2d51",
+    "ARCHITECTURE_IPC_EXTENSION.md": "0cc65fa48339a008ade8ca02376cda16e5899e95435dd34136b9059df1034ade",
+    "tools/plot_architecture_duels_by_model.py": "f32962938dcb96aef56be3b5b6f0156dd504f43eb8f6a424a0af59756c5260d6",
+    "r_architecture_mc_narma_ipc_full.sbatch": "2da881e54119e8317f43c788921b26b888cb11b4dca94275a67317f1de03be90",
+    "tests/test_architecture_backfill.py": "50515367c95dd7d18c27d1e4f97cecd6879cdf4aca14facce30ed4f1f048d309",
+    "Connectome/ce_adj.npy": "3efb994aaf7ef7981633f51adfdcff9b82f882eb4e9619b20321617f66681937",
+    "Connectome/ce_unknown_sign_weights.npy": "7ee3cfdd637994431b7911da53249e2ba8e2a9840e61599be4b376caad3d5e95"
+  }
+}

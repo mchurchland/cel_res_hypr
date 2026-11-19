@@ -33,13 +33,21 @@ SOURCES = ('ARCHITECTURE_SWEEP.md', 'architecture_mc_narma.py', 'network_stats/a
     'r_architecture_mc_narma_analyze.sbatch')
 SOURCES += ('network_stats/ipc_capacity.py', 'tests/test_architecture_ipc.py',
     'r_architecture_mc_narma_ipc_50_100.sbatch', 'ARCHITECTURE_IPC_EXTENSION.md',
-    'tools/plot_architecture_duels_by_model.py')
+    'tools/plot_architecture_duels_by_model.py', 'r_architecture_mc_narma_ipc_full.sbatch',
+    'tests/test_architecture_backfill.py')
 DATA = ('Connectome/ce_adj.npy', 'Connectome/ce_unknown_sign_weights.npy')
 KEY = ('repeat_id', 'family', 'negative_fraction', 'normalization', 'rho_target', 'leak', 'input_scale')
 
 
 def digest(data):
     return hashlib.sha256(data).hexdigest()
+
+
+def file_digest(path):
+    h=hashlib.sha256()
+    with Path(path).open('rb') as f:
+        for block in iter(lambda:f.read(8*1024*1024),b''):h.update(block)
+    return h.hexdigest()
 
 
 def canonical(value):
@@ -136,7 +144,14 @@ def prepare(args):
                 raise ValueError(f'Overlap parent has different {key}')
         if old['config']['repeats']<c['repeats'] or .5 not in old['config']['fractions'] or .5 not in c['fractions']:
             raise ValueError('Overlap requires 50% in both runs and enough paired parent repeats')
-        c['overlap_parent']=dict(path=str(parent),manifest_sha256=digest((parent/'manifest.json').read_bytes()))
+        c['overlap_parent']=dict(path=str(parent),manifest_sha256=digest((parent/'manifest.json').read_bytes()),experiment_id=old['experiment_id'])
+    if args.reuse_parent_through is not None:
+        if ipc is None or args.overlap_parent is None or not 0<=args.reuse_parent_through<=.5:
+            raise ValueError('Reusing parent scores requires IPC, an overlap parent and a cutoff in [0,.5]')
+        lower=[f for f in c['fractions'] if f<=args.reuse_parent_through]
+        if not lower or any(f not in old['config']['fractions'] for f in lower):
+            raise ValueError('Every reused fraction must exist in the parent')
+        c['reuse_parent_through']=args.reuse_parent_through
     for name in ('families', 'normalizations', 'fractions', 'rhos', 'leaks', 'inputs'):
         if not c[name] or len(c[name]) != len(set(c[name])):
             raise ValueError(f'Empty/duplicate {name}')
@@ -151,6 +166,7 @@ def prepare(args):
     identity = dict(protocol=IPC_PROTOCOL if ipc else PROTOCOL, config=c, source_sha256=hashes)
     experiment_id = digest(canonical(identity))
     total = args.repeats*len(args.families)*len(args.normalizations)*len(args.fractions)*len(list(itertools.product(args.rhos,args.leaks,args.inputs)))
+    reused=sum(f<=c.get('reuse_parent_through',-1) for f in c['fractions'])*total//len(c['fractions'])
     out = args.run_dir.resolve()
     if (out/'manifest.json').exists():
         existing = load_run(out)
@@ -164,13 +180,15 @@ def prepare(args):
         atomic(out/'snapshot'/relative, (ROOT/relative).read_bytes())
     manifest = {**identity, 'experiment_id': experiment_id, 'prepared_environment': environment(),
         'model_definitions': DEFINITIONS, 'expected_evaluations': total,
+        'reused_temporal_evaluations':reused,'new_temporal_evaluations':total-reused,
+        'expected_trajectories':2*total-reused,
         'data': dict(nodes=len(known), known_edges=int(np.count_nonzero(known)),
                      unknown_edges=int(np.count_nonzero(unknown)),
                      reference_fraction=float(np.count_nonzero(known<0)/np.count_nonzero(known))),
         'created_utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())}
     write_json(out/'manifest.json', manifest)
     suffix='; IPC reuses the MC trajectory' if ipc else ''
-    print(f'Prepared {out}: {total:,} paired MC/NARMA10 evaluations; {2*total:,} trajectories{suffix}.', flush=True)
+    print(f'Prepared {out}: {total:,} result rows; {total-reused:,} new and {reused:,} reused MC/NARMA evaluations; {2*total-reused:,} trajectories{suffix}.', flush=True)
 
 
 def load_run(run_dir):
@@ -194,7 +212,11 @@ def tasks_cached(run, m, repeat):
     if path.exists():
         data = read_cache(path, m['experiment_id'])
     else:
-        data = make_task_data(task_settings(m), repeat_seed(m, repeat))
+        if 'reuse_parent_through' in m['config']:
+            parent,old=parent_manifest(m)
+            data=read_cache(parent/'cache'/f'tasks_{repeat:04d}.npz',old['experiment_id'])
+        else:
+            data = make_task_data(task_settings(m), repeat_seed(m, repeat))
         if 'ipc' in m['config']:
             spec=m['config']['ipc']
             data=add_ipc_data(data,task_settings(m),IPCSettings(spec['max_delay'],spec['max_degree']))
@@ -207,6 +229,11 @@ def tasks_cached(run, m, repeat):
     if 'ipc' in m['config']:
         if data['ipc_targets'].shape!=(s.length,m['config']['ipc']['target_count']) or not np.isfinite(data['ipc_targets'][s.washout:]).all():
             raise ValueError('Invalid IPC target cache')
+    if 'reuse_parent_through' in m['config']:
+        parent,old=parent_manifest(m)
+        original=read_cache(parent/'cache'/f'tasks_{repeat:04d}.npz',old['experiment_id'])
+        for key in ('mc_input','narma_input','narma_target','narma_generator_seed','narma_rejected_seeds'):
+            np.testing.assert_array_equal(data[key],original[key],err_msg=f'Parent task mismatch: {key}')
     return data
 
 
@@ -260,7 +287,30 @@ def configure_device(device):
                 environment=environment(), tf32=False)
 
 
-def condition_rows(m, cache, data, repeat, family, fi, normalization, points, device, batch_size):
+def parent_manifest(m):
+    record=m['config']['overlap_parent'];root=Path(record['path'])
+    raw=(root/'manifest.json').read_bytes()
+    if digest(raw)!=record['manifest_sha256']:raise ValueError('Parent manifest changed')
+    return root,json.loads(raw)
+
+
+def parent_condition(m,repeat,family,fraction,norm):
+    root,old=parent_manifest(m);fi=old['config']['fractions'].index(fraction)
+    path=shard_path(root,repeat,family,fi,norm)
+    rows=read_shard(path,old,repeat,family,fi,norm)
+    metadata=json.loads(Path(str(path)+'.json').read_text())
+    return {tuple(float(r[k]) for k in ('rho_target','leak','input_scale')):r for r in rows},old['experiment_id'],metadata['sha256']
+
+
+def inherited_scores(row):
+    result={}
+    for key,value in row.items():
+        if key=='MC' or ((key.startswith('MC_') or key.startswith('NARMA10_')) and not key.startswith('MC_NARMA_')):
+            result[key]=value if key=='MC_ridge_alphas' else float(value)
+    return result
+
+
+def condition_rows(m, cache, data, repeat, family, fi, normalization, points, device, batch_size,reuse_parent=True):
     s = task_settings(m)
     w, eigenvalues, radius = raw_from_cache(cache, family, fi)
     ref = float(cache[f'{family}__{len(m["config"]["fractions"])}__radius'])
@@ -268,22 +318,33 @@ def condition_rows(m, cache, data, repeat, family, fi, normalization, points, de
     n, edge_count = len(w), np.count_nonzero(w)
     state_dtype = m['config'].get('state_dtype','float64')
     raw_hash = digest(w.tobytes())
+    fraction=m['config']['fractions'][fi]
+    reuse=reuse_parent and fraction<=m['config'].get('reuse_parent_through',-1)
+    parent_rows,parent_id,parent_sha=parent_condition(m,repeat,family,fraction,normalization) if reuse else ({},m['experiment_id'],'')
     rows = []
     for begin in range(0,len(points),batch_size):
         batch = points[begin:begin+batch_size]
         factors = [scaling_factor(normalization,rho,radius,ref,ce) for rho,leak,inp in batch]
+        if reuse:
+            for j,point in enumerate(batch):
+                old=parent_rows[point]
+                if old['raw_network_sha256']!=raw_hash or old['input_vector_sha256']!=digest(cache['input_vector'].tobytes()) or not np.isclose(float(old['scaling_factor']),factors[j],rtol=1e-10,atol=1e-12):
+                    raise ValueError('Parent score reuse requires identical raw network, input projection and scaling')
+                factors[j]=float(old['scaling_factor'])
         ws = np.stack([w*factor for factor in factors])
         win = np.stack([cache['input_vector']*inp for rho,leak,inp in batch])
         leaks = [leak for rho,leak,inp in batch]
-        scores = [dict() for _ in batch]
-        for task, input_key in [('MC','mc_input'),('NARMA10','narma_input')]:
+        scores = [inherited_scores(parent_rows[p]) if reuse else {} for p in batch]
+        tasks=[('MC','mc_input')] if reuse else [('MC','mc_input'),('NARMA10','narma_input')]
+        for task, input_key in tasks:
             states, gaps = simulate_batch(ws,win,leaks,data[input_key],s.washout,device,getattr(torch,state_dtype))
             for j in range(len(batch)):
-                scores[j].update(score_states(states[j],data,s,task))
+                if not reuse:scores[j].update(score_states(states[j],data,s,task))
                 if task=='MC' and 'ipc' in m['config']:
                     spec=m['config']['ipc']
                     scores[j].update(score_ipc(states[j],data,s,IPCSettings(spec['max_delay'],spec['max_degree'])))
-                scores[j][f'{task}_washout_initialization_rms_gap'] = float(gaps[j])
+                if not reuse:scores[j][f'{task}_washout_initialization_rms_gap'] = float(gaps[j])
+                if task=='MC' and 'ipc' in m['config']:scores[j]['IPC_washout_initialization_rms_gap']=float(gaps[j])
             del states
         for j, ((rho,leak,inp), factor) in enumerate(zip(batch,factors)):
             row = dict(experiment_id=m['experiment_id'], protocol=m.get('protocol',PROTOCOL), repeat_id=repeat,
@@ -298,6 +359,7 @@ def condition_rows(m, cache, data, repeat, family, fi, normalization, points, de
                 mean_nonzero_raw_magnitude=float(abs(w[w!=0]).mean()),
                 raw_network_sha256=raw_hash, input_vector_sha256=digest(cache['input_vector'].tobytes()),
                 state_dtype=state_dtype, readout_dtype='float64', backend=device,
+                MC_NARMA_reused=int(reuse),MC_NARMA_source_experiment_id=parent_id,MC_NARMA_parent_shard_sha256=parent_sha,
                 narma_generator_seed=int(data['narma_generator_seed']),
                 narma_rejected_streams=len(data['narma_rejected_seeds']),
                 directed_swaps=int(cache['directed_swaps']), rewired_edge_retention=float(cache['rewired_edge_retention']))
@@ -321,8 +383,14 @@ def validate_rows(rows, m, repeat, family, fi, norm):
         seen.add(point)
         if r['experiment_id'] != m['experiment_id'] or int(r['repeat_id']) != repeat or r['family'] != family or r['normalization'] != norm or float(r['negative_fraction']) != m['config']['fractions'][fi] or float(r['neuron_bias']) != 0:
             raise ValueError('Shard identity mismatch')
+        if 'MC_NARMA_reused' in r:
+            wanted=int(m['config']['fractions'][fi]<=m['config'].get('reuse_parent_through',-1))
+            if int(r['MC_NARMA_reused'])!=wanted:
+                raise ValueError('Incorrect parent-score reuse flag')
+            if wanted and (r['MC_NARMA_source_experiment_id']!=m['config']['overlap_parent']['experiment_id'] or len(r['MC_NARMA_parent_shard_sha256'])!=64):
+                raise ValueError('Missing/incorrect parent score provenance')
         for k,v in r.items():
-            if k not in ('experiment_id','protocol','family','normalization','raw_network_sha256','input_vector_sha256','state_dtype','readout_dtype','backend','MC_ridge_alphas'):
+            if k not in ('experiment_id','protocol','family','normalization','raw_network_sha256','input_vector_sha256','state_dtype','readout_dtype','backend','MC_ridge_alphas','MC_NARMA_source_experiment_id','MC_NARMA_parent_shard_sha256'):
                 if not np.isfinite(float(v)):
                     raise ValueError(f'Nonfinite {k}')
         curve = np.array([float(r[f'MC_delay_{i:02d}']) for i in range(1,settings.mc_diagnostic_delay+1)])
@@ -430,23 +498,29 @@ def preflight(args):
     # Check the complete CPU/GPU scoring path on a real, stable CE condition.
     stable_fi=int(np.argmin(abs(np.asarray(m['config']['fractions'])-.2)))
     check_point=[(.6,1.,.1)]
-    cpu=condition_rows(m,cache,data,0,'ce_empirical',stable_fi,'own_radius',check_point,'cpu',1)[0]
-    gpu=condition_rows(m,cache,data,0,'ce_empirical',stable_fi,'own_radius',check_point,args.device,1)[0]
+    cpu=condition_rows(m,cache,data,0,'ce_empirical',stable_fi,'own_radius',check_point,'cpu',1,reuse_parent=False)[0]
+    gpu=condition_rows(m,cache,data,0,'ce_empirical',stable_fi,'own_radius',check_point,args.device,1,reuse_parent=False)[0]
     scoring_parity={k:abs(cpu[k]-gpu[k]) for k in ('MC','MC_extended','NARMA10_test_nmse')}
     if 'ipc' in m['config']: scoring_parity['IPC']=abs(cpu['IPC']-gpu['IPC'])
     tolerance=1e-6 if m['config']['state_dtype']=='float64' else .02
     if any(error>tolerance for error in scoring_parity.values()):
         raise ValueError(f'CPU/GPU metric mismatch: {scoring_parity}')
+    reuse_verified=False
+    if 'reuse_parent_through' in m['config'] and m['config']['fractions'][stable_fi]<=m['config']['reuse_parent_through']:
+        inherited=condition_rows(m,cache,data,0,'ce_empirical',stable_fi,'own_radius',check_point,args.device,1)[0]
+        if inherited['MC_NARMA_reused']!=1 or not np.isclose(inherited['IPC'],gpu['IPC'],rtol=1e-8,atol=1e-8):
+            raise ValueError('IPC parent-reuse branch does not match the fresh-scoring branch')
+        reuse_verified=True
     points=grid(m); selected=[points[i] for i in sorted({0,len(points)//2,len(points)-1})]
     fractions=m['config']['fractions']
     indices=sorted({0,len(fractions)//2,len(fractions)-1})
     smoke=[]; start=time.monotonic()
     for family,fi,norm in itertools.product(m['config']['families'],indices,m['config']['normalizations']):
-        smoke.extend(condition_rows(m,cache,data,0,family,fi,norm,selected,args.device,args.batch_size))
+        smoke.extend(condition_rows(m,cache,data,0,family,fi,norm,selected,args.device,args.batch_size,reuse_parent=False))
         print(f'Preflight {family} EI={fractions[fi]:.0%} {norm}',flush=True)
     overlap=check_parent_overlap(m,cache,smoke) if 'overlap_parent' in m['config'] else None
     write_csv(args.run_dir/'preflight/smoke.csv',smoke)
-    gate=dict(experiment_id=m['experiment_id'],runtime=runtime,parity=parity,scoring_parity=scoring_parity,parent_overlap=overlap,
+    gate=dict(experiment_id=m['experiment_id'],runtime=runtime,parity=parity,scoring_parity=scoring_parity,parent_overlap=overlap,parent_score_reuse_verified=reuse_verified,
               tested_conditions=len(smoke),all_task_streams_checked=m['config']['repeats'],
               smoke_sha256=digest((args.run_dir/'preflight/smoke.csv').read_bytes()),
               smoke_seconds=time.monotonic()-start)
@@ -484,24 +558,35 @@ def check_parent_overlap(m,cache,smoke):
 
 
 def merge(args):
-    m=load_run(args.run_dir); c=m['config']; rows=[]
-    for repeat,family,fi,norm in itertools.product(range(c['repeats']),c['families'],range(len(c['fractions'])),c['normalizations']):
-        rows.extend(read_shard(shard_path(args.run_dir,repeat,family,fi,norm),m,repeat,family,fi,norm))
-    if len(rows)!=m['expected_evaluations']:
-        raise ValueError('Unexpected merged observation count')
+    """Stream validated complete shards; preserve existing merged artifacts."""
+    m=load_run(args.run_dir);c=m['config'];count=0;fields=None
     out=args.run_dir/'architecture_mc_narma.ALL.csv'
-    if out.exists():
-        meta=json.loads(Path(str(out)+'.json').read_text())
-        if meta!=dict(experiment_id=m['experiment_id'],sha256=digest(out.read_bytes())):
-            raise ValueError('Existing merged result changed')
-        with out.open() as f:
-            old=list(csv.DictReader(f))
-        if old!=rows:
-            raise ValueError('Existing merged result differs from shards')
-    else:
-        write_csv(out,rows)
-        write_json(str(out)+'.json',dict(experiment_id=m['experiment_id'],sha256=digest(out.read_bytes())))
-    print(f'Validated/merged {len(rows):,} rows: {out}',flush=True)
+    with tempfile.NamedTemporaryFile(mode='w',newline='',dir=args.run_dir,suffix='.merge.tmp',delete=False) as f:
+        temporary=Path(f.name)
+        try:
+            for repeat,family,fi,norm in itertools.product(range(c['repeats']),c['families'],range(len(c['fractions'])),c['normalizations']):
+                rows=read_shard(shard_path(args.run_dir,repeat,family,fi,norm),m,repeat,family,fi,norm)
+                if fields is None:
+                    fields=list(rows[0]);writer=csv.DictWriter(f,fieldnames=fields);writer.writeheader()
+                if any(set(r)!=set(fields) for r in rows):raise ValueError('Shard schemas differ')
+                writer.writerows(rows);count+=len(rows)
+            if count!=m['expected_evaluations']:raise ValueError('Unexpected merged observation count')
+            f.flush();os.fsync(f.fileno())
+        except BaseException:
+            temporary.unlink(missing_ok=True)
+            raise
+    try:
+        sha=file_digest(temporary)
+        if out.exists():
+            meta=json.loads(Path(str(out)+'.json').read_text())
+            if meta!=dict(experiment_id=m['experiment_id'],sha256=file_digest(out)) or meta['sha256']!=sha:
+                raise ValueError('Existing merged result changed or differs from shards')
+        else:
+            os.link(temporary,out)
+            write_json(str(out)+'.json',dict(experiment_id=m['experiment_id'],sha256=sha))
+    finally:
+        temporary.unlink(missing_ok=True)
+    print(f'Validated/merged {count:,} rows: {out}',flush=True)
 
 
 def parser():
@@ -523,6 +608,7 @@ def parser():
     q.add_argument('--ipc-max-delay',type=int,default=10)
     q.add_argument('--ipc-max-degree',type=int,default=3)
     q.add_argument('--overlap-parent',type=Path,help='Optional earlier run for a 50%% preflight pairing/score check')
+    q.add_argument('--reuse-parent-through',type=float,help='Reuse validated parent MC/NARMA scores through this fraction; compute IPC from regenerated MC states')
     for name,default in [('washout',500),('train',1500),('validation',500),('test',500),('narma-burnin',1000),('mc-max-delay',30),('mc-diagnostic-delay',60)]:
         q.add_argument('--'+name,type=int,default=default)
     for command in ('preflight','run','merge'):
