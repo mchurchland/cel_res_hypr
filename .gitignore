@@ -9,3 +9,5 @@ __pycache__/
 
 # Generated experiment output
 final_results/triad_sign_fraction_experiment/triad_sign_fraction_activation_details.ALL.csv
+results/architecture_mc_narma/architecture_mc_narma_271846/architecture_mc_narma.ALL.csv 
+/home/milesc/Thesis/results/architecture_mc_narma/architecture_mc_narma_271846/architecture_mc_narma.ALL.csv

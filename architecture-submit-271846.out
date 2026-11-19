@@ -1,0 +1,5 @@
+Prepared /home/milesc/Thesis/results/architecture_mc_narma/architecture_mc_narma_271846: 432,000 paired MC/NARMA10 evaluations; 864,000 trajectories.
+Preflight: 271847; GPU array: 271848; merge/analysis: 271849
+Results: /home/milesc/Thesis/results/architecture_mc_narma/architecture_mc_narma_271846
+Analysis (PNG + CSV + Markdown): /home/milesc/Thesis/analysis/architecture_mc_narma/architecture_mc_narma_271846
+Resume with the same settings and RUN_ID=architecture_mc_narma_271846; existing completed shards are validated and reused.
