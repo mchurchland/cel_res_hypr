@@ -1,0 +1,162 @@
+{
+  "config": {
+    "bias": 0.0,
+    "comparison_parent": {
+      "experiment_id": "c5e824839471229666864e1d53bf83aa05db901db193c9c4e917b299769076eb",
+      "manifest_sha256": "fc231bfc82297c960dab567108693acc2b43034e7d238a2339963fa69df043ed",
+      "merged_sha256": "f567d454822e0ed7afe4cf4d13ea2c67e44fb45fda2eb9532c52a017c07fa896",
+      "path": "/home/milesc/Thesis/results/architecture_mc_narma_ipc_full/architecture_full_ipc_271871"
+    },
+    "families": [
+      "ws_binary",
+      "ws_halfnormal"
+    ],
+    "fractions": [
+      0.0,
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9,
+      1.0
+    ],
+    "input_projection": "all nodes; shared U[-1,1] vector per repeat",
+    "inputs": [
+      0.01,
+      0.1,
+      0.5,
+      1.5
+    ],
+    "ipc": {
+      "basis": "products of sqrt(2*k+1)*scipy.special.eval_legendre(k,u[t-delay]); all multi-indices of total degree 1..max_degree; no constant/current-input target",
+      "clipping": "None for IPC; positive-part sum is a separately named diagnostic",
+      "estimator": "per target: 1 - test MSE / mean(test target squared); validation-selected sklearn SVD Ridge with intercept; sum signed estimates",
+      "input_distribution": "iid Uniform[-1,1]",
+      "lags": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "max_degree": 3,
+      "max_delay": 10,
+      "scope": "finite delayed-input basis, not full IPC; readout protocol is a regularized held-out adaptation of Dambre 2012",
+      "target_count": 285
+    },
+    "leaks": [
+      0.6,
+      1.0
+    ],
+    "narma_stream_policy": "Reject only nonfinite generated targets before any network evaluation; seed=repeat_seed+37000003+1009*attempt, attempt=0..99; log every rejection; share accepted stream across all conditions",
+    "normalizations": [
+      "own_radius",
+      "fixed_reference",
+      "shared_ce_scale"
+    ],
+    "repeats": 100,
+    "rhos": [
+      0.6,
+      0.95,
+      1.05
+    ],
+    "seed": 20261119,
+    "seed_stride": 100000,
+    "state_dtype": "float64",
+    "swaps_per_edge": 20,
+    "tasks": {
+      "mc_diagnostic_delay": 60,
+      "mc_max_delay": 30,
+      "narma_burnin": 1000,
+      "ridge_alphas": [
+        1e-08,
+        1e-06,
+        0.0001,
+        0.01,
+        1.0
+      ],
+      "test": 500,
+      "train": 1500,
+      "validation": 500,
+      "washout": 500
+    },
+    "ws_probability": 0.1
+  },
+  "created_utc": "2026-11-20T17:52:22Z",
+  "data": {
+    "known_edges": 1740,
+    "nodes": 297,
+    "reference_fraction": 0.2425287356321839,
+    "unknown_edges": 1864
+  },
+  "expected_evaluations": 158400,
+  "expected_trajectories": 316800,
+  "experiment_id": "d3828785c97d21722259701532420fcd3b21446e2293d99f6896f807ab18f25d",
+  "model_definitions": {
+    "ce_binary": "CE topology and same CE sign mask; all magnitudes one.",
+    "ce_degree_rewired": "NetworkX directed swaps; preserve in/out degrees and each source signed outgoing-weight multiset; change targets.",
+    "ce_empirical": "Completed CE topology and contact-count magnitudes; randomized edge-sign quota.",
+    "ce_halfnormal": "CE topology and same CE sign mask; absolute Gaussian magnitudes normalized to mean one.",
+    "ce_shuffled": "CE topology and exact sign mask; shuffle magnitudes WITHIN sign classes, preserving exact signed multiset. Placements change across fractions.",
+    "ce_unknown_removed": "Known-edge mask, 297 nodes retained, full-CE magnitude units retained; its own exact sign quota on remaining edges. Fewer edges, not density-matched to ER.",
+    "er_binary": "Same ER mask/sign assignment as weighted ER; magnitudes one.",
+    "er_halfnormal": "Same ER mask; exact signed multiset of CE half-normal control.",
+    "er_signed_empirical": "Uniform loop-free directed fixed-edge-count random graph; exact signed CE empirical multiset.",
+    "ws_binary": "Parent directed WS-like topology and edge-sign mask, p=.1; all raw magnitudes one.",
+    "ws_halfnormal": "Same parent WS topology/sign mask; exact signed half-normal multiset of the parent CE/ER controls; original mean-one raw magnitude units.",
+    "ws_signed_empirical": "Directed WS-like ring with p=0.1 rewiring and random node relabeling; exact signed CE empirical multiset."
+  },
+  "new_temporal_evaluations": 158400,
+  "prepared_environment": {
+    "packages": {
+      "matplotlib": "3.10.3",
+      "networkx": "3.4.2",
+      "numpy": "2.2.6",
+      "pandas": "2.3.0",
+      "scikit-learn": "1.7.2",
+      "scipy": "1.15.3",
+      "torch": "2.8.0"
+    },
+    "python": "3.10.18"
+  },
+  "protocol": "architecture-mc-narma-ipc-v3-delayed-legendre",
+  "reused_temporal_evaluations": 0,
+  "source_sha256": {
+    "ARCHITECTURE_IPC_EXTENSION.md": "0cc65fa48339a008ade8ca02376cda16e5899e95435dd34136b9059df1034ade",
+    "ARCHITECTURE_SWEEP.md": "93c111e1739281d6e09cbbcf8301ca6c68327ef8f83584e887e30dba9355b150",
+    "Connectome/ce_adj.npy": "3efb994aaf7ef7981633f51adfdcff9b82f882eb4e9619b20321617f66681937",
+    "Connectome/ce_unknown_sign_weights.npy": "7ee3cfdd637994431b7911da53249e2ba8e2a9840e61599be4b376caad3d5e95",
+    "WS_WEIGHT_CONTROLS.md": "1dd7af8fa166b1600265c2103e6d4bef9e8ef6cc478bcac3521526e99f174507",
+    "architecture_mc_narma.py": "b4e83973d2d53bd8539f671d9cc83c082e494644091233f695f0463c868786f9",
+    "network_stats/architecture_sweep.py": "555c8005f2792db5aa52dfc41575a4f378331a9a15d5b5d44802893fa54d2c39",
+    "network_stats/audited_temporal_tasks.py": "499f5ba118dad40459e91498577a3d7628c2dcf67f5c0ee101089c6becb44b9b",
+    "network_stats/ipc_capacity.py": "5169d0b2fe8f5daaaa2395d59777b7aa4c2cd3673bde85e1f59119b273548b8a",
+    "network_stats/ws_weight_controls.py": "f368098c91a4d6fe6bd8320eb40c96ff8681018c54e10f81b983680f7b804b6e",
+    "r_architecture_mc_narma.sbatch": "dbfeb5d29aa94c8fd5c37d4f24e05d972be5d1dc26fec8f7866544f6ec5b3399",
+    "r_architecture_mc_narma_analyze.sbatch": "7a752f962b9623b5aa9d939a269f8eb19d6ea3025431f47f34361f08fc1ec0ee",
+    "r_architecture_mc_narma_ipc_50_100.sbatch": "416e12887588be4535ded335f00e6f2515aecba6a434cc976dec51300fdb2d51",
+    "r_architecture_mc_narma_ipc_full.sbatch": "2da881e54119e8317f43c788921b26b888cb11b4dca94275a67317f1de03be90",
+    "r_architecture_mc_narma_preflight.sbatch": "51f0c64ff8d2a6fc65b79be939686d6992640ef9188625f3a4f5625d52871429",
+    "r_ws_binary_halfnormal.sbatch": "92e49f743061bcebf30ca28e609fb73f10edbf1fb1d0714609b29ee432717025",
+    "tests/test_architecture_backfill.py": "50515367c95dd7d18c27d1e4f97cecd6879cdf4aca14facce30ed4f1f048d309",
+    "tests/test_architecture_ipc.py": "ebd77d88653c0b19859c9b3c5d6af3bcc45bab84b5ce907475665624107f49e2",
+    "tests/test_architecture_pipeline.py": "cf07c4c401a921f8433e55909853e28a6ab0d55f3157d06b910a451ded456cd6",
+    "tests/test_architecture_ws_controls.py": "66a9677d27bc1f50cb0ade8c12000c2279093ad51ddd3f47494173a229b011b9",
+    "third_party/echotorch/COPYING": "edaef632cbb643e4e7a221717a6c441a4c1a7c918e6e4d56debc3d8739b233f6",
+    "third_party/echotorch/NARMADataset.py": "07a9a4edf2ae6b7b70a2e97590172159b6fac516eab94462293747dbdf71256f",
+    "third_party/echotorch/README.md": "907c846dd1f0db0bf8b8cba69d812efae315ff4995f9091b3ebd6b91295596cc",
+    "tools/analyze_architecture_mc_narma.py": "a9bdb73f39a2fd90a1f71b591ed553f79df98cbd4c0502432e684fd189b5f524",
+    "tools/plot_architecture_duels_by_model.py": "14652c534010f0df85065e88f007b742e6b9e188a58585f9d0f561b1c37e2c83",
+    "tools/submit_architecture_mc_narma.sh": "415824d70dde581743c1243dc5be242941a094b557e6089245e4bfb777b424b5",
+    "util/util.py": "644c26d045ee5785cb0719cdc4bcc6b1c7e38a35db6d4d9c4a04fe792f4d9d1b"
+  }
+}
