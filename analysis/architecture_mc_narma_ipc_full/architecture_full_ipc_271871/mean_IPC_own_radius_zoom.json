@@ -1,0 +1,31 @@
+{
+  "source": "mean_performance.csv",
+  "source_sha256": "e0745cd9c9eb45c2e89ac2561ebfda30d410e3d002a5012355cb28ea8bab4661",
+  "y_limits": [
+    -60,
+    70
+  ],
+  "full_range_inset": true,
+  "observations_removed": 0,
+  "clipped_main_panel_values": [
+    {
+      "family": "er_halfnormal",
+      "negative_fraction": 0.4,
+      "mean": -22.39200240106573,
+      "ci_low": -149.1004768397995,
+      "ci_high": 41.67134375996796
+    },
+    {
+      "family": "ws_signed_empirical",
+      "negative_fraction": 0.2,
+      "mean": -897.5563943833454,
+      "ci_low": -2767.534607122592,
+      "ci_high": 45.4135918611036
+    }
+  ],
+  "original_figure": "mean_IPC_own_radius_full_range.png",
+  "original_sha256": "76c962f23e0f468ad1d743f086634657bbca0dd3b0c5d49826c9f14ff0127238",
+  "updated_figure_sha256": "6b6cccb6dc42c2919ec104b727b1b443f05bafb5e212f95fa5f27817c2a8e298",
+  "script": "tools/replot_ipc_mean_zoom.py",
+  "script_sha256": "5e273b28dab4f2c52f5181716e417e3a0a7437554996b2ee6731db79c9d8088e"
+}

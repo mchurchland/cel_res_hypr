@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import TwoSlopeNorm
 import numpy as np
 import pandas as pd
-from architecture_mc_narma import load_run, merge, digest, write_json, file_digest
+from architecture_mc_narma import load_run, merge, digest, write_json, file_digest, parent_manifest, grid
 
 PARAMETERS=['rho_target','leak','input_scale']
 METRICS={'MC':1,'NARMA10_test_nmse':-1}
@@ -35,11 +35,39 @@ LABELS={'ce_empirical':'CE empirical','ce_shuffled':'CE shuffled magnitudes',
  'ce_degree_rewired':'CE degree rewired','ce_binary':'CE binary',
  'ce_halfnormal':'CE half-normal','er_signed_empirical':'ER exact CE signed weights',
  'er_binary':'ER binary','er_halfnormal':'ER half-normal',
- 'ws_signed_empirical':'WS-like exact CE signed weights','ce_unknown_removed':'CE unknown edges removed'}
+ 'ws_signed_empirical':'WS-like exact CE signed weights','ce_unknown_removed':'CE unknown edges removed',
+ 'ws_binary':'WS-like binary','ws_halfnormal':'WS-like half-normal'}
 COLORS={'ce_empirical':'#d55e00','ce_unknown_removed':'#0072b2','er_binary':'#009e73',
  'ce_shuffled':'#e69f00','ce_degree_rewired':'#cc79a7','ce_binary':'#882255',
  'ce_halfnormal':'#aa4499','er_signed_empirical':'#44aa99','er_halfnormal':'#117733',
- 'ws_signed_empirical':'#332288'}
+ 'ws_signed_empirical':'#332288','ws_binary':'#777777','ws_halfnormal':'#88ccee'}
+
+
+def attach_comparison_parent(new,m):
+    """Include existing comparator rows in analysis without resimulating them."""
+    if 'comparison_parent' not in m['config']:return new,m,None
+    root,old=parent_manifest(m);record=m['config']['comparison_parent'];path=root/'architecture_mc_narma.ALL.csv'
+    if file_digest(path)!=record['merged_sha256']:raise ValueError('Comparison-parent merged CSV changed')
+    parent=pd.read_csv(path);c=m['config']
+    mask=parent.repeat_id.isin(range(c['repeats']))
+    for column,key in [('negative_fraction','fractions'),('normalization','normalizations'),('rho_target','rhos'),('leak','leaks'),('input_scale','inputs')]:
+        mask &= parent[column].isin(c[key])
+    parent=parent[mask].copy()
+    if set(new.family)!=set(c['families']) or set(parent.family)!=set(old['config']['families']) or set(new.family)&set(parent.family):
+        raise ValueError('Missing/overlapping new and parent families')
+    if 'ipc' not in c:parent=parent.drop(columns=[name for name in parent if name.startswith('IPC')])
+    families=list(old['config']['families'])+list(c['families'])
+    combined=pd.concat([parent,new],ignore_index=True)
+    keys=['repeat_id','family','negative_fraction','normalization',*PARAMETERS]
+    expected=c['repeats']*len(families)*len(c['fractions'])*len(c['normalizations'])*len(grid(m))
+    if len(combined)!=expected or combined.duplicated(keys).any():raise ValueError('Incomplete/duplicated combined dataset')
+    if not np.isfinite(combined[list(metric_directions(new))].to_numpy()).all():raise ValueError('Missing/nonfinite paired scores')
+    sizes=combined.groupby(['repeat_id','family','negative_fraction','normalization']).size()
+    if not (sizes==len(grid(m))).all():raise ValueError('Incomplete paired configuration surfaces')
+    analysis_manifest=dict(m,config=dict(c,families=families))
+    provenance=dict(path=str(path),sha256=record['merged_sha256'],experiment_id=old['experiment_id'],
+        parent_rows_used=len(parent),new_rows=len(new),analysis_rows=len(combined),analysis_families=families)
+    return combined,analysis_manifest,provenance
 
 
 def bootstrap_weights(n,count,seed):
@@ -156,7 +184,8 @@ def plots(summary,wins,advantages,components,out,m):
             controls=[f for f in m['config']['families'] if f!='ce_empirical']
             if not controls: continue
             limit=float(abs(a.ce_advantage).max()) or 1.
-            fig,axes=plt.subplots(3,3,figsize=(12,10),squeeze=False,layout='constrained')
+            rows=max(1,(len(controls)+2)//3)
+            fig,axes=plt.subplots(rows,3,figsize=(12,3.35*rows),squeeze=False,layout='constrained')
             for ax,family in zip(axes.flat,controls):
                 matrix=a[a.control==family].groupby(['negative_fraction','input_scale']).ce_advantage.mean().unstack().sort_index()
                 im=ax.imshow(matrix,aspect='auto',origin='lower',cmap='RdBu',norm=TwoSlopeNorm(vmin=-limit,vcenter=0,vmax=limit))
@@ -201,6 +230,7 @@ def main(argv=None):
     args.out_dir.mkdir(parents=True,exist_ok=True)
     source=args.run_dir/'architecture_mc_narma.ALL.csv'
     d=pd.read_csv(source)
+    d,m,parent_provenance=attach_comparison_parent(d,m)
     weights=bootstrap_weights(m['config']['repeats'],args.bootstrap,args.seed)
     summary,wins,advantages,components=summarize(d,m,weights)
     for name,table in [('mean_performance',summary),('ce_winning_fraction',wins),('configuration_advantages',advantages),('hyperparameter_variance_components',components)]:
@@ -223,10 +253,13 @@ def main(argv=None):
     if 'reuse_parent_through' in m['config']:
         reused=int(d.MC_NARMA_reused.sum())
         report+=f"\nMC/NARMA scores in {reused:,} rows through {100*m['config']['reuse_parent_through']:g}% inhibition are reused from the recorded parent experiment. IPC was newly computed from regenerated, paired MC state trajectories for those rows. Original NARMA simulations and MC/NARMA readout fitting were skipped for reused rows. Row-level reuse flags, parent experiment IDs and parent-shard hashes preserve provenance.\n"
+    if parent_provenance is not None:
+        report+=f"\nOnly WS binary and WS half-normal were newly simulated ({parent_provenance['new_rows']:,} rows). {parent_provenance['parent_rows_used']:,} existing comparator rows were loaded from {parent_provenance['path']}. The paired analysis covers all {len(m['config']['families'])} families; the new run's merged CSV contains only newly simulated rows. Parent task streams, WS topology/sign masks and half-normal magnitude draws are reused exactly. The current IPC estimator/readout are unchanged, including the known possibility of severe held-out errors after activation-regime changes. No failing rows were removed or clipped.\n"
     report+='\nPrimary comparison: fraction of identical hyperparameter settings won at each E/I fraction, after averaging each setting over paired realizations. Grid-averaged performance is supporting context.\n'
     (args.out_dir/'REPORT.md').write_text(report)
     write_json(args.out_dir/'manifest.json',dict(experiment_id=m['experiment_id'],source=str(source.resolve()),
         source_sha256=file_digest(source),analysis_sha256=digest(Path(__file__).read_bytes()),
+        comparison_parent=parent_provenance,
         bootstrap=args.bootstrap,bootstrap_seed=args.seed,bootstrap_unit='paired whole realization',
         outputs={f.name:digest(f.read_bytes()) for f in args.out_dir.iterdir() if f.is_file()}))
     print(args.out_dir)

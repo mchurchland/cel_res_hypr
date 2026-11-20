@@ -20,6 +20,7 @@ from network_stats.architecture_sweep import (FAMILIES, NORMALIZATIONS, DEFINITI
     make_assets, raw_networks, rng_for, scaling_factor, spectrum, validate_connectomes)
 from network_stats.audited_temporal_tasks import TaskSettings, make_task_data, score_states, simulate_batch
 from network_stats.ipc_capacity import IPCSettings, add_ipc_data, score_ipc
+from network_stats.ws_weight_controls import WS_FAMILIES, WS_DEFINITIONS, extend_parent_cache
 
 ROOT = Path(__file__).resolve().parent
 PROTOCOL = 'architecture-mc-narma-v2-conventional'
@@ -35,6 +36,8 @@ SOURCES += ('network_stats/ipc_capacity.py', 'tests/test_architecture_ipc.py',
     'r_architecture_mc_narma_ipc_50_100.sbatch', 'ARCHITECTURE_IPC_EXTENSION.md',
     'tools/plot_architecture_duels_by_model.py', 'r_architecture_mc_narma_ipc_full.sbatch',
     'tests/test_architecture_backfill.py')
+SOURCES += ('network_stats/ws_weight_controls.py','r_ws_binary_halfnormal.sbatch',
+            'tests/test_architecture_ws_controls.py','WS_WEIGHT_CONTROLS.md')
 DATA = ('Connectome/ce_adj.npy', 'Connectome/ce_unknown_sign_weights.npy')
 KEY = ('repeat_id', 'family', 'negative_fraction', 'normalization', 'rho_target', 'leak', 'input_scale')
 
@@ -133,6 +136,27 @@ def prepare(args):
     if ipc is not None:
         if ipc.max_delay>args.washout: raise ValueError('IPC delay exceeds washout')
         c['ipc']=ipc.definition()
+    if args.comparison_parent is not None:
+        if args.overlap_parent is not None or args.reuse_parent_through is not None:
+            raise ValueError('Comparison-parent mode is separate from parent-score reuse')
+        parent=args.comparison_parent.resolve();old=json.loads((parent/'manifest.json').read_text())
+        if not set(c['families']).issubset(WS_FAMILIES) or set(c['families']) & set(old['config']['families']):
+            raise ValueError('Comparison-parent mode computes only new, disjoint WS controls')
+        for relative in DATA+('network_stats/architecture_sweep.py','network_stats/audited_temporal_tasks.py','util/util.py','third_party/echotorch/NARMADataset.py')+ (('network_stats/ipc_capacity.py',) if ipc else ()):
+            if old['source_sha256'][relative]!=digest((ROOT/relative).read_bytes()):
+                raise ValueError(f'Comparison parent uses different model/task/data source: {relative}')
+        for key in ('rhos','leaks','inputs','seed','seed_stride','tasks','state_dtype','ws_probability','swaps_per_edge'):
+            if canonical(old['config'][key])!=canonical(c[key]):raise ValueError(f'Comparison parent has different {key}')
+        if old['config']['repeats']<c['repeats'] or any(not set(c[k]).issubset(old['config'][k]) for k in ('fractions','normalizations')):
+            raise ValueError('Comparison parent lacks requested conditions or repeats')
+        if ipc is not None and canonical(old['config'].get('ipc'))!=canonical(c['ipc']):
+            raise ValueError('Comparison parent has a different IPC definition')
+        merged=parent/'architecture_mc_narma.ALL.csv';metadata=json.loads(Path(str(merged)+'.json').read_text())
+        if metadata['experiment_id']!=old['experiment_id'] or file_digest(merged)!=metadata['sha256']:
+            raise ValueError('Comparison-parent merged results changed')
+        c['comparison_parent']=dict(path=str(parent),manifest_sha256=file_digest(parent/'manifest.json'),experiment_id=old['experiment_id'],merged_sha256=metadata['sha256'])
+    elif any(f in WS_FAMILIES for f in c['families']):
+        raise ValueError('New WS controls require --comparison-parent for exact pairing')
     if args.overlap_parent is not None:
         parent=args.overlap_parent.resolve()
         old=json.loads((parent/'manifest.json').read_text())
@@ -179,7 +203,7 @@ def prepare(args):
     for relative in SOURCES+DATA:
         atomic(out/'snapshot'/relative, (ROOT/relative).read_bytes())
     manifest = {**identity, 'experiment_id': experiment_id, 'prepared_environment': environment(),
-        'model_definitions': DEFINITIONS, 'expected_evaluations': total,
+        'model_definitions': {**DEFINITIONS,**WS_DEFINITIONS}, 'expected_evaluations': total,
         'reused_temporal_evaluations':reused,'new_temporal_evaluations':total-reused,
         'expected_trajectories':2*total-reused,
         'data': dict(nodes=len(known), known_edges=int(np.count_nonzero(known)),
@@ -212,12 +236,12 @@ def tasks_cached(run, m, repeat):
     if path.exists():
         data = read_cache(path, m['experiment_id'])
     else:
-        if 'reuse_parent_through' in m['config']:
+        if 'reuse_parent_through' in m['config'] or 'comparison_parent' in m['config']:
             parent,old=parent_manifest(m)
             data=read_cache(parent/'cache'/f'tasks_{repeat:04d}.npz',old['experiment_id'])
         else:
             data = make_task_data(task_settings(m), repeat_seed(m, repeat))
-        if 'ipc' in m['config']:
+        if 'ipc' in m['config'] and not ('comparison_parent' in m['config'] and 'ipc_targets' in data):
             spec=m['config']['ipc']
             data=add_ipc_data(data,task_settings(m),IPCSettings(spec['max_delay'],spec['max_degree']))
         write_cache(path, data, m['experiment_id'])
@@ -229,7 +253,7 @@ def tasks_cached(run, m, repeat):
     if 'ipc' in m['config']:
         if data['ipc_targets'].shape!=(s.length,m['config']['ipc']['target_count']) or not np.isfinite(data['ipc_targets'][s.washout:]).all():
             raise ValueError('Invalid IPC target cache')
-    if 'reuse_parent_through' in m['config']:
+    if 'reuse_parent_through' in m['config'] or 'comparison_parent' in m['config']:
         parent,old=parent_manifest(m)
         original=read_cache(parent/'cache'/f'tasks_{repeat:04d}.npz',old['experiment_id'])
         for key in ('mc_input','narma_input','narma_target','narma_generator_seed','narma_rejected_seeds'):
@@ -242,6 +266,12 @@ def networks_cached(run, m, repeat):
     if path.exists():
         return read_cache(path, m['experiment_id'])
     seed = repeat_seed(m, repeat)
+    if 'comparison_parent' in m['config']:
+        parent,old=parent_manifest(m)
+        cache=read_cache(parent/'cache'/f'networks_{repeat:04d}.npz',old['experiment_id'])
+        arrays=extend_parent_cache(cache,old['config']['fractions'],m['config']['fractions'],seed)
+        write_cache(path,arrays,m['experiment_id'])
+        return arrays
     known, unknown = (np.load(Path(run)/'snapshot'/p) for p in DATA)
     a = make_assets(known, unknown, seed, m['config']['swaps_per_edge'])
     arrays = {'reference_fraction': a['reference_fraction'], 'n_nodes': a['n_nodes'],
@@ -288,7 +318,9 @@ def configure_device(device):
 
 
 def parent_manifest(m):
-    record=m['config']['overlap_parent'];root=Path(record['path'])
+    record=m['config'].get('overlap_parent',m['config'].get('comparison_parent'))
+    if record is None:raise ValueError('No parent configured')
+    root=Path(record['path'])
     raw=(root/'manifest.json').read_bytes()
     if digest(raw)!=record['manifest_sha256']:raise ValueError('Parent manifest changed')
     return root,json.loads(raw)
@@ -495,11 +527,12 @@ def preflight(args):
     for repeat in range(m['config']['repeats']):
         tasks_cached(args.run_dir,m,repeat)
     cache=networks_cached(args.run_dir,m,0); data=tasks_cached(args.run_dir,m,0)
-    # Check the complete CPU/GPU scoring path on a real, stable CE condition.
+    # Check the complete scoring path on the first requested family.
     stable_fi=int(np.argmin(abs(np.asarray(m['config']['fractions'])-.2)))
     check_point=[(.6,1.,.1)]
-    cpu=condition_rows(m,cache,data,0,'ce_empirical',stable_fi,'own_radius',check_point,'cpu',1,reuse_parent=False)[0]
-    gpu=condition_rows(m,cache,data,0,'ce_empirical',stable_fi,'own_radius',check_point,args.device,1,reuse_parent=False)[0]
+    check_family=m['config']['families'][0]
+    cpu=condition_rows(m,cache,data,0,check_family,stable_fi,'own_radius',check_point,'cpu',1,reuse_parent=False)[0]
+    gpu=condition_rows(m,cache,data,0,check_family,stable_fi,'own_radius',check_point,args.device,1,reuse_parent=False)[0]
     scoring_parity={k:abs(cpu[k]-gpu[k]) for k in ('MC','MC_extended','NARMA10_test_nmse')}
     if 'ipc' in m['config']: scoring_parity['IPC']=abs(cpu['IPC']-gpu['IPC'])
     tolerance=1e-6 if m['config']['state_dtype']=='float64' else .02
@@ -507,7 +540,7 @@ def preflight(args):
         raise ValueError(f'CPU/GPU metric mismatch: {scoring_parity}')
     reuse_verified=False
     if 'reuse_parent_through' in m['config'] and m['config']['fractions'][stable_fi]<=m['config']['reuse_parent_through']:
-        inherited=condition_rows(m,cache,data,0,'ce_empirical',stable_fi,'own_radius',check_point,args.device,1)[0]
+        inherited=condition_rows(m,cache,data,0,check_family,stable_fi,'own_radius',check_point,args.device,1)[0]
         if inherited['MC_NARMA_reused']!=1 or not np.isclose(inherited['IPC'],gpu['IPC'],rtol=1e-8,atol=1e-8):
             raise ValueError('IPC parent-reuse branch does not match the fresh-scoring branch')
         reuse_verified=True
@@ -594,7 +627,7 @@ def parser():
     sub=p.add_subparsers(dest='command',required=True)
     q=sub.add_parser('prepare')
     q.add_argument('--run-dir',type=Path,required=True)
-    q.add_argument('--families',nargs='+',choices=FAMILIES,default=list(FAMILIES))
+    q.add_argument('--families',nargs='+',choices=FAMILIES+WS_FAMILIES,default=list(FAMILIES))
     q.add_argument('--normalizations',nargs='+',choices=NORMALIZATIONS,default=list(NORMALIZATIONS))
     q.add_argument('--fractions',nargs='+',type=float,default=[0,.1,.2,.3,.4,.5])
     q.add_argument('--rhos',nargs='+',type=float,default=[.6,.95,1.05])
@@ -608,6 +641,7 @@ def parser():
     q.add_argument('--ipc-max-delay',type=int,default=10)
     q.add_argument('--ipc-max-degree',type=int,default=3)
     q.add_argument('--overlap-parent',type=Path,help='Optional earlier run for a 50%% preflight pairing/score check')
+    q.add_argument('--comparison-parent',type=Path,help='Completed parent supplying exact WS topology, paired streams and analysis comparators')
     q.add_argument('--reuse-parent-through',type=float,help='Reuse validated parent MC/NARMA scores through this fraction; compute IPC from regenerated MC states')
     for name,default in [('washout',500),('train',1500),('validation',500),('test',500),('narma-burnin',1000),('mc-max-delay',30),('mc-diagnostic-delay',60)]:
         q.add_argument('--'+name,type=int,default=default)

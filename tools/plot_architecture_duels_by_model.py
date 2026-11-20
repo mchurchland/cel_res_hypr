@@ -82,7 +82,8 @@ def main(argv=None):
     by_input.to_csv(out/'input_win_curves.csv',index=False)
     plt.rcParams.update({'font.size':10,'axes.titlesize':11,'legend.fontsize':9})
     for metric,label in metrics.items():
-        fig,axes=plt.subplots(3,3,figsize=(13,11),sharex=True,sharey=True)
+        rows=max(1,(len(controls)+2)//3)
+        fig,axes=plt.subplots(rows,3,figsize=(13,3.7*rows),sharex=True,sharey=True,squeeze=False)
         for ax,control in zip(axes.flat,controls):
             draw(ax,w,control,metric);ax.set_title(LABELS[control])
         fig.suptitle(f'{label}: fraction of matched hyperparameter settings CE wins',fontsize=16,y=.985)

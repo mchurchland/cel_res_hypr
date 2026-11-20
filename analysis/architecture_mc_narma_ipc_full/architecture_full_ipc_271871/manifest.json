@@ -22,7 +22,7 @@
     "input_advantage_NARMA10_test_nmse_shared_ce_scale.png": "6e7021f79a695251548952a66d565d2481ef9d0ee50c3c7c679d642d22e786d9",
     "ipc_component_diagnostics.csv": "94f9cc05e1c834395bf17afa31a50b939dce48a597671967ef783e35363ad288",
     "mean_IPC_fixed_reference.png": "690df5420abe93473afc0961a247b5e353abba28865d291476cbcc6ddd869607",
-    "mean_IPC_own_radius.png": "76c962f23e0f468ad1d743f086634657bbca0dd3b0c5d49826c9f14ff0127238",
+    "mean_IPC_own_radius.png": "6b6cccb6dc42c2919ec104b727b1b443f05bafb5e212f95fa5f27817c2a8e298",
     "mean_IPC_shared_ce_scale.png": "28381968a955820b285370694fc9bf9661b913c576c7bb64c1f5330e95527d7f",
     "mean_MC_fixed_reference.png": "aef2d058c26c040d6b4cb530be5f3b77e88bb5809c24627e0f5393a2fecec50d",
     "mean_MC_own_radius.png": "b3c0cc23261b51cd6f3c5f426af6d0c0f9355d1499971bdc628aba4b0477354c",
@@ -46,5 +46,13 @@
     "winning_fraction_NARMA10_test_nmse_shared_ce_scale.png": "7d3dec1a08f25abb96fe2a431d311e22b2e19e16ed83a421cc96c00637f4f1b4"
   },
   "source": "/home/milesc/Thesis/results/architecture_mc_narma_ipc_full/architecture_full_ipc_271871/architecture_mc_narma.ALL.csv",
-  "source_sha256": "f567d454822e0ed7afe4cf4d13ea2c67e44fb45fda2eb9532c52a017c07fa896"
+  "source_sha256": "f567d454822e0ed7afe4cf4d13ea2c67e44fb45fda2eb9532c52a017c07fa896",
+  "figure_adjustments": [
+    {
+      "target": "mean_IPC_own_radius.png",
+      "record": "mean_IPC_own_radius_zoom.json",
+      "record_sha256": "3dc1c0304700ed222b98e352b7971c3122ea2678898960b03eca6851ab504315",
+      "original_manifest": "manifest.before_ipc_ylim.json"
+    }
+  ]
 }
