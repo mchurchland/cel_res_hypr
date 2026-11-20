@@ -1,0 +1,40 @@
+{
+  "all_task_streams_checked": 100,
+  "experiment_id": "c5e824839471229666864e1d53bf83aa05db901db193c9c4e917b299769076eb",
+  "parent_overlap": {
+    "max_absolute_score_difference": 7.978329108482285e-11,
+    "paired_models_checked": 10,
+    "stable_conditions_checked": 30
+  },
+  "parent_score_reuse_verified": true,
+  "parity": {
+    "max_absolute_state_error": 8.326672684688674e-17
+  },
+  "runtime": {
+    "cuda_available": true,
+    "device": "cuda:0",
+    "environment": {
+      "packages": {
+        "matplotlib": "3.10.3",
+        "networkx": "3.4.2",
+        "numpy": "2.2.6",
+        "pandas": "2.3.0",
+        "scikit-learn": "1.7.2",
+        "scipy": "1.15.3",
+        "torch": "2.8.0"
+      },
+      "python": "3.10.18"
+    },
+    "gpu": "NVIDIA L40S",
+    "tf32": false
+  },
+  "scoring_parity": {
+    "IPC": 4.501998773775995e-11,
+    "MC": 1.8566481685411418e-11,
+    "MC_extended": 1.8566481685411418e-11,
+    "NARMA10_test_nmse": 9.802436640171663e-13
+  },
+  "smoke_seconds": 106.7277527730912,
+  "smoke_sha256": "f3807557dc2f145091703f1d13805bc2e449d35934c2a918954002cdc380e0d3",
+  "tested_conditions": 270
+}
