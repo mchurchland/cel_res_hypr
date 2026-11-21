@@ -7,10 +7,48 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 
-# Generated experiment output
-final_results/triad_sign_fraction_experiment/triad_sign_fraction_activation_details.ALL.csv
-results/architecture_mc_narma/architecture_mc_narma_271846/architecture_mc_narma.ALL.csv 
-/home/milesc/Thesis/results/architecture_mc_narma/architecture_mc_narma_271846/architecture_mc_narma.ALL.csv
-/home/milesc/Thesis/results/architecture_mc_narma_ipc_full/architecture_full_ipc_271871/*
-results/architecture_mc_narma_ipc_full/architecture_full_ipc_271871/architecture_mc_narma.ALL.csv
-results/ws_binary_halfnormal/ws_binary_halfnormal_272279/architecture_mc_narma.ALL.csv
+# Generated raw runs, including caches, shards, frozen snapshots and downloads.
+# Source connectomes under Connectome/ remain versioned.
+/results/
+/final_results/
+/logs/
+/*.out
+/*.err
+/*.log
+
+# Generated analysis/figure outputs stay local. Keep source scripts and reports.
+/analysis/**
+!/analysis/**/
+!/analysis/**/*.py
+!/analysis/**/*.sh
+!/analysis/**/*.sbatch
+!/analysis/**/*.R
+!/analysis/**/*.jl
+!/analysis/**/*.md
+/analysis/**/cache/
+/analysis/**/snapshot/
+/analysis/**/code_snapshot/
+/analysis/**/sources/
+/analysis/**/default_plan/
+
+/architecture_variant_figures/**
+!/architecture_variant_figures/**/
+!/architecture_variant_figures/**/*.py
+!/architecture_variant_figures/**/*.md
+/metric_figures/**
+!/metric_figures/**/
+!/metric_figures/**/*.py
+!/metric_figures/**/*.md
+
+# Local environments and packaging output
+.venv/
+venv/
+/build/
+/dist/
+*.egg-info/
+.ipynb_checkpoints/
+.mypy_cache/
+.coverage
+htmlcov/
+.DS_Store
+*.merge.tmp

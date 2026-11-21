@@ -1,5 +1,0 @@
-Prepared /home/milesc/Thesis/results/architecture_mc_narma_ipc_full/architecture_full_ipc_271871: 792,000 result rows; 360,000 new and 432,000 reused MC/NARMA evaluations; 1,152,000 trajectories; IPC reuses the MC trajectory.
-Preflight: 271872; GPU array: 271873; merge/analysis: 271874
-Results: /home/milesc/Thesis/results/architecture_mc_narma_ipc_full/architecture_full_ipc_271871
-Analysis (PNG + CSV + Markdown): /home/milesc/Thesis/analysis/architecture_mc_narma_ipc_full/architecture_full_ipc_271871
-Resume with the same settings and RUN_ID=architecture_full_ipc_271871; existing completed shards are validated and reused.

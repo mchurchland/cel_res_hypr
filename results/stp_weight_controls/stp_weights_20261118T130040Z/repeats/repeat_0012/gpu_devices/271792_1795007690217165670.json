@@ -1,8 +1,0 @@
-{
-  "compute_capability": [
-    8,
-    9
-  ],
-  "name": "NVIDIA L40S",
-  "simulated": false
-}

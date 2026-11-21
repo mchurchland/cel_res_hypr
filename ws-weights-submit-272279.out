@@ -1,5 +1,0 @@
-Prepared /home/milesc/Thesis/results/ws_binary_halfnormal/ws_binary_halfnormal_272279: 158,400 result rows; 158,400 new and 0 reused MC/NARMA evaluations; 316,800 trajectories; IPC reuses the MC trajectory.
-Preflight: 272280; GPU array: 272281; merge/analysis: 272282
-Results: /home/milesc/Thesis/results/ws_binary_halfnormal/ws_binary_halfnormal_272279
-Analysis (PNG + CSV + Markdown): /home/milesc/Thesis/analysis/ws_binary_halfnormal/ws_binary_halfnormal_272279
-Resume with the same settings and RUN_ID=ws_binary_halfnormal_272279; existing completed shards are validated and reused.

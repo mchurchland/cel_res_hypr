@@ -1,9 +1,0 @@
-{
-  "n_conditions_checked": 1152,
-  "networks_match_hashes": true,
-  "actual_input_masks_match": true,
-  "input_norms_match": true,
-  "all_terminal_gains_finite_positive": true,
-  "static_terminal_gain_exactly_one": true,
-  "resume_verified_all_eight_shards_cached": true
-}

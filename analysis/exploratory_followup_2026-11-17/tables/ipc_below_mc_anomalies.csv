@@ -1,4 +1,0 @@
-experiment,family,normalization,negative_percent,seed,MC,IPC,KR,rho_target,leak,input_scale,neuron_bias,IPC_minus_MC
-sign,matched_er,spectral_radius,20,17412346,2.92852640151978,2.6916422477687,5.01309442520142,0.6,1,1.5,0.1,-0.236884153751079
-sign,matched_er,spectral_radius,20,18412346,2.88003468513489,2.7390515188448,8.69185161590576,0.95,1,1.5,0,-0.140983166290085
-normalization,matched_er,original_radius,20,8612346,2.43855571746826,2.05337704152982,6.46013259887695,0.8,0.8,1,0,-0.385178675938441

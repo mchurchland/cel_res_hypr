@@ -1,9 +1,0 @@
-Traceback (most recent call last):
-  File "/home/milesc/Thesis/mc_narma_crossover.py", line 316, in <module>
-    main()
-  File "/home/milesc/Thesis/mc_narma_crossover.py", line 246, in main
-    spec, identity = experiment_spec(args, settings)
-  File "/home/milesc/Thesis/mc_narma_crossover.py", line 162, in experiment_spec
-    raise ValueError("This protocol requires reservoirpy==0.4.2; install requirements-crossover.txt.")
-ValueError: This protocol requires reservoirpy==0.4.2; install requirements-crossover.txt.
-ERROR conda.cli.main_run:execute(49): `conda run python mc_narma_crossover.py --out-dir results/crossover_mc_narma10/271580/chunk_13 --ce-adj Connectome/ce_adj.npy --ce-unknown-sign-weights Connectome/ce_unknown_sign_weights.npy --families cel_matched matched_er --normalization-modes spectral_radius original_radius --sign-fracs 0.20 0.24 0.28 0.32 0.36 0.40 --rho-values 0.6 0.95 1.05 --leak-values 0.6 1.0 --input-scales 0.1 0.5 1.0 1.5 --n-repeats 100 --seed 20261117 --repeat-seed-stride 100000 --repeat-split 20 --repeat-rank 13 --cuda 0 --resume` failed. (See above for error)

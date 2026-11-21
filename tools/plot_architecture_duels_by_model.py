@@ -132,7 +132,7 @@ def main(argv=None):
         f'The full-grid plots use {nsettings} configurations and the recorded pointwise paired-realization bootstrap intervals. Input-specific panels count {ninput} radius/leak settings per input; they show descriptive point estimates without intervals. The dotted line is half of the configurations.','',
         ' · '.join(f'[{label} overview](overview_{label}_all_controls.png)' for label in metrics.values()),'','| Control | Full grid, all metrics | By input, all metrics |','|---|---|---|']
     for control in controls:lines.append(f'| {LABELS[control]} | [PNG]({control}_full_grid.png) | [PNG]({control}_by_input.png) |')
-    lines+=['','The six inhibitory fractions are observed points; line segments connect them and do not establish an exact crossover. The grid is fixed, and results do not extend automatically to untested settings. Every strict positive seed-mean advantage counts, including a small advantage at low absolute performance.','',
+    lines+=['',f'The {w.negative_fraction.nunique()} inhibitory fractions are observed points; line segments connect them and do not establish an exact crossover. The grid is fixed, and results do not extend automatically to untested settings. Every strict positive seed-mean advantage counts, including a small advantage at low absolute performance.','',
         'All existing source tables and figures were preserved. No simulations were run.']
     (out/'README.md').write_text('\n'.join(lines)+'\n')
     manifest=dict(source_analysis=str(base),sources={name:sha(base/name) for name in ['ce_winning_fraction.csv','configuration_advantages.csv']},

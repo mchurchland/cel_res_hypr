@@ -342,7 +342,7 @@ def inherited_scores(row):
     return result
 
 
-def condition_rows(m, cache, data, repeat, family, fi, normalization, points, device, batch_size,reuse_parent=True):
+def condition_rows(m, cache, data, repeat, family, fi, normalization, points, device, batch_size,reuse_parent=True,factors_override=None):
     s = task_settings(m)
     w, eigenvalues, radius = raw_from_cache(cache, family, fi)
     ref = float(cache[f'{family}__{len(m["config"]["fractions"])}__radius'])
@@ -354,9 +354,13 @@ def condition_rows(m, cache, data, repeat, family, fi, normalization, points, de
     reuse=reuse_parent and fraction<=m['config'].get('reuse_parent_through',-1)
     parent_rows,parent_id,parent_sha=parent_condition(m,repeat,family,fraction,normalization) if reuse else ({},m['experiment_id'],'')
     rows = []
+    if factors_override is not None:
+        if len(factors_override)!=len(points) or not np.isfinite(factors_override).all() or np.any(np.asarray(factors_override)<=0):
+            raise ValueError('Invalid explicit scaling factors')
     for begin in range(0,len(points),batch_size):
         batch = points[begin:begin+batch_size]
-        factors = [scaling_factor(normalization,rho,radius,ref,ce) for rho,leak,inp in batch]
+        factors = (list(factors_override[begin:begin+len(batch)]) if factors_override is not None else
+                   [scaling_factor(normalization,rho,radius,ref,ce) for rho,leak,inp in batch])
         if reuse:
             for j,point in enumerate(batch):
                 old=parent_rows[point]
@@ -404,7 +408,7 @@ def shard_path(run, repeat, family, fi, norm):
     return Path(run)/'shards'/f'repeat_{repeat:04d}__{family}__ei_{fi:02d}__{norm}.csv'
 
 
-def validate_rows(rows, m, repeat, family, fi, norm):
+def validate_rows(rows, m, repeat, family, fi, norm,factor_check=None):
     expected = set(grid(m))
     if len(rows) != len(expected):
         raise ValueError('Incomplete/duplicated shard')
@@ -436,7 +440,8 @@ def validate_rows(rows, m, repeat, family, fi, norm):
                 raise ValueError('Invalid IPC components/basis')
             if float(r['IPC_positive_part'])<max(0,value)-1e-8:
                 raise ValueError('Invalid IPC positive-part diagnostic')
-        fac = scaling_factor(norm,point[0],float(r['raw_radius']),float(r['fixed_reference_radius']),float(r['shared_ce_radius']))
+        fac = (factor_check(r) if factor_check is not None else
+               scaling_factor(norm,point[0],float(r['raw_radius']),float(r['fixed_reference_radius']),float(r['shared_ce_radius'])))
         if not np.isclose(fac,float(r['scaling_factor']),rtol=1e-12) or not np.isclose(float(r['post_scaling_radius']),fac*float(r['raw_radius']),rtol=1e-12):
             raise ValueError('Invalid spectral normalization')
     if seen != expected:

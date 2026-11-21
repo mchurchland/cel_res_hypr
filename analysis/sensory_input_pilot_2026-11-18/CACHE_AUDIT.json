@@ -1,8 +1,0 @@
-{
-  "n_vectors_checked": 1280,
-  "coefficient_assignments_exact": true,
-  "driven_masks_exact": true,
-  "sensory_indices_exact": true,
-  "recurrent_hashes_match": true,
-  "all_provenance_hashes_match": true
-}
